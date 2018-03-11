@@ -1,0 +1,23 @@
+
+# Java Compiled class file
+*.class
+
+# Log files
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# IntelliJ
+out/
+.idea/
+.mvn/
+*.iml
+
+#maven
+target/
