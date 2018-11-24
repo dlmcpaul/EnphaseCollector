@@ -25,6 +25,6 @@ public class InfluxService {
 
 	void sendMetrics(List<Metric> metricList, Date readTime) {
 		metricList.forEach(m ->	destinationInfluxDB.write(Point.measurement(m.getName()).time(readTime.getTime(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
-		LOG.info("wrote measurement with {} fields at {}", metricList.size(), readTime);
+		LOG.debug("wrote measurement with {} fields at {}", metricList.size(), readTime);
 	}
 }
