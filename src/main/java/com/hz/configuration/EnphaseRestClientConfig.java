@@ -1,6 +1,5 @@
 package com.hz.configuration;
 
-import com.hz.services.EnphaseService;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -26,6 +25,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Random;
 
 import static org.apache.http.auth.AuthScope.ANY_HOST;
@@ -65,19 +65,19 @@ public class EnphaseRestClientConfig {
 	@Bean
 	public RestTemplate enphaseRestTemplate(RestTemplateBuilder builder) {
 
-		LOG.info("Reading from Insecure source {}", config.getController().getUrl());
+		LOG.info("Reading from insecure Envoy controller endpoint {}", config.getController().getUrl());
 
 		return builder
 				.rootUri(config.getController().getUrl())
-				.setConnectTimeout(5000)
-				.setReadTimeout(5000)
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(5))
 				.build();
 	}
 
     @Bean
     public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
 
-	    LOG.info("Reading from Protected source {}", config.getController().getUrl());
+	    LOG.info("Reading from protected Envoy controller endpoint {}", config.getController().getUrl());
 
 	    HttpHost host = new HttpHost(config.getController().getHost(), config.getController().getPort(), "http");
 	    CloseableHttpClient client = HttpClientBuilder.create().
@@ -85,11 +85,13 @@ public class EnphaseRestClientConfig {
 	    HttpComponentsClientHttpRequestFactory requestFactory =
 			    new HttpComponentsClientHttpRequestFactoryDigestAuth(host, client);
 
-	    return builder.rootUri(config.getController().getUrl())
-			    .requestFactory(requestFactory)
-			    .setConnectTimeout(5000)
-			    .setReadTimeout(5000)
-			    .build();
+	    RestTemplate template = builder.rootUri(config.getController().getUrl())
+			    .setConnectTimeout(Duration.ofSeconds(5))
+			    .setReadTimeout(Duration.ofSeconds(5))
+	            .build();
+
+	    template.setRequestFactory(requestFactory);
+		return template;
     }
 
 	private class HttpComponentsClientHttpRequestFactoryDigestAuth
@@ -97,7 +99,7 @@ public class EnphaseRestClientConfig {
 
 		private final HttpHost host;
 
-		public HttpComponentsClientHttpRequestFactoryDigestAuth(HttpHost host, HttpClient httpClient) {
+		HttpComponentsClientHttpRequestFactoryDigestAuth(HttpHost host, HttpClient httpClient) {
 			super(httpClient);
 			this.host = host;
 		}
@@ -118,15 +120,10 @@ public class EnphaseRestClientConfig {
 			authCache.put(host, digestScheme);
 
 			// Add AuthCache to the execution context
-			BasicHttpContext localcontext = new BasicHttpContext();
-			localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
-			return localcontext;
+			BasicHttpContext localContext = new BasicHttpContext();
+			localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
+			return localContext;
 		}
-	}
-
-	@Bean
-	public EnphaseService enphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate, RestTemplate destinationRestTemplate) {
-		return new EnphaseService(enphaseRestTemplate, enphaseSecureRestTemplate, destinationRestTemplate);
 	}
 
 }

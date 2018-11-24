@@ -7,23 +7,16 @@ import lombok.Data;
  */
 @Data
 public class Metric {
-	private long time;
 	private String name;
-	private long value;
+	private float value;
 
-	public Metric(long time, String name, long value) {
-		this.time = time;
+	public Metric(String name, float value) {
 		this.name = name;
 		this.value = value < 10 ? 0 : value;
 	}
 
-	public Metric(long time, String name, long value1, long value2) {
-		this.time = time;
+	public Metric(String name, float value1, float value2) {
 		this.name = name;
 		this.value = value1 - value2;
-	}
-
-	public String dataPoint() {
-		return String.join(" ", name, "value="+String.valueOf(value), String.valueOf(time));
 	}
 }

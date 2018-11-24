@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("envoy")
 @Data
 public class EnphaseCollectorConfig {
-    private ProtectedHTTPResource controller = new ProtectedHTTPResource();
+    private ProtectedHTTPResource controller;
     private int refreshSeconds;
     private HTTPResource metricDestination;
 
