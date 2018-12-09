@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.constraints.NotNull;
@@ -49,16 +50,21 @@ public class EnphaseService {
 	}
 
 	private Optional<System> collectEnphaseData() {
-		ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
+    	try {
+		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
 
-		if (systemResponse.getStatusCodeValue() == 200) {
-			System system = systemResponse.getBody();
-			getProductionData(system);
-			getInventory(system);
-			getIndividualPanelData(system);
-			return Optional.of(system);
-		}
-		LOG.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
+		    if (systemResponse.getStatusCodeValue() == 200) {
+			    System system = systemResponse.getBody();
+			    getProductionData(system);
+			    getInventory(system);
+			    getIndividualPanelData(system);
+			    return Optional.of(system);
+		    } else {
+			    LOG.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
+		    }
+	    } catch (ResourceAccessException e) {
+		    LOG.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage());
+	    }
 		return Optional.empty();
 	}
 
