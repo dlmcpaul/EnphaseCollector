@@ -13,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -62,7 +64,7 @@ public class EnphaseService {
 		    } else {
 			    LOG.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
 		    }
-	    } catch (ResourceAccessException e) {
+	    } catch (RestClientException e) {
 		    LOG.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage());
 	    }
 		return Optional.empty();

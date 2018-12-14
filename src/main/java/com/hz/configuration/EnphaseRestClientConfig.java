@@ -70,7 +70,7 @@ public class EnphaseRestClientConfig {
 		return builder
 				.rootUri(config.getController().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(30))
 				.build();
 	}
 
