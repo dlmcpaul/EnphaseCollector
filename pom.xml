@@ -5,7 +5,7 @@
 
 	<groupId>com.hz</groupId>
 	<artifactId>enphasecollector</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>DEV</version>
 	<packaging>jar</packaging>
 
 	<name>EnphaseCollector</name>
