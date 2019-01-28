@@ -31,4 +31,7 @@ COPY --from=builder /opt/jre-minimal /opt/jdk
 # copy our application
 ADD ${JAR_FILE} /opt/app/enphasecollector.jar
 
+# expose the internal actuator endpoints
+EXPOSE 8080
+
 CMD ["/opt/jdk/bin/java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/opt/app/enphasecollector.jar"]
