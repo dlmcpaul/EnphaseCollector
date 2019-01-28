@@ -1,14 +1,13 @@
-version: '2'
+version: '3.1'
 services:
   enphaseCollector:
     image: "dlmcpaul/enphasecollector:latest"
+    hostname: enphase
     container_name: enphaseCollector
     depends_on:
       - db
-    networks:
-      - internal
     ports:
-      - "8080"
+      - "8080:8080"
     env_file:
       - ./compose.env
     environment:
@@ -18,15 +17,9 @@ services:
       ENVOY_CONTROLLER_PASSWORD:
   db:
     image: "influxdb:latest"
+    hostname: influx
     container_name: enphaseCollectorDB
-    networks:
-      - internal
     expose:
       - "8086"
     ports:
-      - "8086"
-networks:
-  internal:
-  default:
-    external:
-      name: bridge
+      - "8086:8086"
