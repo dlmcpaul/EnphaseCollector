@@ -10,10 +10,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties("envoy")
 @Data
-public class EnphaseCollectorConfig {
+public class EnphaseCollectorProperties {
     private ProtectedHTTPResource controller;
     private int refreshSeconds;
-    private HTTPResource metricDestination;
+    private HTTPResource influxdbResource;
+    private PvOutputResource pvOutputResource;
 
     @Data
     @NoArgsConstructor
@@ -23,6 +24,12 @@ public class EnphaseCollectorConfig {
         private String context;
 
         public String getUrl() {
+            if (port == 80) {
+                return "http://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+            }
+            if (port == 443) {
+                return "https://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+            }
             return "http://" + host + ":" + port + (context == null || context.isEmpty() ? "" : "/" + context);
         }
     }
@@ -33,5 +40,13 @@ public class EnphaseCollectorConfig {
     public static class ProtectedHTTPResource extends HTTPResource {
         private String user;
         private String password;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @NoArgsConstructor
+    public static class PvOutputResource extends HTTPResource {
+        private String key;
+        private String systemId;
     }
 }

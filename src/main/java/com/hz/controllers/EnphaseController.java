@@ -1,6 +1,7 @@
 package com.hz.controllers;
 
 import com.hz.services.EnphaseService;
+import com.hz.services.OutputManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class EnphaseController {
 
-	private final EnphaseService enphaseService;
+	private final OutputManager outputManager;
 
 	@Autowired
-	public EnphaseController(EnphaseService enphaseService) {
-		this.enphaseService = enphaseService;
+	public EnphaseController(OutputManager outputManager) {
+		this.outputManager = outputManager;
 	}
 
 	@RequestMapping("/")
 	public String home(Model model) {
-		model.addAttribute("metrics", enphaseService.collect());
+		model.addAttribute("metrics", outputManager.collect());
 		return "index";
 	}
 }

@@ -32,26 +32,13 @@ public class EnphaseService {
 
     private final RestTemplate enphaseSecureRestTemplate;
 
-    private final InfluxService influxService;
-
     @Autowired
-	public EnphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate, InfluxService influxService) {
+	public EnphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate) {
 		this.enphaseRestTemplate = enphaseRestTemplate;
 		this.enphaseSecureRestTemplate = enphaseSecureRestTemplate;
-		this.influxService = influxService;
 	}
 
-	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
-	public void gather() {
-		collectEnphaseData().ifPresent(system -> influxService.sendMetrics(this.getMetrics(system), this.getCollectionTime(system)));
-	}
-
-	public List<Metric> collect() {
-		Optional<System> system = collectEnphaseData();
-		return system.isPresent() ? this.getMetrics( system.get() ) : new ArrayList<>();
-	}
-
-	private Optional<System> collectEnphaseData() {
+	public Optional<System> collectEnphaseData() {
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
 
@@ -70,7 +57,7 @@ public class EnphaseService {
 		return Optional.empty();
 	}
 
-    private Date getCollectionTime(@NotNull System system) {
+    public Date getCollectionTime(@NotNull System system) {
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
 	    if (productionEim.isPresent()) {
 //		    return productionEim.get().getReadingTime();
@@ -162,7 +149,7 @@ public class EnphaseService {
 	    metricList.add(new Metric( "solar.difference",production, consumption));
     }
 
-    private List<Metric> getMetrics(System system) {
+    public List<Metric> getMetrics(System system) {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();

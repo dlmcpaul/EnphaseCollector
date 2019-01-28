@@ -47,10 +47,10 @@ public class EnphaseRestClientConfig {
     public static final String INVERTERS = "/api/v1/production/inverters";
 	private static final String REALM = "enphaseenergy.com";
 
-    private final EnphaseCollectorConfig config;
+    private final EnphaseCollectorProperties config;
 
 	@Autowired
-	public EnphaseRestClientConfig(EnphaseCollectorConfig config) {
+	public EnphaseRestClientConfig(EnphaseCollectorProperties config) {
 		this.config = config;
 	}
 

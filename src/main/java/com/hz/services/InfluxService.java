@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@Profile("!standalone")
+@Profile("influxdb")
 public class InfluxService implements ExportServiceInterface {
 	private static final Logger LOG = LoggerFactory.getLogger(InfluxService.class);
 
