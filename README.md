@@ -10,19 +10,22 @@ docker run -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=IP=envoy-ip \\\
 -e ENVOY_INFLUXDBRESOURCE_HOST=influxdb-ip \\\
 -e ENVOY_INFLUXDBRESOURCE_PORT=influxdb-port \\\
+-e SPRING_PROFILES_ACTIVE=influxdb \\\
 dlmcpaul/enphasecollector
 
 where password is likely to be the last 6 characters of your envoy controller serial number
 
 Environment variables descriptions:
 
-ENVOY_CONTROLLER_HOST           Envoy Controller IP Address
+ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
 
-ENVOY_CONTROLLER_PASSWORD       Envoy Controller password
+ENVOY_CONTROLLER_PASSWORD       Set to your Envoy Controller password
 
-ENVOY_INFLUXDBRESOURCE_HOST     Influx Database IP Address
+ENVOY_INFLUXDBRESOURCE_HOST     Set to your Influx Database IP Address
 
-ENVOY_INFLUXDBRESOURCE_PORT     Influx Database Port No
+ENVOY_INFLUXDBRESOURCE_PORT     Sety to your Influx Database Port No
+
+SPRING_PROFILES_ACTIVE          Determines destination for stats.  Only influxdb currently valid
 
 ## Dependencies
 Influx DB with 2 databases created 'solardb' and 'collectorStats'
