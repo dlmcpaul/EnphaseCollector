@@ -1,6 +1,6 @@
 package com.hz.services;
 
-import com.hz.interfaces.ExportServiceInterface;
+import com.hz.interfaces.LocalExportInterface;
 import com.hz.metrics.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Profile("standalone")
-public class LocalDBService implements ExportServiceInterface {
+@Profile("localdb")
+public class LocalDBService implements LocalExportInterface {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocalDBService.class);
 

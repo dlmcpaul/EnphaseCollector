@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * Created by David on 22-Oct-17.
  */
@@ -22,7 +20,7 @@ import java.util.Date;
 })
 public abstract class TypeBase {
     private int activeCount;
-    private Date readingTime;
+    private long readingTime;
     @JsonProperty(value="wNow")
     private int wattsNow;
     @JsonProperty(value="whLifetime")

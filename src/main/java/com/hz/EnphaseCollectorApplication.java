@@ -3,7 +3,6 @@ package com.hz;
 import com.hz.configuration.EnphaseCollectorProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.InfluxMetricsExportAutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

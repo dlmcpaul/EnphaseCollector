@@ -1,6 +1,6 @@
 package com.hz.services;
 
-import com.hz.interfaces.ExportServiceInterface;
+import com.hz.interfaces.InfluxExportInterface;
 import com.hz.metrics.Metric;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Profile("influxdb")
-public class InfluxService implements ExportServiceInterface {
+public class InfluxService implements InfluxExportInterface {
 	private static final Logger LOG = LoggerFactory.getLogger(InfluxService.class);
 
 	private final InfluxDB destinationInfluxDB;

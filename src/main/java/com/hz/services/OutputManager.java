@@ -1,6 +1,7 @@
 package com.hz.services;
 
-import com.hz.interfaces.ExportServiceInterface;
+import com.hz.interfaces.InfluxExportInterface;
+import com.hz.interfaces.LocalExportInterface;
 import com.hz.metrics.Metric;
 import com.hz.models.System;
 import org.slf4j.Logger;
@@ -21,12 +22,16 @@ public class OutputManager {
 	private EnphaseService enphaseService;
 
 	@Autowired
-	private ExportServiceInterface influxService;
+	private InfluxExportInterface influxService;
+
+	@Autowired
+	private LocalExportInterface localService;
 
 	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
 	public void gather() {
 		try {
 			enphaseService.collectEnphaseData().ifPresent(system -> influxService.sendMetrics(enphaseService.getMetrics(system), enphaseService.getCollectionTime(system)));
+			enphaseService.collectEnphaseData().ifPresent(system -> localService.sendMetrics(enphaseService.getMetrics(system), enphaseService.getCollectionTime(system)));
 		} catch (Exception e) {
 			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage());
 		}

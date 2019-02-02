@@ -1,11 +1,10 @@
 package com.hz.controllers;
 
-import com.hz.services.EnphaseService;
 import com.hz.services.OutputManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Created by David on 23-Oct-17.
@@ -20,7 +19,7 @@ public class EnphaseController {
 		this.outputManager = outputManager;
 	}
 
-	@RequestMapping("/")
+	@GetMapping("/")
 	public String home(Model model) {
 		model.addAttribute("metrics", outputManager.collect());
 		return "index";
