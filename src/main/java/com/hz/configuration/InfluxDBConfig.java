@@ -31,8 +31,8 @@ public class InfluxDBConfig {
 
 	@Bean
 	@Profile({"influxdb"})
-	public InfluxDB destinationInfluxDB() {
-		LOG.info("Writing to influx database at {}", config.getInfluxdbResource().getUrl());
+	public InfluxMeterRegistry influxMeterRegistry() {
+		LOG.info("Writing metrics to influx database at {}", config.getInfluxdbResource().getUrl());
 
 		InfluxConfig metricsConfig = new InfluxConfig() {
 
@@ -62,7 +62,13 @@ public class InfluxDBConfig {
 			}
 		};
 
-		Metrics.addRegistry(new InfluxMeterRegistry(metricsConfig, Clock.SYSTEM));
+		return new InfluxMeterRegistry(metricsConfig, Clock.SYSTEM);
+	}
+
+	@Bean
+	@Profile({"influxdb"})
+	public InfluxDB destinationInfluxDB() {
+		LOG.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
 
 		InfluxDB database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
 		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
