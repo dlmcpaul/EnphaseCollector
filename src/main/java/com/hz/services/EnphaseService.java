@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.xml.transform.StringSource;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -25,11 +28,14 @@ public class EnphaseService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EnphaseService.class);
 
+	private long lastReadTime = 0L;
+	private int lastStatus = 200;
+
+	private EnvoyInfo envoyInfo = null;
+
+	private final Unmarshaller enphaseMarshaller;
     private final RestTemplate enphaseRestTemplate;
-
     private final RestTemplate enphaseSecureRestTemplate;
-
-    private static long lastReadTime = 0L;
 
     // Table of my serial numbers to map to simpler values
 	private List<String> mySerialNumbers = Arrays.asList(
@@ -51,18 +57,29 @@ public class EnphaseService {
 		    "121707050570");
 
     @Autowired
-	public EnphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate) {
+	public EnphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate, Unmarshaller enphaseMarshaller) {
 		this.enphaseRestTemplate = enphaseRestTemplate;
 		this.enphaseSecureRestTemplate = enphaseSecureRestTemplate;
+		this.enphaseMarshaller = enphaseMarshaller;
 	}
 
-	private static void setLastReadTime(long time) {
-    	EnphaseService.lastReadTime = time;
+	public boolean isOk() {
+    	return this.lastStatus == 200;
 	}
 
-	public Optional<System> collectEnphaseData() {
+	public String getVersion() {
+    	this.getControllerData();
+    	if (envoyInfo != null) {
+    		return envoyInfo.envoyDevice.software;
+	    }
+
+    	return "Unknown";
+	}
+
+	Optional<System> collectEnphaseData() {
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
+			this.lastStatus = systemResponse.getStatusCodeValue();
 
 		    if (systemResponse.getStatusCodeValue() == 200) {
 			    System system = systemResponse.getBody();
@@ -73,8 +90,9 @@ public class EnphaseService {
 			    }
 
 			    Optional<TypeBase> eim = system.getProduction().getProductionEim();
-			    setLastReadTime(eim.isPresent() ? eim.get().getReadingTime() : 0L);
+			    this.lastReadTime = eim.isPresent() ? eim.get().getReadingTime() : 0L;
 
+			    getControllerData();
 			    getInventory(system);
 			    getIndividualPanelData(system);
 
@@ -88,7 +106,7 @@ public class EnphaseService {
 		return Optional.empty();
 	}
 
-    public Date getCollectionTime(@NotNull System system) {
+    Date getCollectionTime(@NotNull System system) {
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
 	    if (productionEim.isPresent()) {
 		    Calendar lastRead = GregorianCalendar.getInstance();
@@ -101,11 +119,7 @@ public class EnphaseService {
     private boolean systemNotReady(@NotNull System system) {
 	    Optional<TypeBase> eim = system.getProduction().getProductionEim();
 
-    	if (eim.isPresent()) {
-    		return eim.get().getReadingTime() <= lastReadTime;
-	    }
-
-    	return true;
+	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
     }
 
     private String map(String serial) {
@@ -142,7 +156,7 @@ public class EnphaseService {
 	    metricList.add(new Metric( "solar.difference",production, consumption));
     }
 
-    public List<Metric> getMetrics(System system) {
+    List<Metric> getMetrics(System system) {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
@@ -171,6 +185,7 @@ public class EnphaseService {
     private void getInventory(@NotNull System system) {
 	    ResponseEntity<List<Inventory>> inventoryResponse =
 			    enphaseRestTemplate.exchange(EnphaseRestClientConfig.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+	    this.lastStatus = inventoryResponse.getStatusCodeValue();
 
 	    if (inventoryResponse.getStatusCodeValue() == 200) {
 		    system.setInventoryList(inventoryResponse.getBody());
@@ -187,12 +202,28 @@ public class EnphaseService {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
 			    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
+		this.lastStatus = inverterResponse.getStatusCodeValue();
 
 	    if (inverterResponse.getStatusCodeValue() == 200) {
 		    system.getProduction().setInverterList(inverterResponse.getBody());
 	    } else {
-	    	LOG.error("Reading Invertors failed {}", inverterResponse.getStatusCode());
+	    	LOG.error("Reading Inverters failed {}", inverterResponse.getStatusCode());
 	    }
+    }
+
+    private void getControllerData() {
+    	if (envoyInfo == null) {
+		    String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
+
+		    try {
+		    	if (infoXml != null) {
+				    envoyInfo = (EnvoyInfo) enphaseMarshaller.unmarshal(new StringSource(infoXml));
+			    }
+		    } catch (IOException e) {
+		    	LOG.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
+		    }
+	    }
+
     }
 
 }

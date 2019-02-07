@@ -40,8 +40,9 @@ public class EnphaseRestClientConfig {
     private static final Logger LOG = LoggerFactory.getLogger(EnphaseRestClientConfig.class);
 
     public static final String SYSTEM = "/home.json";
-    public static final String INVENTORY = "/inventory.json";
-    public static final String PRODUCTION = "/production.json";
+    public static final String INVENTORY = "/inventory.json?deleted=1";
+    public static final String PRODUCTION = "/production.json?details=1";
+    public static final String CONTROLLER = "/info.xml";
 
     // Needs Digest authentication
     public static final String INVERTERS = "/api/v1/production/inverters";
