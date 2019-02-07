@@ -18,6 +18,6 @@ public class InfluxMock implements InfluxExportInterface {
 
 	@Override
 	public void sendMetrics(List<Metric> metricList, Date readTime) {
-		LOG.info("Writing stats at {} with {} items", readTime, metricList.size());
+		LOG.debug("Writing stats at {} with {} items", readTime, metricList.size());
 	}
 }
