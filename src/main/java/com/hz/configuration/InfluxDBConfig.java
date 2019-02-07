@@ -1,7 +1,6 @@
 package com.hz.configuration;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 import org.influxdb.BatchOptions;
