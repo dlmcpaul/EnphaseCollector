@@ -76,6 +76,15 @@ public class EnphaseService {
     	return "Unknown";
 	}
 
+	public String getSerialNumber() {
+		this.getControllerData();
+		if (envoyInfo != null) {
+			return envoyInfo.envoyDevice.sn;
+		}
+
+		return "Unknown";
+	}
+
 	Optional<System> collectEnphaseData() {
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
