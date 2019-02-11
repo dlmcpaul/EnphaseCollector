@@ -6,7 +6,10 @@ Can be run as a java application or using the docker image
 
 If using the docker image
 
-docker run -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
+Example #1 using influxDB for storage
+
+docker run \\\
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=IP=envoy-ip \\\
 -e ENVOY_INFLUXDBRESOURCE_HOST=influxdb-ip \\\
 -e ENVOY_INFLUXDBRESOURCE_PORT=influxdb-port \\\
@@ -15,19 +18,27 @@ dlmcpaul/enphasecollector
 
 where password is likely to be the last 6 characters of your envoy controller serial number
 
-Environment variables descriptions:
+Example #2 in standalone mode with no storage
 
-ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
+docker run \\\
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
+-e ENVOY_CONTROLLER_HOST=IP=envoy-ip \\\
+-p 8080:8080 \\\
+dlmcpaul/enphasecollector
 
-ENVOY_CONTROLLER_PASSWORD       Set to your Envoy Controller password
+and a web page available at http://localhost:8080
 
-ENVOY_INFLUXDBRESOURCE_HOST     Set to your Influx Database IP Address
+Available environment variables descriptions:
 
-ENVOY_INFLUXDBRESOURCE_PORT     Sety to your Influx Database Port No
-
-SPRING_PROFILES_ACTIVE          Determines destination for stats.  Only influxdb currently valid
-
+- ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
+- ENVOY_CONTROLLER_PASSWORD       Set to your Envoy Controller password
+- ENVOY_INFLUXDBRESOURCE_HOST     Set to your Influx Database IP Address
+- ENVOY_INFLUXDBRESOURCE_PORT     Sety to your Influx Database Port No
+- SPRING_PROFILES_ACTIVE          Determines destination for stats.  Only influxdb currently valid
+- ENVOY_REFRESH_SECONDS           How often to poll the Envoy Controller.  Default 60000 (60s)
 ## Dependencies
-Influx DB with 2 databases created 'solardb' and 'collectorStats'
+- Docker (or Java)
 
-Docker (or Java)
+- If profile set to influxdb then an 
+Influx DB is needed for storage of stats (Will autocreate 2 databases called 'solardb' and 'collectorStats')
+

@@ -56,4 +56,9 @@ public class OutputManager {
 	public String getSerialNumber() {
 		return enphaseService.getSerialNumber();
 	}
+
+	public int getInvertorCount() {
+		return system.isPresent() ? system.get().getProduction().getInverterList().size() : 0;
+	}
+
 }

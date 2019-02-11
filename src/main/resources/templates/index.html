@@ -9,7 +9,7 @@
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.0.3/highcharts.js}"></script>
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.0.3/highcharts-more.js}"></script>
 </head>
-<body>
+<body class="has-background-light">
 <section class="hero is-info">
     <div class="hero-body">
         <div class="container">
@@ -22,24 +22,133 @@
         </div>
     </div>
 </section>
-<section class="section">
+<section class="section has-background-light">
     <div class="container">
-        <div class="columns">
-            <div id="consumption" class="column is-4"></div>
-            <div class="column"></div>
-            <div id="production" class="column is-4"></div>
+        <div class="tile is-ancestor">
+            <div class="tile is-parent is-8">
+                <div class="tile is-child notification">
+                    <div class="card">
+                        <div id="consumption" class="card-image"></div>
+                        <div class="card-content">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-64x64">
+                                        <img src="power.gif" alt="Placeholder image">
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-4">Consumption</p>
+                                    <p class="subtitle is-6">W</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tile is-child notification">
+                    <div class="card">
+                        <div id="production" class="card-image"></div>
+                        <div class="card-content">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-64x64">
+                                        <img src="sun.jpeg" alt="Placeholder image">
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-4">Production</p>
+                                    <p class="subtitle is-6">W</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tile is-parent is-vertical is-4">
+                <div class="tile is-child notification is-primary">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="solar-panel-1.jpg" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        <strong><span data-th-text="${enphase_info.inverterCount}"></span></strong> microinverters connected and sending data
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div data-th-if="${enphase_info.wifi}" class="tile is-child notification is-primary">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="wifi.jpg" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        Connected by <strong>Wifi</strong> to your home network
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div data-th-if="${not enphase_info.wifi}" class="tile is-child notification is-primary">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="lan.jpg" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        Connected by <strong>LAN</strong> to your home network
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="tile is-child notification is-primary">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="communication.png" alt="Image">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="content">
+                                    <p>
+                                        Last communication to Enphase was at <strong  data-th-text="${#calendars.format(enphase_info.lastRead, 'dd-MMM-yyyy HH:mm')}"></strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-<section class="section has-background-light">
+<footer class="footer has-background-light">
     <div class="content has-text-centered">
         <p>Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span><br>
             Envoy Software Version: <span data-th-text="${software_version}">version</span><br>
             Envoy Serial Number: <span data-th-text="${serial_number}">serial</span><br></p>
     </div>
-</section>
+</footer>
 <script data-th-inline="javascript">
-    var value = [[${consumption}]];
+    var value = [[${enphase_info.consumption}]];
 
     var consumption_chart = new Highcharts.chart({
         chart: {
@@ -48,7 +157,7 @@
             height: '100%'
         },
         title: {
-            text: 'Current Consumption'
+            text: ''
         },
         pane: {
             startAngle: -150,
@@ -145,7 +254,7 @@
     setInterval("refresh_consumption(consumption_chart, consumptionUrl)", [[${refresh_interval}]]);
 </script>
 <script data-th-inline="javascript">
-    var value = [[${production}]];
+    var value = [[${enphase_info.production}]];
 
     var production_chart = new Highcharts.chart({
         chart: {
@@ -154,7 +263,7 @@
             height: '100%'
         },
         title: {
-            text: 'Current Production'
+            text: ''
         },
         pane: {
             startAngle: -150,

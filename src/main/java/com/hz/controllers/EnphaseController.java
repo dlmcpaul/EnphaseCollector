@@ -1,12 +1,14 @@
 package com.hz.controllers;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.controllers.models.SystemInfo;
 import com.hz.metrics.Metric;
 import com.hz.services.OutputManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -27,9 +29,7 @@ public class EnphaseController {
 		this.properties = properties;
 	}
 
-	// Generate main page from template
-	@GetMapping("/")
-	public String home(Model model) {
+	private SystemInfo getSystemInfo() {
 		List<Metric> metrics = outputManager.getMetrics();
 
 		Optional<Metric> metric;
@@ -42,8 +42,15 @@ public class EnphaseController {
 
 		int consumptionWatts = metric.isPresent() ? Math.round(metric.get().getValue()) : 0;
 
-		model.addAttribute("production", productionWatts);
-		model.addAttribute("consumption", consumptionWatts);
+		SystemInfo systemInfo = new SystemInfo(productionWatts, consumptionWatts, outputManager.getInvertorCount(), true, outputManager.getCollectionTime());
+
+		return systemInfo;
+	}
+
+	// Generate main page from template
+	@GetMapping("/")
+	public String home(Model model) {
+		model.addAttribute("enphase_info", getSystemInfo());
 		model.addAttribute("software_version", outputManager.getSoftwareVersion());
 		model.addAttribute("serial_number", outputManager.getSerialNumber());
 		model.addAttribute("refresh_interval", properties.getRefreshSeconds());
