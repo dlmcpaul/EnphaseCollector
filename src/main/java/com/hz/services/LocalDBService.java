@@ -105,13 +105,13 @@ public class LocalDBService implements LocalExportInterface {
 		}
 
 		// Convert to Wh = watts / (60 * 60 * 1000 / refreshSeconds)
-		BigDecimal oneHour = BigDecimal.valueOf(60 * 60 * 1000).divide(BigDecimal.valueOf(properties.getRefreshSeconds()), 4, RoundingMode.HALF_UP);
+		BigDecimal oneHour = BigDecimal.valueOf(60 * 60 * 1000L).divide(BigDecimal.valueOf(properties.getRefreshSeconds()), 4, RoundingMode.HALF_UP);
 		BigDecimal wattHours = watts.divide(oneHour, 4, RoundingMode.HALF_UP);
 		// Convert to KWh = Wh / 1000
-		BigDecimal KiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+		BigDecimal kiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 		// Convert to dollars cost = KWh * price per kilowatt
-		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, NumberFormat.getNumberInstance().format(KiloWattHours), price, watts);
-		return KiloWattHours.multiply(BigDecimal.valueOf(price));
+		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, NumberFormat.getNumberInstance().format(kiloWattHours), price, watts);
+		return kiloWattHours.multiply(BigDecimal.valueOf(price));
 	}
 
 	private LocalDateTime getMidnight() {

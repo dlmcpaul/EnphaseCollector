@@ -46,7 +46,6 @@ public class EnphaseController {
 		} else {
 			statusList.add(new Status("lan.jpg", "Home network connection", "LAN"));
 		}
-		DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
 		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		statusList.add(new Status("communication.png","Last communication to Enphase today", "" + envoySystem.getLastCommunication().format(timeFormatter)));
 
@@ -83,7 +82,7 @@ public class EnphaseController {
 	public PvC getPvc() {
 		PvC pvc = new PvC();
 
-		localDBService.getTodaysEvents().stream().forEach(event -> pvc.addEvent(event));
+		localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
 
 		return pvc;
 	}

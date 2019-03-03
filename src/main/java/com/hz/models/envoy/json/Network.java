@@ -23,14 +23,14 @@ public class Network {
 		return new Date(lastReportTime * 1000L);
 	}
 
-	public Optional<NetInterface> findPrimary() {
+	private Optional<NetInterface> findPrimary() {
 		return netInterfaces.stream().filter(netInterface -> netInterface.getInterfaceName().equalsIgnoreCase(primaryInterface)).findFirst();
 	}
 
 	public boolean isWifi() {
 		Optional<NetInterface> netInterface = findPrimary();
 
-		return (netInterface.isPresent() ? netInterface.get().getType().equalsIgnoreCase("wifi") : false);
+		return netInterface.isPresent() && netInterface.get().getType().equalsIgnoreCase("wifi");
 	}
 
 }
