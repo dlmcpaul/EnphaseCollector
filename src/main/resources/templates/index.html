@@ -4,8 +4,9 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Enphase Solar System</title>
-    <link data-th-href="@{/webjars/bulma/0.7.2/css/bulma.css}" rel="stylesheet"/>
+    <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.4/css/bulma.css}"/>
     <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}"/>
+    <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.0.3/highcharts.js}"></script>
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.0.3/highcharts-more.js}"></script>
 </head>
@@ -22,149 +23,82 @@
         </div>
     </div>
 </section>
-<section class="section has-background-light">
+<section class="section has-background-white">
     <div class="container">
-        <div class="tile is-ancestor">
-            <div class="tile is-parent is-8">
-                <div class="tile is-child notification">
-                    <div class="card">
-                        <div id="consumption" class="card-image"></div>
-                        <div class="card-content">
-                            <div class="media">
+        <div class="columns">
+            <div class="column is-8">
+                <div class="tile is-ancestor">
+                    <div class="tile is-parent">
+                        <div class="tile is-child">
+                            <div id="consumption" class="image"></div>
+                            <article class="media">
                                 <div class="media-left">
                                     <figure class="image is-64x64">
-                                        <img src="power.gif" alt="Placeholder image">
+                                        <img data-th-src="@{power.gif}" src="" alt="Placeholder image">
                                     </figure>
                                 </div>
                                 <div class="media-content">
                                     <p class="title is-4">Consumption</p>
-                                    <p class="subtitle is-6">W</p>
+                                    <p id="consumption_label" class="subtitle is-6"
+                                       data-th-text="${consumption} + ' W'"></p>
                                 </div>
-                            </div>
+                            </article>
                         </div>
-                    </div>
-                </div>
-                <div class="tile is-child notification">
-                    <div class="card">
-                        <div id="production" class="card-image"></div>
-                        <div class="card-content">
-                            <div class="media">
+                        <div class="tile is-child">
+                            <div id="production" class="image"></div>
+                            <article class="media">
                                 <div class="media-left">
                                     <figure class="image is-64x64">
-                                        <img src="sun.jpeg" alt="Placeholder image">
+                                        <img data-th-src="@{sun.jpeg}" src="" alt="Placeholder image">
                                     </figure>
                                 </div>
                                 <div class="media-content">
                                     <p class="title is-4">Production</p>
-                                    <p class="subtitle is-6">W</p>
+                                    <p id="production_label" class="subtitle is-6"
+                                       data-th-text="${production} + ' W'"></p>
                                 </div>
-                            </div>
+                            </article>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="tile is-parent is-vertical is-4">
-                <div class="tile is-child notification is-primary">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-left">
-                                <figure class="image is-64x64">
-                                    <img src="solar-panel-1.jpg" alt="Image">
-                                </figure>
-                            </div>
-                            <div class="media-content">
-                                <div class="content">
-                                    <p>
-                                        <strong><span data-th-text="${enphase_info.inverterCount}"></span></strong> microinverters connected and sending data
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-                <div data-th-if="${enphase_info.wifi}" class="tile is-child notification is-primary">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-left">
-                                <figure class="image is-64x64">
-                                    <img src="wifi.jpg" alt="Image">
-                                </figure>
-                            </div>
-                            <div class="media-content">
-                                <div class="content">
-                                    <p>
-                                        Connected by <strong>Wifi</strong> to your home network
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-                <div data-th-if="${not enphase_info.wifi}" class="tile is-child notification is-primary">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-left">
-                                <figure class="image is-64x64">
-                                    <img src="lan.jpg" alt="Image">
-                                </figure>
-                            </div>
-                            <div class="media-content">
-                                <div class="content">
-                                    <p>
-                                        Connected by <strong>LAN</strong> to your home network
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-                <div class="tile is-child notification is-primary">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-left">
-                                <figure class="image is-64x64">
-                                    <img src="communication.png" alt="Image">
-                                </figure>
-                            </div>
-                            <div class="media-content">
-                                <div class="content">
-                                    <p>
-                                        Last communication to Enphase was at <strong  data-th-text="${#calendars.format(enphase_info.lastRead, 'dd-MMM-yyyy HH:mm')}"></strong>
-                                    </p>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
+            <div data-th-replace="~{statsFragment :: statusPanel (${statusList})}"></div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <div id="pvc" class="image"></div>
             </div>
         </div>
     </div>
 </section>
-<footer class="footer has-background-light">
+<footer class="footer has-background-white">
     <div class="content has-text-centered">
-        <p>Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span><br>
+        <p>Rendered by <strong>Thymeleaf</strong> at <span
+                data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span><br>
             Envoy Software Version: <span data-th-text="${software_version}">version</span><br>
             Envoy Serial Number: <span data-th-text="${serial_number}">serial</span><br></p>
     </div>
 </footer>
+<script type="text/javascript" data-th-src="@{/js/chart.js}"></script>
 <script data-th-inline="javascript">
-    var value = [[${enphase_info.consumption}]];
-
-    var consumption_chart = new Highcharts.chart({
+    var consumptionProperties = {
         chart: {
             renderTo: 'consumption',
             type: 'gauge',
             height: '100%'
         },
         title: {
-            text: ''
+            text: null
+        },
+        credits: {
+            enabled: false
         },
         pane: {
             startAngle: -150,
             endAngle: 150,
             background: [{
                 backgroundColor: {
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
                         [0, '#FFF'],
                         [1, '#333']
@@ -174,7 +108,7 @@
                 outerRadius: '109%'
             }, {
                 backgroundColor: {
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
                         [0, '#333'],
                         [1, '#FFF']
@@ -229,48 +163,31 @@
         },
         series: [{
             name: 'consumption',
-            data: [ value ],
+            data: [0],
             tooltip: {
                 valueSuffix: ' W'
             }
         }]
-    });
+    };
 
-    function refresh_consumption(chart, url) {
-
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var point = chart.series[0].points[0];
-                point.update(Number(xhttp.responseText));
-            }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
-    }
-
-    var consumptionUrl = [[${#httpServletRequest.contextPath}]] + '/consumption';
-    setInterval("refresh_consumption(consumption_chart, consumptionUrl)", [[${refresh_interval}]]);
-</script>
-<script data-th-inline="javascript">
-    var value = [[${enphase_info.production}]];
-
-    var production_chart = new Highcharts.chart({
+    var productionProperties = {
         chart: {
             renderTo: 'production',
             type: 'gauge',
             height: '100%'
         },
+        credits: {
+            enabled: false
+        },
         title: {
-            text: ''
+            text: null
         },
         pane: {
             startAngle: -150,
             endAngle: 150,
             background: [{
                 backgroundColor: {
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
                         [0, '#FFF'],
                         [1, '#333']
@@ -280,7 +197,7 @@
                 outerRadius: '109%'
             }, {
                 backgroundColor: {
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
                         [0, '#333'],
                         [1, '#FFF']
@@ -335,166 +252,80 @@
         },
         series: [{
             name: 'production',
-            data: [ value ],
+            data: [0],
             tooltip: {
                 valueSuffix: ' W'
             }
         }]
+    };
+
+    var now = new Date();
+
+    //Disable use of UTC
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
     });
 
-    function refresh_production(chart, url) {
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var point = chart.series[0].points[0];
-                point.update(Number(xhttp.responseText));
-            }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
-    }
-
-    var productionUrl = [[${#httpServletRequest.contextPath}]] + '/production';
-    setInterval("refresh_production(production_chart, productionUrl)", [[${refresh_interval}]]);
-
-</script>
-<!--<script data-th-inline="javascript">
-    function refreshXXX() {
-        var token = $('input[name="_csrf"]').val();
-        var fullUrl = [[${#httpServletRequest.contextPath}]] + '/refresh';
-        $.ajax({
-            type: "post",
-            headers: {
-                'X-CSRF-TOKEN': token
-            },
-            url: fullUrl,
-            cache: false,
-            data: {reference: rowid},
-            success: function (response) {
-                $( "#jobListBlock").html(response);
-            },
-            error: function (xhr, ajaxOptions, thrownError) { //Add these parameters to display the required response
-                alert(xhr.status);
-                alert(xhr.responseText);
-            }
-        });
-    }
-</script>
-<script data-th-inline="javascript">
-
-    var rawSamples = /*[[${metrics}]]*/ {};
-    var data = rawSamples.map(function (s) {
-        return [s.time, s.panel, s.value]
-    });
-
-    var chart = new Highcharts.chart('chart', {
-
+    var pvcProperties = {
         chart: {
-            type: 'heatmap',
-            marginTop: 40,
-            marginBottom: 80,
-            plotBorderWidth: 1
+            renderTo: 'pvc',
+            type: 'line',
+            height: '25%'
+        },
+        credits: {
+            enabled: false
         },
         title: {
-            text: 'Solar Panel Performance over today'
+            text: 'Production vs Consumption'
         },
         xAxis: {
-            categories: ['0000', '0100', '0200', '0300', '0400', '0500', '0600', '0700', '0800', '0900', '1000', '1100', '1200', '1300', '1400', '1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200', '2300', '2400', ]
+            title: {
+                text: 'Today'
+            },
+            type: 'datetime', //For time series, x-axis labels will be time
+            labels: {
+                //You can format the label according to your need
+                format: '{value:%H}'
+            },
+            minPadding: 0.05,
+            maxPadding: 0.05
         },
         yAxis: {
-            categories: ['Panel 1', 'Panel 2', 'Panel 3', 'Panel 4', 'Panel 5', 'Panel 6', 'Panel 7', 'Panel 8', 'Panel 9', 'Panel 10', 'Panel 11', 'Panel 12', 'Panel 13', 'Panel 14', 'Panel 15', 'Panel 16'],
-            title: null
-        },
-        colorAxis: {
-            stops: [
-                [0, '#0000aa'],
-                [0.25, '#004488'],
-                [0.5, '#008844'],
-                [0.75, '#00cc22'],
-                [1, '#00ff00']
-            ],
-            min: 0,
-            max: 300,
-            startOnTick: false,
-            endOnTick: false,
             labels: {
-                format: '{value}W'
+                format: '{value}W',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'Watts'
             }
         },
         legend: {
-            align: 'right',
             layout: 'vertical',
-            margin: 0,
+            align: 'left',
+            x: 120,
             verticalAlign: 'top',
-            y: 25,
-            symbolHeight: 280
+            y: 50,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
         },
-        series: [{
-            name: 'Watts per Panel',
-            borderWidth: 1,
-            data: data,
-            dataLabels: {
-                enabled: true,
-                color: '#000000'
-            }
-        }]
+        series: [
+            {
+                name: 'production',
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: 'consumption',
+                data: [ [now.getTime(), 0] ]
+            }]
+    };
 
-    });
+    makeChart("production", productionProperties, [[${#httpServletRequest.contextPath}]] + '/production', [[${refresh_interval}]]);
+    makeChart("consumption", consumptionProperties, [[${#httpServletRequest.contextPath}]] + '/consumption', [[${refresh_interval}]]);
+    makePvcChart("pvc", pvcProperties, [[${#httpServletRequest.contextPath}]] + '/pvc', [[${refresh_interval}]]);
 </script>
-<script data-th-inline="javascript">
-
-    var data = [ [0,0,0],[0,1,100],[0,2,150],[1,0,50],[1,1,200],[1,2,200],[2,0,100],[2,1,300],[2,2,350] ];
-
-    var chart = new Highcharts.chart('test', {
-
-        chart: {
-            type: 'heatmap',
-            marginTop: 40,
-            marginBottom: 80,
-            plotBorderWidth: 1
-        },
-        title: {
-            text: 'Solar Panel Performance over today'
-        },
-        xAxis: {
-            categories: ['1', '2', '3']
-        },
-
-        yAxis: {
-            categories: ['A', 'B', 'C'],
-            title: null
-        },
-        colorAxis: {
-            min: 0,
-            max: 320,
-            minColor: '#FFFFFF',
-            maxColor: Highcharts.getOptions().colors[0],
-            startOnTick: false,
-            endOnTick: false,
-            labels: {
-                format: '{value}W'
-            }
-        },
-        legend: {
-            align: 'right',
-            layout: 'vertical',
-            margin: 0,
-            verticalAlign: 'top',
-            y: 25,
-            symbolHeight: 280
-        },
-        series: [{
-            name: 'Watts per Panel',
-            borderWidth: 1,
-            data: data,
-            dataLabels: {
-                enabled: true,
-                color: '#000000'
-            }
-        }]
-
-    });
-</script>-->
 </body>
 </html>

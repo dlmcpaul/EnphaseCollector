@@ -1,0 +1,9 @@
+article.solarmessage {
+    margin: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #E6EAEE;
+}
+article.solarmessage:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}

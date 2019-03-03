@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<div th:fragment="statusPanel (statusList)" class="column is-4">
+    <article th:each="status : ${statusList}" class="solarmessage">
+        <div data-th-replace="~{statusFragment :: element(${status.image},${status.text},${status.value})}"></div>
+    </article>
+</div>
+</body>
+
+</html>

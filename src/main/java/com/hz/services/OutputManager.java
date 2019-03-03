@@ -2,63 +2,64 @@ package com.hz.services;
 
 import com.hz.interfaces.InfluxExportInterface;
 import com.hz.interfaces.LocalExportInterface;
-import com.hz.metrics.Metric;
-import com.hz.models.System;
+import com.hz.models.database.EnvoySystem;
+import com.hz.models.envoy.json.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
 public class OutputManager {
 	private static final Logger LOG = LoggerFactory.getLogger(OutputManager.class);
 
-	@Autowired
 	private EnphaseService enphaseService;
-
-	@Autowired
 	private InfluxExportInterface influxService;
-
-	@Autowired
 	private LocalExportInterface localService;
 
-	private Optional<System> system = Optional.empty();
+	@Autowired
+	public OutputManager(EnphaseService enphaseService, InfluxExportInterface influxService, LocalExportInterface localService) {
+		this.enphaseService = enphaseService;
+		this.influxService = influxService;
+		this.localService = localService;
+	}
+
+	@PostConstruct
+	public void init() {
+		this.gather();
+	}
 
 	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
 	public void gather() {
 		try {
-			system = enphaseService.collectEnphaseData();
+			Optional<System> system = enphaseService.collectEnphaseData();
 			system.ifPresent(s -> influxService.sendMetrics(enphaseService.getMetrics(s), enphaseService.getCollectionTime(s)));
+			system.ifPresent(s -> localService.sendSystemInfo(makeSystemInfo(s)));
 			system.ifPresent(s -> localService.sendMetrics(enphaseService.getMetrics(s), enphaseService.getCollectionTime(s)));
 		} catch (Exception e) {
-			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage());
+			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
 		}
 	}
 
-	public Date getCollectionTime() {
-		return system.isPresent() ? enphaseService.getCollectionTime(system.get()) : new Date();
-	}
+	private EnvoySystem makeSystemInfo(System system) {
+		EnvoySystem envoySystem = new EnvoySystem();
+		envoySystem.setEnvoySerial(enphaseService.getSerialNumber());
+		envoySystem.setEnvoyVersion(enphaseService.getSoftwareVersion());
 
-	public List<Metric> getMetrics() {
-		return system.isPresent() ? enphaseService.getMetrics( system.get() ) : new ArrayList<>();
-	}
+		envoySystem.setWifi(system.getNetwork().isWifi());
+		envoySystem.setNetwork("");
 
-	public String getSoftwareVersion() {
-		return enphaseService.getVersion();
-	}
+		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
+		envoySystem.setLastReadTime(LocalDateTime.ofInstant(enphaseService.getCollectionTime(system).toInstant(), ZoneId.systemDefault()));
+		envoySystem.setPanelCount(system.getProduction().getInverterList().size());
 
-	public String getSerialNumber() {
-		return enphaseService.getSerialNumber();
-	}
-
-	public int getInvertorCount() {
-		return system.isPresent() ? system.get().getProduction().getInverterList().size() : 0;
+		return envoySystem;
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.hz.mocks;
 
-import com.hz.interfaces.InfluxExportInterface;
+import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-@Profile("!influxdb")
+@Profile("!pvoutput")
 @Service
-public class InfluxMock implements InfluxExportInterface {
+public class PvOutputMock implements PvOutputExportInterface {
 
-	private static final Logger LOG = LoggerFactory.getLogger(InfluxMock.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PvOutputMock.class);
 
 	@Override
 	public void sendMetrics(List<Metric> metrics, Date readTime) {

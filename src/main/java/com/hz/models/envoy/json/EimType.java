@@ -1,4 +1,4 @@
-package com.hz.models;
+package com.hz.models.envoy.json;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -2,8 +2,9 @@ package com.hz.services;
 
 import com.hz.configuration.EnphaseRestClientConfig;
 import com.hz.metrics.Metric;
-import com.hz.models.*;
-import com.hz.models.System;
+import com.hz.models.envoy.json.System;
+import com.hz.models.envoy.json.*;
+import com.hz.models.envoy.xml.EnvoyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class EnphaseService {
     	return this.lastStatus == 200;
 	}
 
-	public String getVersion() {
+	public String getSoftwareVersion() {
     	this.getControllerData();
     	if (envoyInfo != null) {
     		return envoyInfo.envoyDevice.software;
@@ -99,7 +100,7 @@ public class EnphaseService {
 			    }
 
 			    Optional<TypeBase> eim = system.getProduction().getProductionEim();
-			    this.lastReadTime = eim.isPresent() ? eim.get().getReadingTime() : 0L;
+			    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
 			    getControllerData();
 			    getInventory(system);

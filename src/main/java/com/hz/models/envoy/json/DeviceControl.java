@@ -1,4 +1,4 @@
-package com.hz.models;
+package com.hz.models.envoy.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -8,7 +8,6 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ACB {
-    private int num;
-    private int level;
+public class DeviceControl {
+    private boolean gficlearset;
 }

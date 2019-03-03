@@ -1,23 +1,122 @@
 package com.hz.services;
 
+import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.interfaces.EnvoySystemRepository;
+import com.hz.interfaces.EventRepository;
 import com.hz.interfaces.LocalExportInterface;
 import com.hz.metrics.Metric;
+import com.hz.models.database.EnvoySystem;
+import com.hz.models.database.Event;
+import com.hz.models.database.Panel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Profile("localdb")
 public class LocalDBService implements LocalExportInterface {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocalDBService.class);
 
-	@Override
-	public void sendMetrics(List<Metric> metricList, Date readTime) {
-		LOG.debug("Writing stats at {} with {} items", readTime, metricList.size());
+	private final EnvoySystemRepository envoySystemRepository;
+	private final EventRepository eventRepository;
+	private final EnphaseCollectorProperties properties;
+
+	@Autowired
+	public LocalDBService(EnphaseCollectorProperties properties, EnvoySystemRepository envoySystemRepository, EventRepository eventRepository) {
+		this.properties = properties;
+		this.envoySystemRepository = envoySystemRepository;
+		this.eventRepository = eventRepository;
 	}
+
+	@Override
+	public void sendMetrics(List<Metric> metrics, Date readTime) {
+		LOG.debug("Writing stats at {} with {} items", readTime, metrics.size());
+
+		Event event = new Event();
+		event.setTime((LocalDateTime.ofInstant(readTime.toInstant(), ZoneId.systemDefault())));
+
+		event.setProduction(getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setConsumption(getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+
+		metrics.forEach(m -> event.addSolarPanel(new Panel(m.getName(), m.getValue())));
+
+		eventRepository.save(event);
+	}
+
+	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
+		return metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(name)).findFirst();
+	}
+
+	@Override
+	public void sendSystemInfo(EnvoySystem envoySystem) {
+		envoySystemRepository.save(envoySystem);
+	}
+
+	public EnvoySystem getSystemInfo() {
+		return envoySystemRepository.findById(1L).orElseGet(EnvoySystem::new);
+	}
+
+	public Event getLastEvent() {
+		Optional<EnvoySystem> envoySystem = envoySystemRepository.findById(1L);
+
+		return envoySystem.map(es -> eventRepository.findTopByTime(es.getLastReadTime())).orElseGet(Event::new);
+	}
+
+	public List<Event> getTodaysEvents() {
+		return eventRepository.findEventsByTimeAfter(getMidnight());
+	}
+
+	public BigDecimal calculateTodaysCost() {
+		return calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), 0.32, "Cost");
+	}
+
+	public BigDecimal calculateTodaysPayment() {
+		return calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), 0.12, "Payment");
+	}
+
+	public BigDecimal calculateTodaysSavings() {
+		Long totalWatts = eventRepository.findTotalProductionAfter(getMidnight());
+		Long excessWatts = eventRepository.findExcessProductionAfter(getMidnight());
+		return calculateFinancial( totalWatts - excessWatts , 0.32, "Savings");
+	}
+
+	public Long calculateMaxProduction() {
+		return eventRepository.findMaxProductionAfter(getMidnight());
+	}
+
+	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
+
+		BigDecimal watts;
+
+		if (recordedWatts < 0) {
+			watts = BigDecimal.ZERO;
+		} else {
+			watts = BigDecimal.valueOf(recordedWatts);
+		}
+
+		// Convert to Wh = watts / (60 * 60 * 1000 / refreshSeconds)
+		BigDecimal oneHour = BigDecimal.valueOf(60 * 60 * 1000).divide(BigDecimal.valueOf(properties.getRefreshSeconds()), 4, RoundingMode.HALF_UP);
+		BigDecimal wattHours = watts.divide(oneHour, 4, RoundingMode.HALF_UP);
+		// Convert to KWh = Wh / 1000
+		BigDecimal KiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+		// Convert to dollars cost = KWh * price per kilowatt
+		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, NumberFormat.getNumberInstance().format(KiloWattHours), price, watts);
+		return KiloWattHours.multiply(BigDecimal.valueOf(price));
+	}
+
+	private LocalDateTime getMidnight() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.toLocalDate().atStartOfDay();
+	}
+
 }

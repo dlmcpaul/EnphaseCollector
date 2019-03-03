@@ -1,8 +1,8 @@
 package com.hz.configuration;
 
-import com.hz.models.EnvoyDevice;
-import com.hz.models.EnvoyInfo;
-import com.hz.models.EnvoyPackage;
+import com.hz.models.envoy.xml.EnvoyDevice;
+import com.hz.models.envoy.xml.EnvoyInfo;
+import com.hz.models.envoy.xml.EnvoyPackage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.Unmarshaller;

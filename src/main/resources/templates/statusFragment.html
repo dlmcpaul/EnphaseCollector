@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<div th:fragment="element (image, text, value)">
+    <div class="media">
+        <div class="media-left">
+            <figure class="image is-32x32">
+                <img th:src="${image}" alt="Image">
+            </figure>
+        </div>
+        <div class="media-content">
+            <div class="content">
+                <p th:utext="${text}"/>
+            </div>
+        </div>
+        <div class="media-right">
+            <strong><span class="has-text-black" th:text="${value}">0</span></strong>
+        </div>
+    </div>
+</div>
+</body>
+</html>

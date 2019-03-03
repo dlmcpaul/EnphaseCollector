@@ -14,7 +14,7 @@ public class EnphaseHealthIndicator implements HealthIndicator {
 
 	public Health health() {
 		if (enphaseService.isOk()) {
-			return Health.up().withDetail("version",enphaseService.getVersion()).build();
+			return Health.up().withDetail("version",enphaseService.getSoftwareVersion()).build();
 		}
 		return Health.down().build();
 	}

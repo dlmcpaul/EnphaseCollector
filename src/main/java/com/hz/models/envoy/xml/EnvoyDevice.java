@@ -1,4 +1,4 @@
-package com.hz.models;
+package com.hz.models.envoy.xml;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
