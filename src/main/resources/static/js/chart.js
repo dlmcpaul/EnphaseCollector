@@ -51,3 +51,19 @@ function refreshPvcChart(chart, url) {
     request.open("GET", url, true);
     request.send();
 }
+
+function makeStats(target, refreshUrl, interval) {
+    // Refresh every interval
+    setInterval(function() { refreshStats(target, refreshUrl) }, interval);
+}
+
+function refreshStats(target, url) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            document.getElementById(target).outerHTML = request.responseText;
+        }
+    };
+    request.open("GET", url, true);
+    request.send();
+}

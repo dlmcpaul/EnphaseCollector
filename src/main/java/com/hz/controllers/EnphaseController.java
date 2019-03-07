@@ -71,6 +71,12 @@ public class EnphaseController {
 		return "index";
 	}
 
+	@GetMapping("/refreshStats")
+	public String status(Model model) {
+		model.addAttribute("statusList", this.populateStatusList());
+		return "statsFragment :: statusPanel";
+	}
+
 	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")
 	@ResponseBody
 	public Event update() {

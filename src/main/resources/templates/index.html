@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <div data-th-replace="~{statsFragment :: statusPanel (${statusList})}"></div>
+            <div data-th-replace="~{statsFragment :: statusPanel}"></div>
         </div>
         <div class="columns">
             <div class="column">
@@ -326,6 +326,7 @@
     makeChart("production", productionProperties, [[${#httpServletRequest.contextPath}]] + '/production', [[${refresh_interval}]]);
     makeChart("consumption", consumptionProperties, [[${#httpServletRequest.contextPath}]] + '/consumption', [[${refresh_interval}]]);
     makePvcChart("pvc", pvcProperties, [[${#httpServletRequest.contextPath}]] + '/pvc', [[${refresh_interval}]]);
+    makeStats("statusPanel",[[${#httpServletRequest.contextPath}]] + '/refreshStats',[[${refresh_interval}]])
 </script>
 </body>
 </html>
