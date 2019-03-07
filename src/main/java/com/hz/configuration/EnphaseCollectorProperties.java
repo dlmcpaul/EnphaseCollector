@@ -13,6 +13,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class EnphaseCollectorProperties {
     private ProtectedHTTPResource controller;
     private int refreshSeconds;
+    private double paymentPerKiloWatt;
+    private double chargePerKiloWatt;
+    private double dailySupplyCharge;
     private HTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
 

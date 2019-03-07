@@ -77,17 +77,17 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public BigDecimal calculateTodaysCost() {
-		return calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), 0.32, "Cost");
+		return calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), properties.getChargePerKiloWatt(), "Cost");
 	}
 
 	public BigDecimal calculateTodaysPayment() {
-		return calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), 0.12, "Payment");
+		return calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), properties.getPaymentPerKiloWatt(), "Payment");
 	}
 
 	public BigDecimal calculateTodaysSavings() {
 		Long totalWatts = eventRepository.findTotalProductionAfter(getMidnight());
 		Long excessWatts = eventRepository.findExcessProductionAfter(getMidnight());
-		return calculateFinancial( totalWatts - excessWatts , 0.32, "Savings");
+		return calculateFinancial( totalWatts - excessWatts , properties.getChargePerKiloWatt(), "Savings");
 	}
 
 	public Long calculateMaxProduction() {
@@ -97,6 +97,7 @@ public class LocalDBService implements LocalExportInterface {
 	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
 
 		BigDecimal watts;
+		final NumberFormat numberInstance = NumberFormat.getNumberInstance();
 
 		if (recordedWatts < 0) {
 			watts = BigDecimal.ZERO;
@@ -110,7 +111,7 @@ public class LocalDBService implements LocalExportInterface {
 		// Convert to KWh = Wh / 1000
 		BigDecimal kiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 		// Convert to dollars cost = KWh * price per kilowatt
-		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, NumberFormat.getNumberInstance().format(kiloWattHours), price, watts);
+		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, numberInstance.format(kiloWattHours), price, watts);
 		return kiloWattHours.multiply(BigDecimal.valueOf(price));
 	}
 

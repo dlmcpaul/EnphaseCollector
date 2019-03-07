@@ -39,20 +39,22 @@ public class EnphaseController {
 	private List<Status> populateStatusList() {
 		ArrayList<Status> statusList = new ArrayList<>();
 		EnvoySystem envoySystem = localDBService.getSystemInfo();
+		NumberFormat currency = NumberFormat.getCurrencyInstance();
 
-		statusList.add(new Status("solar-panel.jpg","Total panels connected and sending data", "" + envoySystem.getPanelCount()));
+		statusList.add(new Status("solar-panel.jpg","Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 		if (envoySystem.isWifi()) {
 			statusList.add(new Status("wifi.jpg", "Home network connection", "Wifi"));
 		} else {
 			statusList.add(new Status("lan.jpg", "Home network connection", "LAN"));
 		}
 		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		statusList.add(new Status("communication.png","Last communication to Enphase today", "" + envoySystem.getLastCommunication().format(timeFormatter)));
+		statusList.add(new Status("communication.png","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
-		statusList.add(new Status("electricity.jpg", "Highest output so far today", "" + localDBService.calculateMaxProduction() + " W"));
-		statusList.add(new Status("electricity.jpg", "Paid today from exporting to grid", NumberFormat.getCurrencyInstance().format(localDBService.calculateTodaysPayment())));
-		statusList.add(new Status("electricity.jpg", "Savings today from not using grid", NumberFormat.getCurrencyInstance().format(localDBService.calculateTodaysSavings())));
-		statusList.add(new Status("electricity.jpg", "Cost today from grid usage", NumberFormat.getCurrencyInstance().format(localDBService.calculateTodaysCost())));
+		statusList.add(new Status("electricity.jpg", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
+		statusList.add(new Status("electricity.jpg", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
+		statusList.add(new Status("electricity.jpg", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+		statusList.add(new Status("electricity.jpg", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
+		statusList.add(new Status("electricity.jpg", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
 
 		Collections.shuffle(statusList);
 
