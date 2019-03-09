@@ -1,4 +1,4 @@
-FROM alpine:3.8 as builder
+FROM alpine:3.9 as builder
 MAINTAINER David McPaul <dlmcpaul@gmail.com>
 
 # Generate a minimal java runtime using the latest Portola distribution
@@ -22,7 +22,7 @@ RUN mkdir -p /opt/jdk \
     --output /opt/jre-minimal
 
 # Start with fresh copy of alpine linux
-FROM alpine:3.8
+FROM alpine:3.9
 
 # copy our minimal runtime
 RUN mkdir -p /opt/app
@@ -30,6 +30,10 @@ COPY --from=builder /opt/jre-minimal /opt/jdk
 
 # copy our application
 ADD ${JAR_FILE} /opt/app/enphasecollector.jar
+
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
 
 # expose the internal actuator endpoints
 EXPOSE 8080
