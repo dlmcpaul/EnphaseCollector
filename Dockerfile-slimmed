@@ -1,35 +1,36 @@
-FROM alpine:3.9 as builder
+FROM azul/zulu-openjdk-alpine:11 as builder
 MAINTAINER David McPaul <dlmcpaul@gmail.com>
 
-# Generate a minimal java runtime using the latest Portola distribution
-# MODULES should contain the ouput from jdeps --list-deps ${JAR_FILE}
-# maybe use 'export MODULES=$(jdeps --list-deps ${JAR_FILE})'
-ARG MODULES
+ENV JAVA_MINIMAL=/opt/jre
+
+# Generate a minimal java runtime using the latest azul/zulu-openjdk-alpine
 ARG JAR_FILE
-RUN mkdir -p /opt/jdk \
-     && cd /opt/jdk \
-     && wget -O openjdk-musl.tar.gz https://download.java.net/java/early_access/alpine/25/binaries/openjdk-12-ea+25_linux-x64-musl_bin.tar.gz \
-     && tar -zxvf openjdk-musl.tar.gz \
-     && rm openjdk-musl.tar.gz \
-     && ./jdk-12/bin/jlink \
-    --add-modules  \
-    ${MODULES},java.xml,jdk.unsupported,java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument \
+COPY ${JAR_FILE} /app.jar
+
+RUN MODULES=$(jdeps --print-module-deps /app.jar) \
+    && echo modules=$MODULES \
+    && jlink \
     --verbose \
-    --strip-debug \
+    --add-modules \
+        "$MODULES",java.base,java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument \
     --compress 2 \
+    --strip-debug \
     --no-header-files \
     --no-man-pages \
-    --output /opt/jre-minimal
+    --output "$JAVA_MINIMAL"
 
 # Start with fresh copy of alpine linux
 FROM alpine:3.9
 
+ARG JAR_FILE
+
 # copy our minimal runtime
-RUN mkdir -p /opt/app
-COPY --from=builder /opt/jre-minimal /opt/jdk
+ENV JAVA_MINIMAL=/opt/jre
+ENV PATH="$PATH:$JAVA_MINIMAL/bin"
+COPY --from=builder "$JAVA_MINIMAL" "$JAVA_MINIMAL"
 
 # copy our application
-ADD ${JAR_FILE} /opt/app/enphasecollector.jar
+COPY ${JAR_FILE} /app.jar
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -38,4 +39,4 @@ ENV LANGUAGE en_US.UTF-8
 # expose the internal actuator endpoints
 EXPOSE 8080
 
-CMD ["/opt/jdk/bin/java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/opt/app/enphasecollector.jar"]
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "/app.jar"]
