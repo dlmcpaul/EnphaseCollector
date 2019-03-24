@@ -72,11 +72,22 @@
     </div>
 </section>
 <footer class="footer has-background-white">
-    <div class="content has-text-centered">
-        <p>Rendered by <strong>Thymeleaf</strong> at <span
-                data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span><br>
-            Envoy Software Version: <span data-th-text="${software_version}">version</span><br>
-            Envoy Serial Number: <span data-th-text="${serial_number}">serial</span><br></p>
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3"></div>
+            <div class="column is-5">
+                <h1 class="has-text-weight-semibold">About</h1>
+                <hr>
+                <ul>
+                    <li class="is-size-6">Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span></li>
+                    <li class="is-size-6">Envoy Software Version: <span data-th-text="${software_version}">version</span></li>
+                    <li class="is-size-6">Envoy Serial Number: <span data-th-text="${serial_number}">serial</span></li>
+                    <li><br></li>
+                    <li class="is-size-6"><a href="https://bulma.io"><img data-th-src="@{made-with-bulma.png}" alt="Made with Bulma" width="128" height="24"></a></li>
+                </ul>
+            </div>
+            <div class="column is-3"></div>
+        </div>
     </div>
 </footer>
 <script type="text/javascript" data-th-src="@{/js/chart.js}"></script>

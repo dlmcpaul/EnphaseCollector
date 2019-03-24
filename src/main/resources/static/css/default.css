@@ -7,3 +7,7 @@ article.solarmessage:last-child {
     padding-bottom: 0;
     border-bottom: none;
 }
+
+.footer li {
+    margin: .4rem 1rem;
+}
