@@ -28,6 +28,8 @@ dlmcpaul/enphasecollector
 
 and a web page available at http://localhost:8080
 
+![Example Local Display](docs/images/LocalDisplay.jpg "Example Local Display")
+
 Available environment variables descriptions:
 
 - ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
