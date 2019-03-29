@@ -10,6 +10,13 @@
 
 	<name>EnphaseCollector</name>
 	<description>Collector for Enphase Solar Statistics</description>
+	<url>https://github.com/dlmcpaul/EnphaseCollector</url>
+
+	<scm>
+		<url>https://github.com/dlmcpaul/EnphaseCollector</url>
+		<connection>scm:git:git://github.com/dlmcpaul/EnphaseCollector.git</connection>
+		<developerConnection>scm:git:git@github.com:dlmcpaul/EnphaseCollector.git</developerConnection>
+	</scm>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -19,12 +26,14 @@
 	</parent>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<java.jaxb.version>2.3.1</java.jaxb.version>
+		<h2.database.version>1.4.198</h2.database.version>
+		<highcharts.version>7.0.3</highcharts.version>
+		<bulma.version>0.7.4</bulma.version>
+		<influxdb.connector.version>2.15</influxdb.connector.version>
+		<font-awsome.version>4.7.0</font-awsome.version>
 	</properties>
 
 	<dependencies>
@@ -65,7 +74,7 @@
 		<dependency>
 			<groupId>org.influxdb</groupId>
 			<artifactId>influxdb-java</artifactId>
-			<version>2.15</version>
+			<version>${influxdb.connector.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.micrometer</groupId>
@@ -80,36 +89,36 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.198</version>
+			<version>${h2.database.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!-- JAXB removed from Java 11 forwards so add compile jar and runtime jar back in -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.3.1</version>
+			<version>${java.jaxb.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
 			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.1</version>
+			<version>${java.jaxb.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
-			<version>4.7.0</version>
+			<version>${font-awsome.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>highcharts</artifactId>
-			<version>7.0.3</version>
+			<version>${highcharts.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>bulma</artifactId>
-			<version>0.7.4</version>
+			<version>${bulma.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
