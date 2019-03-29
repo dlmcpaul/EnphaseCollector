@@ -60,7 +60,7 @@ public class PvOutputClientConfig {
 				.build();
 	}
 
-	public class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
+	public static class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
 
 		private final String headerName;
 		private final String headerValue;
