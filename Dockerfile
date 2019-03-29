@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:latest
+FROM azul/zulu-openjdk-alpine:11
 MAINTAINER David McPaul <dlmcpaul@gmail.com>
 
 ENV LC_ALL en_US.UTF-8
