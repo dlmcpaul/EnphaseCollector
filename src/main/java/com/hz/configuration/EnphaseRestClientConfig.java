@@ -25,8 +25,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.security.SecureRandom;
 import java.time.Duration;
-import java.util.Random;
 
 import static org.apache.http.auth.AuthScope.ANY_HOST;
 import static org.apache.http.auth.AuthScope.ANY_SCHEME;
@@ -49,6 +49,8 @@ public class EnphaseRestClientConfig {
 	private static final String REALM = "enphaseenergy.com";
 
     private final EnphaseCollectorProperties config;
+
+    private static SecureRandom secureRandom = new SecureRandom();
 
 	@Autowired
 	public EnphaseRestClientConfig(EnphaseCollectorProperties config) {
@@ -95,7 +97,7 @@ public class EnphaseRestClientConfig {
 		return template;
     }
 
-	private class HttpComponentsClientHttpRequestFactoryDigestAuth
+	private static class HttpComponentsClientHttpRequestFactoryDigestAuth
 			extends HttpComponentsClientHttpRequestFactory {
 
 		private final HttpHost host;
@@ -117,7 +119,7 @@ public class EnphaseRestClientConfig {
 			DigestScheme digestScheme = new DigestScheme();
 			// If we already know the realm name
 			digestScheme.overrideParamter("realm", REALM);
-			digestScheme.overrideParamter("nonce", Long.toString(new Random().nextLong(), 36));
+			digestScheme.overrideParamter("nonce", Long.toString(secureRandom.nextLong(), 36));
 			authCache.put(host, digestScheme);
 
 			// Add AuthCache to the execution context
