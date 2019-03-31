@@ -1,6 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.configuration.PvOutputClientConfig;
 import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
 import com.hz.utils.Convertors;
@@ -80,12 +81,12 @@ public class PvOutputService implements PvOutputExportInterface {
 			map.add("v3", energyConsumedAccumulator.toString());
 			map.add("v4", String.valueOf(powerConsumed));
 
-			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
 			try {
-				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(properties.getPvOutputResource().getUrl(), requestEntity, String.class);
+				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
 				if (stringResponseEntity.getStatusCodeValue() != 200) {
-					LOG.info("ERROR {}", stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");
+					LOG.error("ERROR {}", stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");
 				}
 			} catch (HttpClientErrorException e) {
 				LOG.error("ERROR: {}", e.getMessage());
