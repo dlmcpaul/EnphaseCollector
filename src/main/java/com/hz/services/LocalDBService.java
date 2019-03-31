@@ -8,6 +8,7 @@ import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.models.database.Panel;
+import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,23 +97,25 @@ public class LocalDBService implements LocalExportInterface {
 
 	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
 
-		BigDecimal watts;
+		BigDecimal watts = BigDecimal.ZERO;
 		final NumberFormat numberInstance = NumberFormat.getNumberInstance();
+		final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
 
-		if (recordedWatts < 0) {
-			watts = BigDecimal.ZERO;
-		} else {
+		if (recordedWatts > 0) {
 			watts = BigDecimal.valueOf(recordedWatts);
 		}
 
-		// Convert to Wh = watts / (60 * 60 * 1000 / refreshSeconds)
-		BigDecimal oneHour = BigDecimal.valueOf(60 * 60 * 1000L).divide(BigDecimal.valueOf(properties.getRefreshSeconds()), 4, RoundingMode.HALF_UP);
-		BigDecimal wattHours = watts.divide(oneHour, 4, RoundingMode.HALF_UP);
+		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds());
+
 		// Convert to KWh = Wh / 1000
 		BigDecimal kiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 		// Convert to dollars cost = KWh * price per kilowatt
-		LOG.info("{} - {} Kwh at {} dollars per Kwh calculated from {} W", type, numberInstance.format(kiloWattHours), price, watts);
-		return kiloWattHours.multiply(BigDecimal.valueOf(price));
+		BigDecimal moneyValue = kiloWattHours.multiply(BigDecimal.valueOf(price));
+
+		// NOSONAR
+		LOG.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);
+
+		return moneyValue;
 	}
 
 	private LocalDateTime getMidnight() {

@@ -62,7 +62,7 @@ public class EnphaseService {
 		this.enphaseRestTemplate = enphaseRestTemplate;
 		this.enphaseSecureRestTemplate = enphaseSecureRestTemplate;
 		this.enphaseMarshaller = enphaseMarshaller;
-	}
+    }
 
 	public boolean isOk() {
     	return this.lastStatus == 200;
@@ -93,20 +93,24 @@ public class EnphaseService {
 
 		    if (systemResponse.getStatusCodeValue() == 200) {
 			    System system = systemResponse.getBody();
-			    getProductionData(system);
-			    // Wait until production read time is updated
-			    while (systemNotReady(system)) {
+			    if (system != null) {
 				    getProductionData(system);
+				    // Wait until production read time is updated
+				    while (systemNotReady(system)) {
+					    getProductionData(system);
+			        }
+
+				    Optional<TypeBase> eim = system.getProduction().getProductionEim();
+				    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
+
+				    getControllerData();
+				    getInventory(system);
+				    getIndividualPanelData(system);
+
+				    return Optional.of(system);
+			    } else {
+				    LOG.error("Envoy Production read failed");
 			    }
-
-			    Optional<TypeBase> eim = system.getProduction().getProductionEim();
-			    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
-
-			    getControllerData();
-			    getInventory(system);
-			    getIndividualPanelData(system);
-
-			    return Optional.of(system);
 		    } else {
 			    LOG.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
 		    }
