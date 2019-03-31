@@ -84,7 +84,7 @@ public class PvOutputService implements PvOutputExportInterface {
 			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
 			try {
-				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
+				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(properties.getPvOutputResource().getUrl() + PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
 				if (stringResponseEntity.getStatusCodeValue() != 200) {
 					LOG.error("ERROR {}", stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");
 				}

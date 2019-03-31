@@ -28,7 +28,7 @@ public class PvOutputClientConfig {
 		this.config = config;
 	}
 
-	public final static String ADD_STATUS = "service/r2/addstatus.jsp";
+	public final static String ADD_STATUS = "/service/r2/addstatus.jsp";
 
 	// HTTP Post to https://pvoutput.org/service/r2/addstatus.jsp
 	// add headers
