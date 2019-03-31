@@ -2,6 +2,7 @@ package com.hz.services;
 
 import com.hz.interfaces.InfluxExportInterface;
 import com.hz.interfaces.LocalExportInterface;
+import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
 import org.slf4j.Logger;
@@ -19,15 +20,17 @@ import java.util.Optional;
 public class OutputManager {
 	private static final Logger LOG = LoggerFactory.getLogger(OutputManager.class);
 
-	private EnphaseService enphaseService;
-	private InfluxExportInterface influxService;
-	private LocalExportInterface localService;
+	private EnphaseService enphaseImportService;
+	private InfluxExportInterface influxExportService;
+	private LocalExportInterface localExportService;
+	private PvOutputExportInterface pvoutputExportService;
 
 	@Autowired
-	public OutputManager(EnphaseService enphaseService, InfluxExportInterface influxService, LocalExportInterface localService) {
-		this.enphaseService = enphaseService;
-		this.influxService = influxService;
-		this.localService = localService;
+	public OutputManager(EnphaseService enphaseImportService, InfluxExportInterface influxExportService, LocalExportInterface localExportService, PvOutputExportInterface pvoutputExportService) {
+		this.enphaseImportService = enphaseImportService;
+		this.influxExportService = influxExportService;
+		this.localExportService = localExportService;
+		this.pvoutputExportService = pvoutputExportService;
 	}
 
 	@PostConstruct
@@ -38,10 +41,11 @@ public class OutputManager {
 	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
 	public void gather() {
 		try {
-			Optional<System> system = enphaseService.collectEnphaseData();
-			system.ifPresent(s -> influxService.sendMetrics(enphaseService.getMetrics(s), enphaseService.getCollectionTime(s)));
-			system.ifPresent(s -> localService.sendSystemInfo(makeSystemInfo(s)));
-			system.ifPresent(s -> localService.sendMetrics(enphaseService.getMetrics(s), enphaseService.getCollectionTime(s)));
+			Optional<System> system = enphaseImportService.collectEnphaseData();
+			system.ifPresent(s -> influxExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+			system.ifPresent(s -> localExportService.sendSystemInfo(makeSystemInfo(s)));
+			system.ifPresent(s -> localExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+			system.ifPresent(s -> pvoutputExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
 		} catch (Exception e) {
 			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
 		}
@@ -49,14 +53,14 @@ public class OutputManager {
 
 	private EnvoySystem makeSystemInfo(System system) {
 		EnvoySystem envoySystem = new EnvoySystem();
-		envoySystem.setEnvoySerial(enphaseService.getSerialNumber());
-		envoySystem.setEnvoyVersion(enphaseService.getSoftwareVersion());
+		envoySystem.setEnvoySerial(enphaseImportService.getSerialNumber());
+		envoySystem.setEnvoyVersion(enphaseImportService.getSoftwareVersion());
 
 		envoySystem.setWifi(system.getNetwork().isWifi());
 		envoySystem.setNetwork("");
 
 		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
-		envoySystem.setLastReadTime(LocalDateTime.ofInstant(enphaseService.getCollectionTime(system).toInstant(), ZoneId.systemDefault()));
+		envoySystem.setLastReadTime(LocalDateTime.ofInstant(enphaseImportService.getCollectionTime(system).toInstant(), ZoneId.systemDefault()));
 		envoySystem.setPanelCount(system.getProduction().getInverterList().size());
 
 		return envoySystem;

@@ -28,6 +28,8 @@ public class PvOutputClientConfig {
 		this.config = config;
 	}
 
+	public static String ADD_STATUS = "/service/r2/addstatus.jsp";
+
 	// HTTP Post to https://pvoutput.org/service/r2/addstatus.jsp
 	// add headers
 	// X-Pvoutput-Apikey = key
@@ -46,18 +48,20 @@ public class PvOutputClientConfig {
 	// n	Net Flag	        No	        number	    -	        1
 
 
-	@Bean
+	@Bean(name="pvRestTemplate")
 	public RestTemplate pvRestTemplate(RestTemplateBuilder builder) {
 
-		LOG.info("Writing to Pv Output endpoint {}", config.getPvOutputResource().getUrl());
+		LOG.info("Writing to Pv Output endpoint {} using key {}", config.getPvOutputResource().getUrl(), config.getPvOutputResource().getKey());
 
-		return builder
+		RestTemplate template = builder
 				.rootUri(config.getPvOutputResource().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(30))
 				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-Apikey",config.getPvOutputResource().getKey()))
 				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-SystemId",config.getPvOutputResource().getSystemId()))
 				.build();
+
+		return template;
 	}
 
 	public static class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
