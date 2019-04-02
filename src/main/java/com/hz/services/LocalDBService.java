@@ -112,8 +112,7 @@ public class LocalDBService implements LocalExportInterface {
 		// Convert to dollars cost = KWh * price per kilowatt
 		BigDecimal moneyValue = kiloWattHours.multiply(BigDecimal.valueOf(price));
 
-		// NOSONAR
-		LOG.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);
+		LOG.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);		// NOSONAR
 
 		return moneyValue;
 	}
