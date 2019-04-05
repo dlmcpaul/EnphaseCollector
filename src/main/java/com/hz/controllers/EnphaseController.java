@@ -40,6 +40,7 @@ public class EnphaseController {
 		ArrayList<Status> statusList = new ArrayList<>();
 		EnvoySystem envoySystem = localDBService.getSystemInfo();
 		NumberFormat currency = NumberFormat.getCurrencyInstance();
+		NumberFormat number = NumberFormat.getNumberInstance();
 
 		statusList.add(new Status("solar-panel.jpg","Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 		if (envoySystem.isWifi()) {
@@ -50,11 +51,14 @@ public class EnphaseController {
 		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 		statusList.add(new Status("communication.png","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
-		statusList.add(new Status("electricity.jpg", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
+		statusList.add(new Status("up_arrow.jpg", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
 		statusList.add(new Status("electricity.jpg", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
 		statusList.add(new Status("electricity.jpg", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
 		statusList.add(new Status("electricity.jpg", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
 		statusList.add(new Status("electricity.jpg", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
+
+		statusList.add(new Status("sunshine.png", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
+		statusList.add(new Status("electricity_pole.jpg", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
 
 		Collections.shuffle(statusList);
 

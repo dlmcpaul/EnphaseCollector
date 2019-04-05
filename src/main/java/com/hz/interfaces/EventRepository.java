@@ -20,6 +20,9 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 	@Query(value = "select nvl(sum(production),0) from Event where time > ?1", nativeQuery = true)
 	public Long findTotalProductionAfter(LocalDateTime time);
 
+	@Query(value = "select nvl(sum(consumption),0) from Event where time > ?1", nativeQuery = true)
+	public Long findTotalConsumptionAfter(LocalDateTime time);
+
 	@Query(value = "select nvl(max(production),0) from Event where time > ?1", nativeQuery = true)
 	public Long findMaxProductionAfter(LocalDateTime time);
 }
