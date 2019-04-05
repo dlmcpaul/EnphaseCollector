@@ -43,7 +43,7 @@ public class PvOutputService implements PvOutputExportInterface {
 
 	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-	private static final int interval = 5;
+	private static final int INTERVAL = 5;
 
 	// TODO allow for 5,10,15 min intervals
 	// pvoutput has a min of 5 minutes
@@ -56,7 +56,7 @@ public class PvOutputService implements PvOutputExportInterface {
 		// Roll forward nextUpdate to nearest 5 min in future
 		LocalDateTime now = LocalDateTime.now();
 		while (now.isAfter(nextUpdate)) {
-			nextUpdate = nextUpdate.plusMinutes(interval);
+			nextUpdate = nextUpdate.plusMinutes(INTERVAL);
 		}
 
 		// TODO should read the last update for today from pvoutput and set the accumulators
