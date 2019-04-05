@@ -7,9 +7,11 @@ public class Convertors {
 
 	private Convertors() {}
 
-	public static BigDecimal convertToWattHours(BigDecimal watts, int refreshMicroSeconds) {
-		// Convert to Wh = watts / (60 * 60 * 1000 / refreshMicroSeconds)
-		BigDecimal oneHour = BigDecimal.valueOf(60 * 60 * 1000L).divide(BigDecimal.valueOf(refreshMicroSeconds), 4, RoundingMode.HALF_UP);
-		return watts.divide(oneHour, 4, RoundingMode.HALF_UP);
+	public static BigDecimal convertToWattHours(BigDecimal watts, int minutesOfOperation) {
+		// Wh = W * hours of operation
+		// So scale minutes of operation to hours of operation
+
+		BigDecimal scale = BigDecimal.valueOf(minutesOfOperation).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
+		return watts.multiply(scale);
 	}
 }

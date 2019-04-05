@@ -68,11 +68,11 @@ public class PvOutputService implements PvOutputExportInterface {
 		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 
-		this.updateAccumulators(production, consumption);
+		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshSeconds() / 60000), Convertors.convertToWattHours(consumption, properties.getRefreshSeconds() / 60000));
 		this.updatePower(production.intValue(), consumption.intValue());
 
 		if (localReadTime.isAfter(nextUpdate)) {
-			LOG.debug("dt={} v1={} v2={} v3={} v4={}", nextUpdate, Convertors.convertToWattHours(energyGeneratedAccumulator, interval * properties.getRefreshSeconds()), powerGenerated, Convertors.convertToWattHours(energyConsumedAccumulator, interval * properties.getRefreshSeconds()), powerConsumed);
+			LOG.info("dt={} v1={} v2={} v3={} v4={}", nextUpdate, energyGeneratedAccumulator, powerGenerated, energyConsumedAccumulator, powerConsumed);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -80,9 +80,9 @@ public class PvOutputService implements PvOutputExportInterface {
 			MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
 			map.add("d", dateFormatter.format(nextUpdate));
 			map.add("t", timeFormatter.format(nextUpdate));
-			map.add("v1", Convertors.convertToWattHours(energyGeneratedAccumulator, interval * properties.getRefreshSeconds()).toString());
+			map.add("v1", energyGeneratedAccumulator.toString());
 			map.add("v2", String.valueOf(powerGenerated));
-			map.add("v3", Convertors.convertToWattHours(energyConsumedAccumulator, interval * properties.getRefreshSeconds()).toString());
+			map.add("v3", energyConsumedAccumulator.toString());
 			map.add("v4", String.valueOf(powerConsumed));
 
 			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
@@ -90,11 +90,10 @@ public class PvOutputService implements PvOutputExportInterface {
 			try {
 				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(properties.getPvOutputResource().getUrl() + PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
 				if (stringResponseEntity.getStatusCodeValue() != 200) {
-					LOG.error("ERROR {}", stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");		// NOSONAR
-
+					LOG.error("ERROR: Request {} -> {}", requestEntity.getBody(), stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");		// NOSONAR
 				}
 			} catch (HttpClientErrorException e) {
-				LOG.error("ERROR: {}", e.getMessage());
+				LOG.error("ERROR: {} {}", e.getMessage(), e.getResponseBodyAsString());
 			}
 
 			int day = nextUpdate.getDayOfMonth();

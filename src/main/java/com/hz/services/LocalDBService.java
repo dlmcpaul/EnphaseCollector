@@ -95,6 +95,18 @@ public class LocalDBService implements LocalExportInterface {
 		return eventRepository.findMaxProductionAfter(getMidnight());
 	}
 
+	public BigDecimal calculateTotalProduction() {
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalProductionAfter(getMidnight()));
+		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
+		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+	}
+
+	public BigDecimal calculateTotalConsumption() {
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalConsumptionAfter(getMidnight()));
+		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
+		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+	}
+
 	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
 
 		BigDecimal watts = BigDecimal.ZERO;
@@ -105,7 +117,7 @@ public class LocalDBService implements LocalExportInterface {
 			watts = BigDecimal.valueOf(recordedWatts);
 		}
 
-		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds());
+		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
 
 		// Convert to KWh = Wh / 1000
 		BigDecimal kiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
