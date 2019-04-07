@@ -30,7 +30,7 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<java.jaxb.version>2.3.1</java.jaxb.version>
 		<h2.database.version>1.4.199</h2.database.version>
-		<highcharts.version>7.0.3</highcharts.version>
+		<highcharts.version>7.1.0</highcharts.version>
 		<bulma.version>0.7.4</bulma.version>
 		<influxdb.connector.version>2.15</influxdb.connector.version>
 		<font-awsome.version>4.7.0</font-awsome.version>
