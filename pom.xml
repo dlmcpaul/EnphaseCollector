@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.3.RELEASE</version>
+		<version>2.1.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -29,7 +29,7 @@
 		<java.version>11</java.version>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<java.jaxb.version>2.3.1</java.jaxb.version>
-		<h2.database.version>1.4.198</h2.database.version>
+		<h2.database.version>1.4.199</h2.database.version>
 		<highcharts.version>7.0.3</highcharts.version>
 		<bulma.version>0.7.4</bulma.version>
 		<influxdb.connector.version>2.15</influxdb.connector.version>
@@ -128,7 +128,6 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
