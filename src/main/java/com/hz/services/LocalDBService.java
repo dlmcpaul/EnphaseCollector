@@ -18,8 +18,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,11 +38,11 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	@Override
-	public void sendMetrics(List<Metric> metrics, Date readTime) {
+	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
 		LOG.debug("Writing stats at {} with {} items", readTime, metrics.size());
 
 		Event event = new Event();
-		event.setTime((LocalDateTime.ofInstant(readTime.toInstant(), ZoneId.systemDefault())));
+		event.setTime(readTime);
 
 		event.setProduction(getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 		event.setConsumption(getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));

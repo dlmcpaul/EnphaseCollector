@@ -21,9 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,15 +61,14 @@ public class PvOutputService implements PvOutputExportInterface {
 	}
 
 	@Override
-	public void sendMetrics(List<Metric> metrics, Date readTime) {
-		LocalDateTime localReadTime = (LocalDateTime.ofInstant(readTime.toInstant(), ZoneId.systemDefault()));
+	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
 		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 
 		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshSeconds() / 60000), Convertors.convertToWattHours(consumption, properties.getRefreshSeconds() / 60000));
 		this.updatePower(production.intValue(), consumption.intValue());
 
-		if (localReadTime.isAfter(nextUpdate)) {
+		if (readTime.isAfter(nextUpdate)) {
 			LOG.info("dt={} v1={} v2={} v3={} v4={}", nextUpdate, energyGeneratedAccumulator, powerGenerated, energyConsumedAccumulator, powerConsumed);
 
 			HttpHeaders headers = new HttpHeaders();

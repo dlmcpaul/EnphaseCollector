@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -26,8 +27,8 @@ public class InfluxService implements InfluxExportInterface {
 		this.destinationInfluxDB = destinationInfluxDB;
 	}
 
-	public void sendMetrics(List<Metric> metrics, Date readTime) {
-		metrics.forEach(m ->	destinationInfluxDB.write(Point.measurement(m.getName()).time(readTime.getTime(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
+	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
+		metrics.forEach(m ->	destinationInfluxDB.write(Point.measurement(m.getName()).time(readTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
 		LOG.debug("wrote measurement with {} fields at {}", metrics.size(), readTime);
 	}
 }

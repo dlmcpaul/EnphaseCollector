@@ -60,7 +60,7 @@ public class OutputManager {
 		envoySystem.setNetwork("");
 
 		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
-		envoySystem.setLastReadTime(LocalDateTime.ofInstant(enphaseImportService.getCollectionTime(system).toInstant(), ZoneId.systemDefault()));
+		envoySystem.setLastReadTime(enphaseImportService.getCollectionTime(system));
 		envoySystem.setPanelCount(system.getProduction().getInverterList().size());
 
 		return envoySystem;

@@ -19,7 +19,14 @@ import org.springframework.xml.transform.StringSource;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by David on 22-Oct-17.
@@ -86,7 +93,7 @@ public class EnphaseService {
 		return "Unknown";
 	}
 
-	Optional<System> collectEnphaseData() {
+	public Optional<System> collectEnphaseData() {
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
 			this.lastStatus = systemResponse.getStatusCodeValue();
@@ -120,14 +127,11 @@ public class EnphaseService {
 		return Optional.empty();
 	}
 
-    Date getCollectionTime(@NotNull System system) {
+    public LocalDateTime getCollectionTime(@NotNull System system) {
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
-	    if (productionEim.isPresent()) {
-		    Calendar lastRead = GregorianCalendar.getInstance();
-		    lastRead.setTimeInMillis(productionEim.get().getReadingTime() * 1000L);
-		    return lastRead.getTime();
-	    }
-	    return GregorianCalendar.getInstance().getTime();
+	    // Envoy only produces time in seconds
+	    return productionEim.map(typeBase -> LocalDateTime.ofInstant(Instant.ofEpochMilli(typeBase.getReadingTime() * 1000L), ZoneId.systemDefault()))
+			    .orElseGet(() -> LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     private boolean systemNotReady(@NotNull System system) {
