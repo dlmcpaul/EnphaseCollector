@@ -282,7 +282,6 @@
     var pvcProperties = {
         chart: {
             renderTo: 'pvc',
-            type: 'line',
             height: '25%'
         },
         credits: {
@@ -325,11 +324,22 @@
         },
         series: [
             {
+                type: 'line',
                 name: 'production',
+                color: '#55BF3B',
                 data: [ [now.getTime(), 0] ]
             },
             {
+                type: 'line',
                 name: 'consumption',
+                color: '#DDDF0D',
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                type: 'area',
+                name: 'grid',
+                color: '#DF5353',
+                fillOpacity: 0.2,
                 data: [ [now.getTime(), 0] ]
             }]
     };

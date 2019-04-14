@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -52,17 +53,26 @@ public class EnphaseController {
 		statusList.add(new Status("communication.png","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
 		statusList.add(new Status("up_arrow.jpg", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
-		statusList.add(new Status("electricity.jpg", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
-		statusList.add(new Status("electricity.jpg", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
-		statusList.add(new Status("electricity.jpg", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
-		statusList.add(new Status("electricity.jpg", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
+		statusList.add(new Status("dollar.png", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
+		statusList.add(new Status("dollar.png", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+		statusList.add(new Status("dollar.png", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
+		statusList.add(new Status("dollar.png", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
 
 		statusList.add(new Status("sunshine.png", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
-		statusList.add(new Status("electricity_pole.jpg", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
+		statusList.add(new Status("electricity.jpg", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
+		statusList.add(new Status("electricity_pole.jpg", "Grid Import Today", number.format(calculateGridImport(localDBService.calculateTotalProduction(), localDBService.calculateTotalConsumption())) + " kW"));
 
 		Collections.shuffle(statusList);
 
 		return statusList.subList(0,7);
+	}
+
+	private BigDecimal calculateGridImport(BigDecimal production, BigDecimal consumption) {
+		if (production.compareTo(consumption) < 0) {
+			return consumption.subtract(production);
+		}
+
+		return BigDecimal.ZERO;
 	}
 
 	// Generate main page from template

@@ -46,6 +46,7 @@ function refreshPvcChart(chart, url) {
 
             chart.series[0].setData(response.production);
             chart.series[1].setData(response.consumption);
+            chart.series[2].setData(response.gridimport);
         }
     };
     request.open("GET", url, true);
