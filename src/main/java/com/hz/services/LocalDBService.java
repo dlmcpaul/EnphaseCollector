@@ -93,6 +93,12 @@ public class LocalDBService implements LocalExportInterface {
 		return eventRepository.findMaxProductionAfter(getMidnight());
 	}
 
+	public BigDecimal calculateGridImport() {
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findExcessConsumptionAfter(getMidnight()));
+		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
+		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+	}
+
 	public BigDecimal calculateTotalProduction() {
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalProductionAfter(getMidnight()));
 		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);

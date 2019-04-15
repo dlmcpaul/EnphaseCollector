@@ -7,13 +7,14 @@ import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @Controller
 public class EnphaseController {
+	private static final Logger LOG = LoggerFactory.getLogger(EnphaseController.class);
 
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
@@ -60,19 +62,11 @@ public class EnphaseController {
 
 		statusList.add(new Status("sunshine.png", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
 		statusList.add(new Status("electricity.jpg", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
-		statusList.add(new Status("electricity_pole.jpg", "Grid Import Today", number.format(calculateGridImport(localDBService.calculateTotalProduction(), localDBService.calculateTotalConsumption())) + " kW"));
+		statusList.add(new Status("electricity_pole.jpg", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
 
 		Collections.shuffle(statusList);
 
 		return statusList.subList(0,7);
-	}
-
-	private BigDecimal calculateGridImport(BigDecimal production, BigDecimal consumption) {
-		if (production.compareTo(consumption) < 0) {
-			return consumption.subtract(production);
-		}
-
-		return BigDecimal.ZERO;
 	}
 
 	// Generate main page from template
