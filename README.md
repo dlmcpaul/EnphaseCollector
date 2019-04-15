@@ -38,6 +38,9 @@ docker run \\\
 -e SPRING_PROFILES_ACTIVE=pvoutput \\\
 dlmcpaul/enphasecollector
 
+For all the above docker commands you will likely need to set the time zone with\
+ -e TZ=Australia/Sydney or similar
+
 Available environment variables descriptions:
 
 - ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
