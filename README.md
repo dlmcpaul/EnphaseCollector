@@ -29,6 +29,7 @@ dlmcpaul/enphasecollector
 and a web page available at http://localhost:8080 like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
 
 Example #3 sending data to pvoutput
+
 docker run \\\
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=envoy-ip \\\
@@ -47,9 +48,9 @@ Available environment variables descriptions:
 - ENBOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
 - SPRING_PROFILES_ACTIVE          Determines destination for stats.  if not set only an internal database gets the stats.  Values can be influxdb and pvoutput
 - ENVOY_REFRESH_SECONDS           How often to poll the Envoy Controller.  Default 60000 (60s)
-- ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125
-- ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285
-- ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93
+- ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
+- ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
+- ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93 is 93c/day
 ## Dependencies
 - Docker (or Java)
 
