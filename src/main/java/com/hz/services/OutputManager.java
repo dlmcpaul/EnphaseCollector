@@ -8,6 +8,7 @@ import com.hz.models.envoy.json.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 @Service
+@Profile("!testing")
 public class OutputManager {
 	private static final Logger LOG = LoggerFactory.getLogger(OutputManager.class);
 
@@ -61,7 +63,7 @@ public class OutputManager {
 
 		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
 		envoySystem.setLastReadTime(enphaseImportService.getCollectionTime(system));
-		envoySystem.setPanelCount(system.getProduction().getInverterList().size());
+		envoySystem.setPanelCount(system.getProduction().getMicroInvertorsList().size());
 
 		return envoySystem;
 	}

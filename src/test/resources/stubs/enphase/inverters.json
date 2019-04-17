@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/api/v1/production/inverters",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "[{\"serialNumber\": \"121707050094\", \"lastReportDate\": 1555139855, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 348 }, {\"serialNumber\": \"121707050096\", \"lastReportDate\": 1555139861, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 353 }, {\"serialNumber\": \"121707040461\", \"lastReportDate\": 1555139853, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 351 }, {\"serialNumber\": \"121707050367\", \"lastReportDate\": 1555139856, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 347 }, {\"serialNumber\": \"121707050571\", \"lastReportDate\": 1555139840, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 366 }, {\"serialNumber\": \"121707049876\", \"lastReportDate\": 1555139852, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 350 }, {\"serialNumber\": \"121707050549\", \"lastReportDate\": 1555139847, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 355 }, {\"serialNumber\": \"121707050098\", \"lastReportDate\": 1555139849, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 376 }, {\"serialNumber\": \"121707049878\", \"lastReportDate\": 1555139842, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 327 }, {\"serialNumber\": \"121707049864\", \"lastReportDate\": 1555139847, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 343 }, {\"serialNumber\": \"121707040638\", \"lastReportDate\": 1555139853, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 371 }, {\"serialNumber\": \"121707049848\", \"lastReportDate\": 1555139859, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 360 }, {\"serialNumber\": \"121707050013\", \"lastReportDate\": 1555139842, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 350 }, {\"serialNumber\": \"121707047544\", \"lastReportDate\": 1555139857, \"devType\": 1, \"lastReportWatts\": 4, \"maxReportWatts\": 351 }, {\"serialNumber\": \"121707049853\", \"lastReportDate\": 1555140917, \"devType\": 1, \"lastReportWatts\": 0, \"maxReportWatts\": 351 }, {\"serialNumber\": \"121707050570\", \"lastReportDate\": 1555139845, \"devType\": 1, \"lastReportWatts\": 5, \"maxReportWatts\": 349 }]",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
