@@ -23,10 +23,20 @@ public class Production {
 	private List<TypeBase> storageList;
 
 	@JsonIgnore
-	public List<Inverter> getInverterList() {
+	public List<Inverter> getMicroInvertorsList() {
 		Optional<TypeBase> inverter = this.getInverter();
 		if (inverter.isPresent()) {
-			return ((InvertersType)inverter.get()).getInverterList();
+			return ((InvertersType)inverter.get()).getMicroInvertors();
+		}
+
+		return new ArrayList<>();
+	}
+
+	@JsonIgnore
+	public List<Inverter> getBatteryList() {
+		Optional<TypeBase> inverter = this.getInverter();
+		if (inverter.isPresent()) {
+			return ((InvertersType)inverter.get()).getBatteries();
 		}
 
 		return new ArrayList<>();

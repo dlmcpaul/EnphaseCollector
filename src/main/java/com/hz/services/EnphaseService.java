@@ -94,6 +94,7 @@ public class EnphaseService {
 	}
 
 	public Optional<System> collectEnphaseData() {
+    	// TODO no need to collect all data every request, only individual panels really
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
 			this.lastStatus = systemResponse.getStatusCodeValue();
@@ -195,7 +196,7 @@ public class EnphaseService {
 
 	    calculateSavings(metricList, production, consumption);
 
-	    system.getProduction().getInverterList().forEach(inverter -> metricList.add(new Metric("solar.panel-" + map(inverter.getSerialNumber()), inverter.getLastReportWatts())));
+	    system.getProduction().getMicroInvertorsList().forEach(inverter -> metricList.add(new Metric("solar.panel-" + map(inverter.getSerialNumber()), inverter.getLastReportWatts())));
 
 	    return metricList;
     }
