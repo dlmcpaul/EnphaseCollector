@@ -34,7 +34,7 @@ docker run \\\
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=envoy-ip \\\
 -e ENVOY_PVOUTPUTRESOURCE_SYSTEMID=your-system-id \\\
--e ENBOY_PVOUTPUTRESOURCE_KEY=your-key \\\
+-e ENVOY_PVOUTPUTRESOURCE_KEY=your-key \\\
 -e SPRING_PROFILES_ACTIVE=pvoutput \\\
 dlmcpaul/enphasecollector
 
