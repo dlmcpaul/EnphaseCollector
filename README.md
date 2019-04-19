@@ -1,6 +1,6 @@
 # EnphaseCollector
 
-Uses the undocumented API in the Envoy device to collect individual solar panel data and upload to an influx db
+Uses the undocumented API in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
 
 Can be run as a java application or using the docker image
 
@@ -9,6 +9,7 @@ If using the docker image
 Example #1 using influxDB for storage
 
 docker run \\\
+-e TZ=your-timezone
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=envoy-ip \\\
 -e ENVOY_INFLUXDBRESOURCE_HOST=influxdb-ip \\\
@@ -21,6 +22,7 @@ where password is likely to be the last 6 characters of your envoy controller se
 Example #2 in standalone mode with no storage
 
 docker run \\\
+-e TZ=your-timezone
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=envoy-ip \\\
 -p 8080:8080 \\\
@@ -31,6 +33,7 @@ and a web page available at http://localhost:8080 like [this](https://dlmcpaul.g
 Example #3 sending data to pvoutput
 
 docker run \\\
+-e TZ=your-timezone
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
 -e ENVOY_CONTROLLER_HOST=envoy-ip \\\
 -e ENVOY_PVOUTPUTRESOURCE_SYSTEMID=your-system-id \\\
@@ -38,8 +41,7 @@ docker run \\\
 -e SPRING_PROFILES_ACTIVE=pvoutput \\\
 dlmcpaul/enphasecollector
 
-For all the above docker commands you will likely need to set the time zone with\
- -e TZ=Australia/Sydney or similar
+Your timezone is something like Australia/Sydney or similar
 
 Available environment variables descriptions:
 
@@ -60,7 +62,7 @@ Available environment variables descriptions:
 - If profile set to influxdb then an 
 Influx DB is needed for storage of the statistics (Will autocreate 2 databases called 'solardb' and 'collectorStats')
 
-- If profile set to pvoutput then every 5m the stats will be uploaded to your account at https://pvoutput.org (you will need to create one to to get the systemid and key)
+- If profile set to pvoutput then every 5m the stats will be uploaded to your account at https://pvoutput.org (you will need to create an account to to get the systemid and key)
 
 - You can set both profiles separated by a comma eg influxdb,pvoutput
 
