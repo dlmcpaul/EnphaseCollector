@@ -23,55 +23,53 @@
         </div>
     </div>
 </section>
-<section class="section has-background-white">
+<section class="section is-paddingless has-background-white">
     <div class="container">
-        <div class="columns">
-            <div class="column is-8">
-                <div class="tile is-ancestor">
-                    <div class="tile is-parent">
-                        <div class="tile is-child">
-                            <div id="consumption" class="image"></div>
-                            <article class="media">
-                                <div class="media-left">
-                                    <figure class="image is-64x64">
-                                        <img data-th-src="@{power.gif}" src="" alt="Placeholder image">
-                                    </figure>
-                                </div>
-                                <div class="media-content">
-                                    <p class="title is-4">Consumption</p>
-                                    <p id="consumption_label" class="subtitle is-6"
-                                       data-th-text="${consumption} + ' W'"></p>
-                                </div>
-                            </article>
-                        </div>
-                        <div class="tile is-child">
-                            <div id="production" class="image"></div>
-                            <article class="media">
-                                <div class="media-left">
-                                    <figure class="image is-64x64">
-                                        <img data-th-src="@{sun.jpeg}" src="" alt="Placeholder image">
-                                    </figure>
-                                </div>
-                                <div class="media-content">
-                                    <p class="title is-4">Production</p>
-                                    <p id="production_label" class="subtitle is-6"
-                                       data-th-text="${production} + ' W'"></p>
-                                </div>
-                            </article>
-                        </div>
+        <div class="tabs is-centered">
+            <ul>
+                <li class="is-active"><a>Live</a></li>
+                <li><a>History</a></li>
+            </ul>
+        </div>
+        <div class="columns is-multiline">
+            <div class="column is-4 is-narrow">
+                <div id="consumption"></div>
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img data-th-src="@{power.gif}" src="" alt="Placeholder image">
+                        </figure>
                     </div>
-                </div>
+                    <div class="media-content">
+                        <p class="title is-4">Consumption</p>
+                        <p id="consumption_label" class="subtitle is-6" data-th-text="${consumption} + ' W'"></p>
+                    </div>
+                </article>
+            </div>
+            <div class="column is-4 is-narrow">
+                <div id="production"></div>
+                <article class="media">
+                    <div class="media-left">
+                        <figure class="image is-64x64">
+                            <img data-th-src="@{sun.jpeg}" src="" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4">Production</p>
+                        <p id="production_label" class="subtitle is-6" data-th-text="${production} + ' W'"></p>
+                    </div>
+                </article>
             </div>
             <div data-th-replace="~{statsFragment :: statusPanel}"></div>
         </div>
         <div class="columns">
-            <div class="column">
-                <div id="pvc" class="image"></div>
+            <div class="column is-12 is-narrow">
+                <div id="pvc"></div>
             </div>
         </div>
     </div>
 </section>
-<footer class="footer has-background-white">
+<footer class="footer is-paddingless has-background-white">
     <div class="container">
         <div class="columns">
             <div class="column is-3"></div>
@@ -95,8 +93,7 @@
     var consumptionProperties = {
         chart: {
             renderTo: 'consumption',
-            type: 'gauge',
-            height: '100%'
+            type: 'gauge'
         },
         title: {
             text: null
@@ -184,8 +181,7 @@
     var productionProperties = {
         chart: {
             renderTo: 'production',
-            type: 'gauge',
-            height: '100%'
+            type: 'gauge'
         },
         credits: {
             enabled: false
@@ -282,7 +278,7 @@
     var pvcProperties = {
         chart: {
             renderTo: 'pvc',
-            height: '25%'
+            height: '30%'
         },
         credits: {
             enabled: false
