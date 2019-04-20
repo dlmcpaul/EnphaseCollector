@@ -7,40 +7,41 @@ Can be run as a java application or using the docker image
 If using the docker image
 
 Example #1 using influxDB for storage
-
-docker run \\\
--e TZ=your-timezone
--e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
--e ENVOY_CONTROLLER_HOST=envoy-ip \\\
--e ENVOY_INFLUXDBRESOURCE_HOST=influxdb-ip \\\
--e ENVOY_INFLUXDBRESOURCE_PORT=influxdb-port \\\
--e SPRING_PROFILES_ACTIVE=influxdb \\\
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-e ENVOY_INFLUXDBRESOURCE_HOST=influxdb-ip \
+-e ENVOY_INFLUXDBRESOURCE_PORT=influxdb-port \
+-e SPRING_PROFILES_ACTIVE=influxdb \
 dlmcpaul/enphasecollector
-
+```
 where password is likely to be the last 6 characters of your envoy controller serial number
 
 Example #2 in standalone mode with no storage
 
-docker run \\\
--e TZ=your-timezone
--e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
--e ENVOY_CONTROLLER_HOST=envoy-ip \\\
--p 8080:8080 \\\
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-p 8080:8080 \
 dlmcpaul/enphasecollector
-
+```
 and a web page available at http://localhost:8080 like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
 
 Example #3 sending data to pvoutput
-
-docker run \\\
--e TZ=your-timezone
--e ENVOY_CONTROLLER_PASSWORD=envoy-password \\\
--e ENVOY_CONTROLLER_HOST=envoy-ip \\\
--e ENVOY_PVOUTPUTRESOURCE_SYSTEMID=your-system-id \\\
--e ENVOY_PVOUTPUTRESOURCE_KEY=your-key \\\
--e SPRING_PROFILES_ACTIVE=pvoutput \\\
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-e ENVOY_PVOUTPUTRESOURCE_SYSTEMID=your-system-id \
+-e ENVOY_PVOUTPUTRESOURCE_KEY=your-key \
+-e SPRING_PROFILES_ACTIVE=pvoutput \
 dlmcpaul/enphasecollector
-
+```
 Your timezone is something like Australia/Sydney or similar
 
 Available environment variables descriptions:
