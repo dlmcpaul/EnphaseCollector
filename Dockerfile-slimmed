@@ -8,11 +8,11 @@ ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
 
 RUN MODULES=$(jdeps --print-module-deps /app.jar) \
-    && echo modules=$MODULES \
+    && echo modules identified = $MODULES \
     && jlink \
     --verbose \
     --add-modules \
-        "$MODULES",java.base,java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument \
+        "$MODULES",java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument \
     --compress 2 \
     --strip-debug \
     --no-header-files \
@@ -20,7 +20,7 @@ RUN MODULES=$(jdeps --print-module-deps /app.jar) \
     --output "$JAVA_MINIMAL"
 
 # Start with fresh copy of alpine linux
-FROM alpine:3.9
+FROM alpine:latest
 
 ARG JAR_FILE
 
