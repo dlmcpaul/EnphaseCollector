@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
-<div th:fragment="element (image, text, value)">
-    <div class="media">
-        <div class="media-left">
-            <figure class="image is-32x32">
-                <img th:src="${image}" alt="Image">
-            </figure>
-        </div>
-        <div class="media-content">
-            <div class="content is-size-7-tablet is-size-7-desktop is-size-6-widescreen is-size-6-fullhd">
-                <p th:utext="${text}"/>
-            </div>
-        </div>
-        <div class="media-right">
-            <strong><span class="has-text-black is-size-7-tablet is-size-7-desktop is-size-6-widescreen is-size-6-fullhd" th:text="${value}">0</span></strong>
-        </div>
-    </div>
-</div>
+<tr th:fragment="element (image, text, value)">
+    <td>
+        <figure class="image is-32x32">
+            <img th:src="${image}" alt="Image">
+        </figure>
+    </td>
+    <td>
+        <p class="flex-text" th:utext="${text}"/>
+    </td>
+    <td class="has-text-right has-text-black has-text-weight-bold flex-text" th:text="${value}" style="white-space: nowrap">0</td>
+</tr>
 </body>
 </html>

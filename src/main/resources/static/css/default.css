@@ -3,6 +3,7 @@ article.solarmessage {
     padding-bottom: 1rem;
     border-bottom: 1px solid #E6EAEE;
 }
+
 article.solarmessage:last-child {
     padding-bottom: 0;
     border-bottom: none;
@@ -10,4 +11,9 @@ article.solarmessage:last-child {
 
 .footer li {
     margin: .4rem 1rem;
+}
+
+.flex-text {
+    font-size: calc( 1.00rem + 0.4vw - 9.5px );
+    vertical-align: middle;
 }
