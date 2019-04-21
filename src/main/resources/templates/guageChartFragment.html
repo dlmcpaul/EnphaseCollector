@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<div th:fragment="guageChart (id, image, title, text)" class="column is-4 is-narrow">
+    <div th:id="${id}"></div>
+    <article class="media is-hidden-mobile">
+        <div class="media-left">
+            <figure class="image is-64x64">
+                <img data-th-src="${image}" src="" alt="Placeholder image">
+            </figure>
+        </div>
+        <div class="media-content">
+            <p class="title is-4" th:text="${title}">Title</p>
+            <p id="consumption_label" class="subtitle is-6" data-th-text="${text} + ' W'"></p>
+        </div>
+    </article>
+    <article class="is-hidden-tablet">
+        <p class="title is-4 has-text-centered" th:text="${title}">Title</p>
+    </article>
+</div>
+</body>
+
+</html>

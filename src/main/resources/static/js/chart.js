@@ -18,7 +18,10 @@ function refreshChart(chart, url, target) {
             var point = chart.series[0].points[0];
             point.update(Number(request.responseText));
 
-            document.getElementById(target + "_label").innerHTML = request.responseText + " W";
+            element = document.getElementById(target + "_label");
+            if (element != null) {
+                element.innerHTML = request.responseText + " W";
+            }
         }
     };
     request.open("GET", url, true);

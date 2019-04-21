@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
-<div th:fragment="statusPanel" id="statusPanel" class="column is-4 is-narrow">
-    <table class="table">
+<div th:fragment="statusPanel" id="statusPanel" class="column is-4">
+    <table class="table is-hidden-mobile">
         <tbody>
-    <th:block th:each="status : ${statusList}" class="solarmessage">
-        <div data-th-replace="~{statusFragment :: element(${status.image},${status.text},${status.value})}"></div>
-    </th:block>
+            <th:block th:each="status : ${statusList}" class="solarmessage">
+                <div data-th-replace="~{statusFragment :: element(${status.image},${status.text},${status.value})}"></div>
+            </th:block>
         </tbody>
     </table>
 </div>
