@@ -1,5 +1,6 @@
 package com.hz;
 
+import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyDevice;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -23,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
@@ -75,13 +77,19 @@ public class EnphaseServiceRestTest {
 	private EnphaseService enphaseService;
 
 	@Test
-	public void verifyEnphaseService() {
+	public void EnphaseServiceTest() {
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assert.assertTrue(system.isPresent());
 		Assert.assertThat(this.enphaseService.getSoftwareVersion(), Matchers.equalTo("D4.5.79"));
 		Assert.assertThat(this.enphaseService.getSerialNumber(), Matchers.equalTo("121703XXXXXX"));
 		Assert.assertThat(system.get().getProduction().getMicroInvertorsList().size(), Matchers.equalTo(16));
+		Assert.assertThat(system.get().getProduction().getBatteryList().size(), Matchers.equalTo(0));
+		Assert.assertThat(this.enphaseService.isOk(), Matchers.equalTo(true));
+
+		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
+
+		Assert.assertThat(metrics.size(), Matchers.equalTo(23));
 	}
 
 }

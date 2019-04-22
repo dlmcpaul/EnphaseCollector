@@ -175,7 +175,7 @@ public class EnphaseService {
 	    metricList.add(new Metric( "solar.difference",production, consumption));
     }
 
-    List<Metric> getMetrics(System system) {
+	public List<Metric> getMetrics(System system) {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
 	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();

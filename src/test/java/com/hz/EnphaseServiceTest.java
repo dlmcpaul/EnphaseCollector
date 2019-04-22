@@ -5,6 +5,7 @@ import com.hz.models.envoy.json.Production;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.TypeBase;
 import com.hz.services.EnphaseService;
+import com.hz.utils.Convertors;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -40,7 +42,7 @@ public class EnphaseServiceTest {
 	}
 
 	@Test
-	public void verifyCollectionDate() {
+	public void CollectionDateTest() {
 		LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
 		// Given
@@ -50,5 +52,16 @@ public class EnphaseServiceTest {
 		LocalDateTime collectionTime = this.mockEnphaseService.getCollectionTime(this.mockEnphaseService.collectEnphaseData().get());
 		// Then
 		Assert.assertThat(collectionTime, Matchers.equalTo(now));
+	}
+
+	@Test
+	public void ConvertorsTest() {
+		BigDecimal result;
+
+		result = Convertors.convertToWattHours(BigDecimal.ZERO, 0);
+		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.ZERO));
+
+		result = Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1);
+		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.valueOf(16.7000)));
 	}
 }
