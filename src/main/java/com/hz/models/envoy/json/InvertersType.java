@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 public class InvertersType extends TypeBase {
 
-	private static final int MICRO_INVERTOR = 1;
+	private static final int MICRO_INVERTER = 1;
 	private static final int BATTERY = 11;
 
 	private List<Inverter> inverterList;    // populated from api/v1/production/inverters
 
 	public List<Inverter> getMicroInvertors() {
-		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTOR).collect(Collectors.toList());
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).collect(Collectors.toList());
 	}
 
 	public List<Inverter> getBatteries() {
