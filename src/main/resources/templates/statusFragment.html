@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
-<tr th:fragment="element (image, text, value)">
+<tr th:fragment="status (image, text, value)" class="status-row">
     <td>
-        <figure class="image is-32x32">
-            <img th:src="${image}" alt="Image">
-        </figure>
+        <nav class="level is-mobile">
+        <div class="level-left">
+            <p class="level-item icon flex-text"><i th:class="${image}"></i></p>
+            <p class="level-item flex-text" th:text="${text}"/>
+        </div>
+        <div class="level-right">
+            <p class="level-item has-text-right has-text-black has-text-weight-bold flex-text" th:text="${value}" style="white-space: nowrap">0</p>
+        </div>
+        </nav>
     </td>
-    <td>
-        <p class="flex-text" th:utext="${text}"/>
-    </td>
-    <td class="has-text-right has-text-black has-text-weight-bold flex-text" th:text="${value}" style="white-space: nowrap">0</td>
 </tr>
 </body>
 </html>

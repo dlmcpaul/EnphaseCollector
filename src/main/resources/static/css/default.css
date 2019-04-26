@@ -1,19 +1,27 @@
-article.solarmessage {
+.status-row {
     margin: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #E6EAEE;
-}
-
-article.solarmessage:last-child {
-    padding-bottom: 0;
-    border-bottom: none;
+    border-bottom: 1px solid #dbdbdb;
 }
 
 .footer li {
     margin: .4rem 1rem;
 }
 
-.flex-text {
-    font-size: calc( 1.00rem + 0.4vw - 9.5px );
-    vertical-align: middle;
+@media (min-width: 769px) {
+    .flex-text {
+        font-size: calc(1rem + 0.4vw - 9.5px);
+        vertical-align: middle;
+    }
+}
+
+@media (max-width: 768px) {
+    .flex-text {
+        font-size: 1rem;
+        vertical-align: middle;
+    }
+}
+
+.centre {
+    text-align: center;
 }

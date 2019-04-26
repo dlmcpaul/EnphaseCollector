@@ -56,8 +56,12 @@ public class Production {
 	}
 
 	@JsonIgnore
-	public Optional<TypeBase> getProductionEim() {
-		return productionList.stream().filter(module -> module.getType().equalsIgnoreCase("eim")).findFirst();
+	public Optional<EimType> getProductionEim() {
+		Optional<TypeBase> result = productionList.stream().filter(module -> module.getType().equalsIgnoreCase("eim")).findFirst();
+		if (result.isPresent()) {
+			return Optional.of(((EimType)result.get()));
+		}
+		return Optional.empty();
 	}
 
 	@JsonIgnore

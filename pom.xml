@@ -33,7 +33,7 @@
 		<highcharts.version>7.1.0</highcharts.version>
 		<bulma.version>0.7.4</bulma.version>
 		<influxdb.connector.version>2.15</influxdb.connector.version>
-		<font-awsome.version>4.7.0</font-awsome.version>
+		<font-awsome.version>5.8.1</font-awsome.version>
 		<spring-cloud-contract.version>2.1.1.RELEASE</spring-cloud-contract.version>
 	</properties>
 
@@ -161,7 +161,18 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>woff</nonFilteredFileExtension>
+						<nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
+			<plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>

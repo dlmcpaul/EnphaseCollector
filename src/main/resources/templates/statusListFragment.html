@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<div th:fragment="statusList" id="statusList" class="column is-4 centre">
+    <table class="table is-fullwidth">
+        <tbody>
+            <th:block th:each="status : ${statusList}">
+                <div data-th-replace="~{statusFragment :: status(${status.image},${status.text},${status.value})}"></div>
+            </th:block>
+        </tbody>
+    </table>
+</div>
+</body>
+
+</html>

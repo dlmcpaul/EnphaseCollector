@@ -1,16 +1,16 @@
-function makeChart(target, properties, refreshUrl, interval) {
+function makeGuageChart(target, properties, refreshUrl, interval) {
 
     // Create Chart
     var chart = new Highcharts.chart(properties);
 
     // Set initial values
-    refreshChart(chart, refreshUrl, target);
+    refreshGuageChart(chart, refreshUrl, target);
 
     // Refresh every interval
-    setInterval(function() { refreshChart(chart, refreshUrl, target) }, interval);
+    setInterval(function() { refreshGuageChart(chart, refreshUrl, target) }, interval);
 }
 
-function refreshChart(chart, url, target) {
+function refreshGuageChart(chart, url, target) {
 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function () {
@@ -56,12 +56,12 @@ function refreshPvcChart(chart, url) {
     request.send();
 }
 
-function makeStats(target, refreshUrl, interval) {
+function makeStatusList(target, refreshUrl, interval) {
     // Refresh every interval
-    setInterval(function() { refreshStats(target, refreshUrl) }, interval);
+    setInterval(function() { refreshStatusList(target, refreshUrl) }, interval);
 }
 
-function refreshStats(target, url) {
+function refreshStatusList(target, url) {
     var request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {

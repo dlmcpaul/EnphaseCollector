@@ -108,7 +108,7 @@ public class EnphaseService {
 					    getProductionData(system);
 			        }
 
-				    Optional<TypeBase> eim = system.getProduction().getProductionEim();
+				    Optional<EimType> eim = system.getProduction().getProductionEim();
 				    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
 				    getControllerData();
@@ -129,14 +129,14 @@ public class EnphaseService {
 	}
 
     public LocalDateTime getCollectionTime(@NotNull System system) {
-	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
+	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
 	    // Envoy only produces time in seconds
 	    return productionEim.map(typeBase -> LocalDateTime.ofInstant(Instant.ofEpochMilli(typeBase.getReadingTime() * 1000L), ZoneId.systemDefault()))
 			    .orElseGet(() -> LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     private boolean systemNotReady(@NotNull System system) {
-	    Optional<TypeBase> eim = system.getProduction().getProductionEim();
+	    Optional<EimType> eim = system.getProduction().getProductionEim();
 
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
     }
@@ -178,13 +178,14 @@ public class EnphaseService {
 	public List<Metric> getMetrics(System system) {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
-	    Optional<TypeBase> productionEim = system.getProduction().getProductionEim();
+	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
 	    long production = 0;
 	    long consumption = 0;
 	    if (productionEim.isPresent()) {
 		    production = productionEim.get().getWattsNow();
 		    metricList.add(new Metric("solar.production.current", production));
 		    metricList.add(new Metric("solar.production.total", productionEim.get().getWattsLifetime()));
+		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
 	    }
 
 	    Optional<TypeBase> consumptionEim = system.getProduction().getConsumptionEim();

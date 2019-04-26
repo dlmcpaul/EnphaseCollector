@@ -45,28 +45,29 @@ public class EnphaseController {
 		NumberFormat currency = NumberFormat.getCurrencyInstance();
 		NumberFormat number = NumberFormat.getNumberInstance();
 
-		statusList.add(new Status("solar-panel.jpg","Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
+		statusList.add(new Status("fas fa-solar-panel","Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 		if (envoySystem.isWifi()) {
-			statusList.add(new Status("wifi.jpg", "Home network connection", "Wifi"));
+			statusList.add(new Status("fas fa-wifi", "Home network connection", "Wifi"));
 		} else {
-			statusList.add(new Status("lan.jpg", "Home network connection", "LAN"));
+			statusList.add(new Status("fas fa-network-wired", "Home network connection", "LAN"));
 		}
 		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		statusList.add(new Status("communication.png","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
+		statusList.add(new Status("fas fa-broadcast-tower","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
-		statusList.add(new Status("up_arrow.jpg", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
-		statusList.add(new Status("dollar.png", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
-		statusList.add(new Status("dollar.png", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
-		statusList.add(new Status("dollar.png", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
-		statusList.add(new Status("dollar.png", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
+		statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
+		statusList.add(new Status("fas fa-dollar-sign", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
+		statusList.add(new Status("fas fa-dollar-sign", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+		statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
+		statusList.add(new Status("fas fa-dollar-sign", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
 
-		statusList.add(new Status("sunshine.png", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
-		statusList.add(new Status("electricity.jpg", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
-		statusList.add(new Status("electricity_pole.jpg", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
+		statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
+		statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
+		statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
+		statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
 
 		Collections.shuffle(statusList);
 
-		return statusList.subList(0,7);
+		return statusList.subList(0,8);
 	}
 
 	// Generate main page from template
@@ -84,7 +85,7 @@ public class EnphaseController {
 	@GetMapping("/refreshStats")
 	public String status(Model model) {
 		model.addAttribute("statusList", this.populateStatusList());
-		return "statsFragment :: statusPanel";
+		return "statusListFragment :: statusList";
 	}
 
 	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")

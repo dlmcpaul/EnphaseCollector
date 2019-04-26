@@ -249,8 +249,8 @@ function initLiveCharts(contextPath, refreshInterval) {
             }]
     };
 
-    makeChart("production", productionProperties, contextPath + '/production', refreshInterval);
-    makeChart("consumption", consumptionProperties, contextPath + '/consumption', refreshInterval);
+    makeGuageChart("production", productionProperties, contextPath + '/production', refreshInterval);
+    makeGuageChart("consumption", consumptionProperties, contextPath + '/consumption', refreshInterval);
     makePvcChart("pvc", pvcProperties, contextPath + '/pvc', refreshInterval);
-    makeStats("statusPanel",contextPath + '/refreshStats',refreshInterval)
+    makeStatusList("statusList", contextPath + '/refreshStats', refreshInterval)
 }

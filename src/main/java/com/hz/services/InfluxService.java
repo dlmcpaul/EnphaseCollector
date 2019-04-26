@@ -28,7 +28,7 @@ public class InfluxService implements InfluxExportInterface {
 	}
 
 	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
-		metrics.forEach(m ->	destinationInfluxDB.write(Point.measurement(m.getName()).time(readTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
+		metrics.forEach(m -> destinationInfluxDB.write(Point.measurement(m.getName()).time(readTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
 		LOG.debug("wrote measurement with {} fields at {}", metrics.size(), readTime);
 	}
 }

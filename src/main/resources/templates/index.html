@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Enphase Solar System</title>
     <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.4/css/bulma.css}"/>
-    <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}"/>
+    <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/5.8.1/css/all.css}"/>
     <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts.js}"></script>
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts-more.js}"></script>
 </head>
 <body class="has-background-light">
-<section class="hero is-info">
+<section class="hero is-info is-bold">
     <div class="hero-body">
         <div class="container">
             <h1 class="title">
                 Enphase Collector
             </h1>
             <h2 class="subtitle">
-                <i class="fa fa-copyright"></i> David McPaul 2018
+                <i class="fas fa-copyright"></i> David McPaul 2018
             </h2>
         </div>
     </div>
@@ -32,10 +32,10 @@
             </ul>
         </div>
         <div id="live-data">
-            <div class="columns is-multiline">
+            <div class="columns is-multiline is-centered">
                 <div data-th-replace="~{guageChartFragment :: guageChart('consumption',@{power.gif},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{guageChartFragment :: guageChart('production',@{sun.jpeg},'Production',${production})}"></div>
-                <div data-th-replace="~{statsFragment :: statusPanel}"></div>
+                <div data-th-replace="~{statusListFragment :: statusList}"></div>
             </div>
             <div class="columns">
                 <div class="column is-12 is-narrow">
@@ -50,11 +50,13 @@
 </section>
 <footer class="footer is-paddingless has-background-white">
     <div class="container">
+        <div class="tabs is-centered">
+            <ul>
+                <li class="has-text-weight-semibold">About</li>
+            </ul>
+        </div>
         <div class="columns">
-            <div class="column is-3"></div>
-            <div class="column is-5">
-                <h1 class="has-text-weight-semibold">About</h1>
-                <hr>
+            <div class="column centre">
                 <ul>
                     <li class="is-size-6">Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span></li>
                     <li class="is-size-6">Envoy Software Version: <span data-th-text="${software_version}">version</span></li>
@@ -63,32 +65,13 @@
                     <li class="is-size-6"><a href="https://bulma.io"><img data-th-src="@{made-with-bulma.png}" alt="Made with Bulma" width="128" height="24"></a></li>
                 </ul>
             </div>
-            <div class="column is-3"></div>
         </div>
     </div>
 </footer>
-<script type="text/javascript" data-th-src="@{/js/chart.js}"></script>
-<script type="text/javascript" data-th-src="@{/js/liveCharts.js}"></script>
+<script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
+<script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
 <script data-th-inline="javascript">
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
-
-    function switchTabs(destination) {
-        // Find Source tab and remove active
-        currentTab = document.querySelector('#tabs li.is-active');
-        currentTab.classList.remove("is-active");
-        // Find Source Data and make hidden
-        currentDataId = currentTab.id + '-data';
-        currentContent = document.getElementById(currentDataId);
-        currentContent.classList.add("is-hidden");
-
-        // Use supplied destination and add active
-        destinationTab = document.getElementById(destination);
-        destinationTab.classList.add("is-active");
-        // Find destination Data and make visible
-        destinationDataId = destination + '-data';
-        destinationContent = document.getElementById(destinationDataId);
-        destinationContent.classList.remove("is-hidden");
-    }
 </script>
 </body>
 </html>
