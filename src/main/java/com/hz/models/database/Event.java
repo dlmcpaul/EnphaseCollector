@@ -21,6 +21,7 @@ public class Event {
 	private LocalDateTime time = LocalDateTime.now();
 	private BigDecimal consumption = new BigDecimal(0);
 	private BigDecimal production = new BigDecimal(0);
+	private BigDecimal voltage = new BigDecimal(0);
 
 	public void addSolarPanel(Panel panel) {
 		if (panel.isSolarPanel()) {

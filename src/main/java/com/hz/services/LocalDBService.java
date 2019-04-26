@@ -46,6 +46,7 @@ public class LocalDBService implements LocalExportInterface {
 
 		event.setProduction(getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 		event.setConsumption(getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setVoltage(getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 
 		metrics.forEach(m -> event.addSolarPanel(new Panel(m.getName(), m.getValue())));
 

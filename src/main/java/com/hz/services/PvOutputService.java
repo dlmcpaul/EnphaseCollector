@@ -19,8 +19,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +46,11 @@ public class PvOutputService implements PvOutputExportInterface {
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	private static final int INTERVAL = 5;
 
+	private static final int UPDATE_DATE = 0;
+	private static final int UPDATE_TIME = 1;
+	private static final int GENERATED_TOTAL = 2;
+	private static final int CONSUMED_TOTAL = 4;
+
 	// TODO allow for 5,10,15 min intervals
 	// pvoutput has a min of 5 minutes
 
@@ -56,20 +64,42 @@ public class PvOutputService implements PvOutputExportInterface {
 		while (now.isAfter(nextUpdate)) {
 			nextUpdate = nextUpdate.plusMinutes(INTERVAL);
 		}
+	}
 
-		// TODO should read the last update for today from pvoutput and set the accumulators
+	@PostConstruct
+	private void initAccumulatorsFromPvOutput() {
+		try {
+			String results = this.pvRestTemplate.getForObject(properties.getPvOutputResource().getUrl() + PvOutputClientConfig.GET_STATUS, String.class);
+			String[] elements = results.split(",");
+			LocalDate lastUpdateDate = LocalDate.parse(elements[UPDATE_DATE], DateTimeFormatter.ofPattern("yyyyMMdd"));
+			LocalTime lastUpdateTime = LocalTime.parse(elements[UPDATE_TIME], DateTimeFormatter.ISO_LOCAL_TIME);
+
+			LOG.info("PvOutput was last updated at {} {}", lastUpdateDate, lastUpdateTime);
+			if (lastUpdateDate.compareTo(LocalDate.now()) == 0) {
+				// Today so we can set accumulators
+				this.energyGeneratedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[GENERATED_TOTAL]));
+				this.energyConsumedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[CONSUMED_TOTAL]));
+
+				LOG.warn("Setting Accumulators to {} and {} some updated may be missing", this.energyGeneratedAccumulator, this.energyConsumedAccumulator);
+			}
+		} catch (HttpClientErrorException e) {
+			LOG.error("Error reading PvOutput Status: {} {}", e.getMessage(), e.getResponseBodyAsString());
+		} catch (Exception e) {
+			LOG.error("Error parsing PvOutput Status: {} {}", e.getMessage(), e);
+		}
 	}
 
 	@Override
 	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
 		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
+		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 
 		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshSeconds() / 60000), Convertors.convertToWattHours(consumption, properties.getRefreshSeconds() / 60000));
 		this.updatePower(production.intValue(), consumption.intValue());
 
 		if (readTime.isAfter(nextUpdate)) {
-			LOG.info("dt={} v1={} v2={} v3={} v4={}", nextUpdate, energyGeneratedAccumulator, powerGenerated, energyConsumedAccumulator, powerConsumed);
+			LOG.info("dt={} v1={} v2={} v3={} v4={} v6={}", nextUpdate, energyGeneratedAccumulator, powerGenerated, energyConsumedAccumulator, powerConsumed, voltage);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -81,16 +111,17 @@ public class PvOutputService implements PvOutputExportInterface {
 			map.add("v2", String.valueOf(powerGenerated));
 			map.add("v3", energyConsumedAccumulator.toString());
 			map.add("v4", String.valueOf(powerConsumed));
+			map.add("v6", String.valueOf(voltage));
 
 			HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
 			try {
 				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(properties.getPvOutputResource().getUrl() + PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
 				if (stringResponseEntity.getStatusCodeValue() != 200) {
-					LOG.error("ERROR: Request {} -> {}", requestEntity.getBody(), stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");		// NOSONAR
+					LOG.error("Error updating PvOutput: Request {} -> {}", requestEntity.getBody(), stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");		// NOSONAR
 				}
 			} catch (HttpClientErrorException e) {
-				LOG.error("ERROR: {} {}", e.getMessage(), e.getResponseBodyAsString());
+				LOG.error("Error updating PvOutput: {} {}", e.getMessage(), e.getResponseBodyAsString());
 			}
 
 			int day = nextUpdate.getDayOfMonth();

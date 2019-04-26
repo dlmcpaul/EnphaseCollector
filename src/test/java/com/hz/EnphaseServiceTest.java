@@ -3,7 +3,6 @@ package com.hz;
 import com.hz.models.envoy.json.EimType;
 import com.hz.models.envoy.json.Production;
 import com.hz.models.envoy.json.System;
-import com.hz.models.envoy.json.TypeBase;
 import com.hz.services.EnphaseService;
 import com.hz.utils.Convertors;
 import org.hamcrest.Matchers;
@@ -35,7 +34,7 @@ public class EnphaseServiceTest {
 		system.get().setProduction(new Production());
 		system.get().getProduction().setProductionList(new ArrayList<>());
 		system.get().getProduction().getProductionList().add(new EimType());
-		Optional<TypeBase> productionEim = system.get().getProduction().getProductionEim();
+		Optional<EimType> productionEim = system.get().getProduction().getProductionEim();
 		productionEim.ifPresent(typeBase -> typeBase.setReadingTime(now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000L));
 
 		return system;

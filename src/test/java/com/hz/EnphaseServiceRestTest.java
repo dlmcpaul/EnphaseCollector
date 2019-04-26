@@ -89,7 +89,7 @@ public class EnphaseServiceRestTest {
 
 		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
 
-		Assert.assertThat(metrics.size(), Matchers.equalTo(23));
+		Assert.assertThat(metrics.size(), Matchers.equalTo(24));
 	}
 
 }
