@@ -68,8 +68,9 @@
         </div>
     </div>
 </footer>
-<script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
+<script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
+<script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
 </script>
