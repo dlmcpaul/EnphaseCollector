@@ -38,8 +38,10 @@ public class EnphaseService {
 
 	private long lastReadTime = 0L;
 	private int lastStatus = 200;
+	private static int fullReadCount = 0;
 
 	private EnvoyInfo envoyInfo = null;
+	private List<Inventory> inventoryList = null;
 
 	private final Unmarshaller enphaseMarshaller;
     private final RestTemplate enphaseRestTemplate;
@@ -111,8 +113,13 @@ public class EnphaseService {
 				    Optional<EimType> eim = system.getProduction().getProductionEim();
 				    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
-				    getControllerData();
-				    getInventory(system);
+				    if (fullReadCount <= 0) {
+				    	fullReadCount = 10;  // Only update every 10 calls.
+					    getInventory(system);
+					    inventoryList = system.getInventoryList();
+				    } else {
+				    	system.setInventoryList(inventoryList);
+				    }
 				    getIndividualPanelData(system);
 
 				    return Optional.of(system);
