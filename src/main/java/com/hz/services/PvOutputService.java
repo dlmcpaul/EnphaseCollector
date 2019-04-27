@@ -80,7 +80,7 @@ public class PvOutputService implements PvOutputExportInterface {
 				this.energyGeneratedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[GENERATED_TOTAL]));
 				this.energyConsumedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[CONSUMED_TOTAL]));
 
-				LOG.warn("Setting Accumulators to {} and {} some updated may be missing", this.energyGeneratedAccumulator, this.energyConsumedAccumulator);
+				LOG.warn("Setting Accumulators to G:{} and C:{} some updates may be missing.  Next update will be {}", this.energyGeneratedAccumulator, this.energyConsumedAccumulator, nextUpdate);
 			}
 		} catch (HttpClientErrorException e) {
 			LOG.error("Error reading PvOutput Status: {} {}", e.getMessage(), e.getResponseBodyAsString());
