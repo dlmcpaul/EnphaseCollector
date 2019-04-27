@@ -19,7 +19,7 @@ function refreshGuageChart(chart, url, target) {
             point.update(Number(request.responseText));
 
             element = document.getElementById(target + "_label");
-            if (element != null) {
+            if (element !== null) {
                 element.innerHTML = request.responseText + " W";
             }
         }
