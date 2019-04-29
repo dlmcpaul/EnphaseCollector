@@ -8,6 +8,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by David on 23-Oct-17.
@@ -57,15 +58,25 @@ public class Production {
 
 	@JsonIgnore
 	public Optional<EimType> getProductionEim() {
-		Optional<TypeBase> result = productionList.stream().filter(module -> module.getType().equalsIgnoreCase("eim")).findFirst();
-		if (result.isPresent()) {
-			return Optional.of(((EimType)result.get()));
-		}
-		return Optional.empty();
+		return findBymeasurementType(productionList, "production");
 	}
 
 	@JsonIgnore
-	public Optional<TypeBase> getConsumptionEim() {
-		return consumptionList.stream().filter(module -> module.getType().equalsIgnoreCase("eim")).findFirst();
+	public Optional<EimType> getConsumptionEim() {
+		return findBymeasurementType(consumptionList, "total-consumption");
 	}
+
+	private Optional<EimType> findBymeasurementType(List<TypeBase> list, String measurementType) {
+		return filterToEimType(list).stream()
+				.filter(eim -> eim.getMeasurementType().equalsIgnoreCase(measurementType))
+				.findFirst();
+	}
+
+	private List<EimType> filterToEimType(List<TypeBase> list) {
+		return list.stream()
+				.filter(module -> module.getType().equalsIgnoreCase("eim"))
+				.map(obj -> (EimType) obj)
+				.collect(Collectors.toList());
+	}
+
 }
