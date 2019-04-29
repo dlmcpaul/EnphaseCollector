@@ -189,14 +189,16 @@ public class EnphaseService {
 	    long production = 0;
 	    long consumption = 0;
 	    if (productionEim.isPresent()) {
+	    	LOG.debug("production {} {}", productionEim.get().getReadingTime(), productionEim.get().getWattsNow());
 		    production = productionEim.get().getWattsNow();
 		    metricList.add(new Metric("solar.production.current", production));
 		    metricList.add(new Metric("solar.production.total", productionEim.get().getWattsLifetime()));
 		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
 	    }
 
-	    Optional<TypeBase> consumptionEim = system.getProduction().getConsumptionEim();
+	    Optional<EimType> consumptionEim = system.getProduction().getConsumptionEim();
 	    if (consumptionEim.isPresent()) {
+		    LOG.debug("consumption {} {}", consumptionEim.get().getReadingTime(), consumptionEim.get().getWattsNow());
 		    consumption = consumptionEim.get().getWattsNow();
 		    metricList.add(new Metric("solar.consumption.current", consumption));
 		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
