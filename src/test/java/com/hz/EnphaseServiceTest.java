@@ -33,7 +33,9 @@ public class EnphaseServiceTest {
 
 		system.get().setProduction(new Production());
 		system.get().getProduction().setProductionList(new ArrayList<>());
-		system.get().getProduction().getProductionList().add(new EimType());
+		EimType production = new EimType();
+		production.setMeasurementType("production");
+		system.get().getProduction().getProductionList().add(production);
 		Optional<EimType> productionEim = system.get().getProduction().getProductionEim();
 		productionEim.ifPresent(typeBase -> typeBase.setReadingTime(now.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000L));
 
