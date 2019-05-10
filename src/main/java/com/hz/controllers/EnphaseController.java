@@ -1,12 +1,14 @@
 package com.hz.controllers;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.controllers.models.FloatValue;
 import com.hz.controllers.models.PvC;
 import com.hz.controllers.models.Status;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
+import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +104,17 @@ public class EnphaseController {
 		localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
 
 		return pvc;
+	}
+
+	@GetMapping(value = "/weekly", produces = "application/json; charset=UTF-8")
+	@ResponseBody
+	public List<FloatValue> getWeekly() {
+		List<FloatValue> values = new ArrayList<>();
+
+		localDBService.getLastWeeksTotals().stream()
+				.forEach(total -> values.add(new FloatValue(total.getDate().atStartOfDay(), Convertors.convertToKiloWattHours(total.getValue(), properties.getRefreshAsMinutes()))));
+
+		return values;
 	}
 
 	@GetMapping(value = "/production", produces = "application/json; charset=UTF-8")

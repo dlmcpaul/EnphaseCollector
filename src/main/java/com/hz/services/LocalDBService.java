@@ -8,6 +8,7 @@ import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.models.database.Panel;
+import com.hz.models.database.Total;
 import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,6 +77,10 @@ public class LocalDBService implements LocalExportInterface {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
 	}
 
+	public List<Total> getLastWeeksTotals() {
+		return eventRepository.findDailyTotalProductionAfter(getLastWeek());
+	}
+
 	public BigDecimal calculateTodaysCost() {
 		return calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), properties.getChargePerKiloWatt(), "Cost");
 	}
@@ -96,20 +101,17 @@ public class LocalDBService implements LocalExportInterface {
 
 	public BigDecimal calculateGridImport() {
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findExcessConsumptionAfter(getMidnight()));
-		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
-		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
 	public BigDecimal calculateTotalProduction() {
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalProductionAfter(getMidnight()));
-		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
-		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
 	public BigDecimal calculateTotalConsumption() {
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalConsumptionAfter(getMidnight()));
-		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
-		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
 	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
@@ -122,10 +124,8 @@ public class LocalDBService implements LocalExportInterface {
 			watts = BigDecimal.valueOf(recordedWatts);
 		}
 
-		BigDecimal wattHours = Convertors.convertToWattHours(watts, properties.getRefreshSeconds() / 60000);
+		BigDecimal kiloWattHours = Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 
-		// Convert to KWh = Wh / 1000
-		BigDecimal kiloWattHours = wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 		// Convert to dollars cost = KWh * price per kilowatt
 		BigDecimal moneyValue = kiloWattHours.multiply(BigDecimal.valueOf(price));
 
@@ -137,6 +137,11 @@ public class LocalDBService implements LocalExportInterface {
 	private LocalDateTime getMidnight() {
 		LocalDateTime now = LocalDateTime.now();
 		return now.toLocalDate().atStartOfDay();
+	}
+
+	private LocalDateTime getLastWeek() {
+		LocalDateTime now = LocalDateTime.now();
+		return now.plus(-7, ChronoUnit.DAYS).toLocalDate().atStartOfDay();
 	}
 
 }

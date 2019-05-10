@@ -44,7 +44,11 @@
             </div>
         </div>
         <div class="is-hidden" id="history-data">
-            <h2>Nothing here yet</h2>
+            <div class="columns">
+                <div class="column is-12 is-narrow">
+                    <div id="weekly"></div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -73,6 +77,7 @@
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
+    initHistoryCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
 </script>
 </body>
 </html>

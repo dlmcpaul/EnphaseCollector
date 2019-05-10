@@ -254,3 +254,57 @@ function initLiveCharts(contextPath, refreshInterval) {
     makePvcChart("pvc", pvcProperties, contextPath + '/pvc', refreshInterval);
     makeStatusList("statusList", contextPath + '/refreshStats', refreshInterval)
 }
+function initHistoryCharts(contextPath, refreshInterval) {
+    var now = new Date();
+
+    //Disable use of UTC
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+
+    var weeklyProperties = {
+        chart: {
+            renderTo: 'weekly',
+            height: '30%'
+        },
+        credits: {
+            enabled: false
+        },
+        title: {
+            text: 'Last Weeks Production'
+        },
+        xAxis: {
+            title: {
+                text: 'Last Week'
+            },
+            type: 'datetime', //For time series, x-axis labels will be time
+            labels: {
+                //You can format the label according to your need
+                format: '{value:%d}'
+            },
+            minPadding: 0.05,
+            maxPadding: 0.05
+        },
+        yAxis: {
+            labels: {
+                format: '{value}kW',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'KiloWatts'
+            }
+        },
+        series: [
+            {
+                type: 'column',
+                name: 'production',
+                color: '#55BF3B',
+                data: [ [now.getTime(), 0] ]
+            }]
+    };
+    makeWeeklyChart("weekly", weeklyProperties, contextPath + '/weekly', refreshInterval);
+}

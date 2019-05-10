@@ -1,6 +1,7 @@
 package com.hz.interfaces;
 
 import com.hz.models.database.Event;
+import com.hz.models.database.Total;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -25,4 +26,8 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
 	@Query(value = "select nvl(max(production),0) from Event where time > ?1", nativeQuery = true)
 	public Long findMaxProductionAfter(LocalDateTime time);
+
+	@Query(value = "select cast(time as date) as date, nvl(sum(production),0) as value from Event where time > ?1 group by date order by date", nativeQuery = true)
+	public List<Total> findDailyTotalProductionAfter(LocalDateTime time);
+
 }

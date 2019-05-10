@@ -10,11 +10,11 @@ import java.util.Date;
 
 @Data
 @JsonFormat(shape= JsonFormat.Shape.ARRAY)
-public class Value {
+public class IntValue {
 	private long date;
 	private int watts;
 
-	public Value(LocalDateTime localDateTime, BigDecimal watts) {
+	public IntValue(LocalDateTime localDateTime, BigDecimal watts) {
 		this.date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime();
 		this.watts = watts.intValue();
 	}

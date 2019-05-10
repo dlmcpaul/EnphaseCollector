@@ -12,12 +12,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class EnphaseCollectorProperties {
     private ProtectedHTTPResource controller;
-    private int refreshSeconds;
+    private int refreshSeconds;     // Misnamed should be refreshMicroSeconds
     private double paymentPerKiloWatt;
     private double chargePerKiloWatt;
     private double dailySupplyCharge;
     private HTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
+
+    // Assumes refreshSeconds is a multiple of 60000
+    public int getRefreshAsMinutes() {
+        return refreshSeconds / 60000;
+    }
 
     @Data
     @NoArgsConstructor

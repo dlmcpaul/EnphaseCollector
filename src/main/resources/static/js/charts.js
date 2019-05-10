@@ -56,6 +56,32 @@ function refreshPvcChart(chart, url) {
     request.send();
 }
 
+function makeWeeklyChart(target, properties, refreshUrl, interval) {
+    // Create Chart
+    var chart = new Highcharts.chart(properties);
+
+    // Set initial values
+    refreshWeeklyChart(chart, refreshUrl);
+
+    // Refresh every interval
+    setInterval(function() { refreshWeeklyChart(chart, refreshUrl) }, interval);
+
+}
+
+function refreshWeeklyChart(chart, url) {
+
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(request.responseText);
+
+            chart.series[0].setData(response);
+        }
+    };
+    request.open("GET", url, true);
+    request.send();
+}
+
 function makeStatusList(target, refreshUrl, interval) {
     // Refresh every interval
     setInterval(function() { refreshStatusList(target, refreshUrl) }, interval);

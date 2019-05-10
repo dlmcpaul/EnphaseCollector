@@ -63,6 +63,6 @@ public class EnphaseServiceTest {
 		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.ZERO));
 
 		result = Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1);
-		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.valueOf(16.7000)));
+		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.valueOf(16.6667)));
 	}
 }

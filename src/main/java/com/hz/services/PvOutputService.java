@@ -95,7 +95,7 @@ public class PvOutputService implements PvOutputExportInterface {
 		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 
-		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshSeconds() / 60000), Convertors.convertToWattHours(consumption, properties.getRefreshSeconds() / 60000));
+		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshAsMinutes()), Convertors.convertToWattHours(consumption, properties.getRefreshAsMinutes()));
 		this.updatePower(production.intValue(), consumption.intValue());
 
 		if (readTime.isAfter(nextUpdate)) {
