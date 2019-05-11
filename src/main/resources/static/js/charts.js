@@ -7,7 +7,7 @@ function makeGuageChart(target, properties, refreshUrl, interval) {
     refreshGuageChart(chart, refreshUrl, target);
 
     // Refresh every interval
-    setInterval(function() { refreshGuageChart(chart, refreshUrl, target) }, interval);
+    setInterval(function() { refreshGuageChart(chart, refreshUrl, target); }, interval);
 }
 
 function refreshGuageChart(chart, url, target) {
@@ -18,7 +18,7 @@ function refreshGuageChart(chart, url, target) {
             var point = chart.series[0].points[0];
             point.update(Number(request.responseText));
 
-            element = document.getElementById(target + "_label");
+            var element = document.getElementById(target + "_label");
             if (element !== null) {
                 element.innerHTML = request.responseText + " W";
             }
@@ -36,7 +36,7 @@ function makePvcChart(target, properties, refreshUrl, interval) {
     refreshPvcChart(chart, refreshUrl);
 
     // Refresh every interval
-    setInterval(function() { refreshPvcChart(chart, refreshUrl) }, interval);
+    setInterval(function() { refreshPvcChart(chart, refreshUrl); }, interval);
 
 }
 
@@ -64,7 +64,7 @@ function makeWeeklyChart(target, properties, refreshUrl, interval) {
     refreshWeeklyChart(chart, refreshUrl);
 
     // Refresh every interval
-    setInterval(function() { refreshWeeklyChart(chart, refreshUrl) }, interval);
+    setInterval(function() { refreshWeeklyChart(chart, refreshUrl); }, interval);
 
 }
 
@@ -84,7 +84,7 @@ function refreshWeeklyChart(chart, url) {
 
 function makeStatusList(target, refreshUrl, interval) {
     // Refresh every interval
-    setInterval(function() { refreshStatusList(target, refreshUrl) }, interval);
+    setInterval(function() { refreshStatusList(target, refreshUrl); }, interval);
 }
 
 function refreshStatusList(target, url) {

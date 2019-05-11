@@ -252,8 +252,9 @@ function initLiveCharts(contextPath, refreshInterval) {
     makeGuageChart("production", productionProperties, contextPath + '/production', refreshInterval);
     makeGuageChart("consumption", consumptionProperties, contextPath + '/consumption', refreshInterval);
     makePvcChart("pvc", pvcProperties, contextPath + '/pvc', refreshInterval);
-    makeStatusList("statusList", contextPath + '/refreshStats', refreshInterval)
+    makeStatusList("statusList", contextPath + '/refreshStats', refreshInterval);
 }
+
 function initHistoryCharts(contextPath, refreshInterval) {
     var now = new Date();
 
