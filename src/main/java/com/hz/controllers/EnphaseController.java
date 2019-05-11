@@ -9,8 +9,6 @@ import com.hz.models.database.Event;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,8 +26,6 @@ import java.util.List;
  */
 @Controller
 public class EnphaseController {
-	private static final Logger LOG = LoggerFactory.getLogger(EnphaseController.class);
-
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;

@@ -38,7 +38,7 @@ public class EnphaseService {
 
 	private long lastReadTime = 0L;
 	private int lastStatus = 200;
-	private static int fullReadCount = 0;
+	private int fullReadCount = 0;
 
 	private EnvoyInfo envoyInfo = null;
 	private List<Inventory> inventoryList = null;
