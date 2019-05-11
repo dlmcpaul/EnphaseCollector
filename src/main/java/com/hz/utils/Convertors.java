@@ -1,8 +1,5 @@
 package com.hz.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -10,8 +7,6 @@ public class Convertors {
 
 	private Convertors() {
 	}
-
-	private static final Logger LOG = LoggerFactory.getLogger(Convertors.class);
 
 	public static BigDecimal convertToWattHours(BigDecimal watts, int minutesOfOperation) {
 		// Wh = W * hours of operation
