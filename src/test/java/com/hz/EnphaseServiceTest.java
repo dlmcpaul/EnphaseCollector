@@ -5,6 +5,7 @@ import com.hz.models.envoy.json.Production;
 import com.hz.models.envoy.json.System;
 import com.hz.services.EnphaseService;
 import com.hz.utils.Convertors;
+import com.hz.utils.Validators;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,12 +58,20 @@ public class EnphaseServiceTest {
 
 	@Test
 	public void ConvertorsTest() {
-		BigDecimal result;
+		Assert.assertThat(Convertors.convertToWattHours(BigDecimal.ZERO, 0), Matchers.comparesEqualTo(BigDecimal.ZERO));
+		Assert.assertThat(Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1), Matchers.comparesEqualTo(BigDecimal.valueOf(16.6667)));
+		Assert.assertThat(Convertors.convertToKiloWattHours(10000L, 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0.1667)));
+		Assert.assertThat(Convertors.convertToKiloWattHours(60000L, 1), Matchers.comparesEqualTo(BigDecimal.valueOf(1)));
+	}
 
-		result = Convertors.convertToWattHours(BigDecimal.ZERO, 0);
-		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.ZERO));
+	@Test
+	public void ValidatorsTest() {
+		Assert.assertTrue(Validators.isValidDuration("7days"));
+		Assert.assertTrue(Validators.isValidDuration("2WEeks"));
+		Assert.assertTrue(Validators.isValidDuration("3Months"));
 
-		result = Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1);
-		Assert.assertThat(result, Matchers.comparesEqualTo(BigDecimal.valueOf(16.6667)));
+		Assert.assertFalse(Validators.isValidDuration("23Days"));
+		Assert.assertFalse(Validators.isValidDuration("Days"));
+		Assert.assertFalse(Validators.isValidDuration("3alpha"));
 	}
 }

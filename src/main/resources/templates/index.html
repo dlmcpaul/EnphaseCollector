@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Enphase Solar System</title>
+    <meta name="description" content="Enphase Solar System Visualiser">
+    <title>Enphase Solar System Visualiser</title>
     <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.4/css/bulma.css}"/>
     <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/5.8.1/css/all.css}"/>
     <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
@@ -12,11 +13,11 @@
     <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts-more.js}"></script>
 </head>
 <body class="has-background-light">
-<section class="hero is-info is-bold">
+<section class="hero is-info is-bold" role="banner">
     <div class="hero-body">
         <div class="container">
             <h1 class="title">
-                Enphase Collector
+                Enphase Solar System Visualiser
             </h1>
             <h2 class="subtitle">
                 <i class="fas fa-copyright"></i> David McPaul 2018
@@ -26,13 +27,15 @@
 </section>
 <section class="section is-paddingless has-background-white">
     <div class="container">
-        <div class="tabs is-centered" id="tabs">
+        <div class="tabs is-centered" id="tabs" role="navigation">
             <ul>
                 <li class="is-active" id="live"><a onClick="switchTabs('live')">Live</a></li>
-                <li id="history"><a onClick="switchTabs('history')">History</a></li>
+                <li id="weekly"><a onClick="switchTabs('weekly')">Weekly</a></li>
+                <li id="monthly"><a onClick="switchTabs('monthly')">Monthly</a></li>
+                <li id="quarterly"><a onClick="switchTabs('quarterly')">Quarterly</a></li>
             </ul>
         </div>
-        <div id="live-data">
+        <div id="live-data" role="main">
             <div class="columns is-multiline is-centered">
                 <div data-th-replace="~{guageChartFragment :: guageChart('consumption',@{power.gif},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{guageChartFragment :: guageChart('production',@{sun.jpeg},'Production',${production})}"></div>
@@ -44,16 +47,30 @@
                 </div>
             </div>
         </div>
-        <div class="is-hidden" id="history-data">
+        <div class="is-hidden" id="weekly-data" role="main">
             <div class="columns">
                 <div class="column is-12 is-narrow">
-                    <div id="weekly"></div>
+                    <div id="weekly_graph"></div>
+                </div>
+            </div>
+        </div>
+        <div class="is-hidden" id="monthly-data" role="main">
+            <div class="columns">
+                <div class="column is-12 is-narrow">
+                    <div id="monthly_graph"></div>
+                </div>
+            </div>
+        </div>
+        <div class="is-hidden" id="quarterly-data" role="main">
+            <div class="columns">
+                <div class="column is-12 is-narrow">
+                    <div id="quarterly_graph"></div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<footer class="footer is-paddingless has-background-white">
+<footer class="footer is-paddingless has-background-white" role="contentinfo">
     <div class="container">
         <div class="tabs is-centered">
             <ul>

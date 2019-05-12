@@ -56,19 +56,19 @@ function refreshPvcChart(chart, url) {
     request.send();
 }
 
-function makeWeeklyChart(target, properties, refreshUrl, interval) {
+function makeHistoryChart(target, properties, refreshUrl, interval) {
     // Create Chart
     var chart = new Highcharts.chart(properties);
 
     // Set initial values
-    refreshWeeklyChart(chart, refreshUrl);
+    refreshHistoryChart(chart, refreshUrl);
 
     // Refresh every interval
-    setInterval(function() { refreshWeeklyChart(chart, refreshUrl); }, interval);
+    setInterval(function() { refreshHistoryChart(chart, refreshUrl); }, interval);
 
 }
 
-function refreshWeeklyChart(chart, url) {
+function refreshHistoryChart(chart, url) {
 
     var request = new XMLHttpRequest();
     request.onreadystatechange = function () {

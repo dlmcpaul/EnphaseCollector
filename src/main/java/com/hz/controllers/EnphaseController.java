@@ -9,10 +9,12 @@ import com.hz.models.database.Event;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
+import com.hz.utils.Validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.NumberFormat;
@@ -102,14 +104,15 @@ public class EnphaseController {
 		return pvc;
 	}
 
-	@GetMapping(value = "/weekly", produces = "application/json; charset=UTF-8")
+	@GetMapping(value = "/history", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public List<FloatValue> getWeekly() {
+	public List<FloatValue> getHistory(@RequestParam String duration) {
 		List<FloatValue> values = new ArrayList<>();
 
-		localDBService.getLastWeeksTotals().stream()
-				.forEach(total -> values.add(new FloatValue(total.getDate().atStartOfDay(), Convertors.convertToKiloWattHours(total.getValue(), properties.getRefreshAsMinutes()))));
-
+		if (Validators.isValidDuration(duration)) {
+			localDBService.getLastDurationTotals(duration).stream()
+					.forEach(total -> values.add(new FloatValue(total.getDate().atStartOfDay(), Convertors.convertToKiloWattHours(total.getValue(), properties.getRefreshAsMinutes()))));
+		}
 		return values;
 	}
 

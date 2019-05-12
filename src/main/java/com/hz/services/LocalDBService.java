@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -77,8 +78,8 @@ public class LocalDBService implements LocalExportInterface {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
 	}
 
-	public List<Total> getLastWeeksTotals() {
-		return eventRepository.findDailyTotalProductionAfter(getLastWeek());
+	public List<Total> getLastDurationTotals(String duration) {
+		return eventRepository.findDailyTotalProductionAfter(getFromDuration(duration));
 	}
 
 	public BigDecimal calculateTodaysCost() {
@@ -135,13 +136,12 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	private LocalDateTime getMidnight() {
-		LocalDateTime now = LocalDateTime.now();
-		return now.toLocalDate().atStartOfDay();
+		LocalDate now = LocalDate.now();
+		return now.atStartOfDay();
 	}
 
-	private LocalDateTime getLastWeek() {
-		LocalDateTime now = LocalDateTime.now();
-		return now.plus(-7, ChronoUnit.DAYS).toLocalDate().atStartOfDay();
+	private LocalDateTime getFromDuration(String duration) {
+		LocalDate now = LocalDate.now();
+		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1, ChronoUnit.valueOf(duration.substring(1).toUpperCase())).atStartOfDay();
 	}
-
 }

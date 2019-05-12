@@ -267,7 +267,7 @@ function initHistoryCharts(contextPath, refreshInterval) {
 
     var weeklyProperties = {
         chart: {
-            renderTo: 'weekly',
+            renderTo: 'weekly_graph',
             height: '30%'
         },
         credits: {
@@ -307,5 +307,88 @@ function initHistoryCharts(contextPath, refreshInterval) {
                 data: [ [now.getTime(), 0] ]
             }]
     };
-    makeWeeklyChart("weekly", weeklyProperties, contextPath + '/weekly', refreshInterval);
+    var monthlyProperties = {
+        chart: {
+            renderTo: 'monthly_graph',
+            height: '30%'
+        },
+        credits: {
+            enabled: false
+        },
+        title: {
+            text: 'Last Months Production'
+        },
+        xAxis: {
+            title: {
+                text: 'Last Month'
+            },
+            type: 'datetime', //For time series, x-axis labels will be time
+            labels: {
+                //You can format the label according to your need
+                format: '{value:%d}'
+            },
+            minPadding: 0.05,
+            maxPadding: 0.05
+        },
+        yAxis: {
+            labels: {
+                format: '{value}kW',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'KiloWatts'
+            }
+        },
+        series: [
+            {
+                type: 'column',
+                name: 'production',
+                color: '#55BF3B',
+                data: [ [now.getTime(), 0] ]
+            }]
+    };
+    var quarterlyProperties = {
+        chart: {
+            renderTo: 'quarterly_graph',
+            height: '30%'
+        },
+        credits: {
+            enabled: false
+        },
+        title: {
+            text: 'Last Quarter Production'
+        },
+        xAxis: {
+            title: {
+                text: 'Last Quarter'
+            },
+            type: 'datetime', //For time series, x-axis labels will be time
+            minPadding: 0.05,
+            maxPadding: 0.05
+        },
+        yAxis: {
+            labels: {
+                format: '{value}kW',
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            },
+            title: {
+                text: 'KiloWatts'
+            }
+        },
+        series: [
+            {
+                type: 'column',
+                name: 'production',
+                color: '#55BF3B',
+                data: [ [now.getTime(), 0] ]
+            }]
+    };
+
+    makeHistoryChart("weekly_graph", weeklyProperties, contextPath + '/history?duration=7Days', refreshInterval);
+    makeHistoryChart("monthly_graph", monthlyProperties, contextPath + '/history?duration=1Months', refreshInterval);
+    makeHistoryChart("quarterly_graph", quarterlyProperties, contextPath + '/history?duration=3Months', refreshInterval);
 }
