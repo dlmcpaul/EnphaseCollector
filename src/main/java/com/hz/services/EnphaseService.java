@@ -19,6 +19,7 @@ import org.springframework.xml.transform.StringSource;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -171,8 +172,8 @@ public class EnphaseService {
 	    return serial;
     }
 
-    private void calculateSavings(ArrayList<Metric> metricList, long production, long consumption) {
-	    if (production > consumption) {
+    private void calculateSavings(ArrayList<Metric> metricList, BigDecimal production, BigDecimal consumption) {
+	    if (production.compareTo(consumption) > 0) {
 		    metricList.add(new Metric("solar.excess", production, consumption));
 		    metricList.add(new Metric("solar.savings", consumption));
 	    } else {
@@ -186,8 +187,8 @@ public class EnphaseService {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
 	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
-	    long production = 0;
-	    long consumption = 0;
+	    BigDecimal production = BigDecimal.ZERO;
+		BigDecimal consumption = BigDecimal.ZERO;
 	    if (productionEim.isPresent()) {
 	    	LOG.debug("production {} {}", productionEim.get().getReadingTime(), productionEim.get().getWattsNow());
 		    production = productionEim.get().getWattsNow();

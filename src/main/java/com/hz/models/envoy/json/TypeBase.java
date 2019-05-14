@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * Created by David on 22-Oct-17.
  */
@@ -13,7 +15,7 @@ import lombok.Data;
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
-@JsonSubTypes({
+@JsonSubTypes(value = {
         @JsonSubTypes.Type(value = InvertersType.class, name = "inverters"),
         @JsonSubTypes.Type(value = EimType.class, name = "eim"),
         @JsonSubTypes.Type(value = AcbType.class, name = "acb")
@@ -22,9 +24,9 @@ public abstract class TypeBase {
     private int activeCount;
     private long readingTime;
     @JsonProperty(value="wNow")
-    private int wattsNow;
+    private BigDecimal wattsNow;
     @JsonProperty(value="whLifetime")
-    private long wattsLifetime;
+    private BigDecimal wattsLifetime;
 
     public String getType() {
         int length = this.getClass().getSimpleName().length();

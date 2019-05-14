@@ -2,6 +2,8 @@ package com.hz.metrics;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * Created by David on 23-Oct-17.
  */
@@ -18,5 +20,15 @@ public class Metric {
 	public Metric(String name, float value1, float value2) {
 		this.name = name;
 		this.value = value1 - value2;
+	}
+
+	public Metric(String name, BigDecimal value1, BigDecimal value2) {
+		this.name = name;
+		this.value = value1.subtract(value2).floatValue();
+	}
+
+	public Metric(String name, BigDecimal value) {
+		this.name = name;
+		this.value = value.floatValue() < 10 ? 0 : value.floatValue();
 	}
 }

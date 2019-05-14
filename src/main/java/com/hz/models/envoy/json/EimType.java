@@ -19,7 +19,7 @@ public class EimType extends TypeBase {
 	private BigDecimal rmsVoltage;
 	private BigDecimal reactPwr;
 	private BigDecimal apprntPwr;
-	private int pwrFactor;
+	private BigDecimal pwrFactor;
 	private BigDecimal whToday;
 	private BigDecimal whLastSevenDays;
 	private BigDecimal vahToday;
