@@ -142,6 +142,6 @@ public class LocalDBService implements LocalExportInterface {
 
 	private LocalDateTime getFromDuration(String duration) {
 		LocalDate now = LocalDate.now();
-		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1, ChronoUnit.valueOf(duration.substring(1).toUpperCase())).atStartOfDay();
+		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1L, ChronoUnit.valueOf(duration.substring(1).toUpperCase())).atStartOfDay();
 	}
 }

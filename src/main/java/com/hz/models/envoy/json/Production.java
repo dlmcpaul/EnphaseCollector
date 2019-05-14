@@ -52,7 +52,7 @@ public class Production {
 	}
 
 	@JsonIgnore
-	private Optional<TypeBase> getInverter() {
+	public Optional<TypeBase> getInverter() {
 		return productionList.stream().filter(module -> module.getType().equalsIgnoreCase("inverters")).findFirst();
 	}
 
@@ -68,7 +68,7 @@ public class Production {
 
 	private Optional<EimType> findBymeasurementType(List<TypeBase> list, String measurementType) {
 		return filterToEimType(list).stream()
-				.filter(eim -> eim.getMeasurementType().equalsIgnoreCase(measurementType))
+				.filter(eim -> eim.getMeasurementType() == null || eim.getMeasurementType().equalsIgnoreCase(measurementType))
 				.findFirst();
 	}
 
