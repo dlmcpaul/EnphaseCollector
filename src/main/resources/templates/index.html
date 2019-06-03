@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description" content="Enphase Solar System Visualiser">
     <title>Enphase Solar System Visualiser</title>
-    <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.4/css/bulma.css}"/>
+    <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.4/css/bulma.min.css}"/>
     <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/5.8.1/css/all.css}"/>
     <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
     <link rel="apple-touch-icon" data-th-href="@{sun.jpeg}">
@@ -37,8 +37,8 @@
         </div>
         <div id="live-data" role="main">
             <div class="columns is-multiline is-centered">
-                <div data-th-replace="~{guageChartFragment :: guageChart('consumption',@{power.gif},'Consumption',${consumption})}"></div>
-                <div data-th-replace="~{guageChartFragment :: guageChart('production',@{sun.jpeg},'Production',${production})}"></div>
+                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{power.gif},'Consumption',${consumption})}"></div>
+                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{sun.jpeg},'Production',${production})}"></div>
                 <div data-th-replace="~{statusListFragment :: statusList}"></div>
             </div>
             <div class="columns">
