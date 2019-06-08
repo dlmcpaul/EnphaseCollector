@@ -1,5 +1,5 @@
 FROM azul/zulu-openjdk-alpine:11 as builder
-MAINTAINER David McPaul <dlmcpaul@gmail.com>
+LABEL maintainer="dlmcpaul@gmail.com"
 
 ENV JAVA_MINIMAL=/opt/jre
 
