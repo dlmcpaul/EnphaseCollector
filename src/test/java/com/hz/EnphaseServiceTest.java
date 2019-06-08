@@ -4,6 +4,7 @@ import com.hz.models.envoy.json.EimType;
 import com.hz.models.envoy.json.Production;
 import com.hz.models.envoy.json.System;
 import com.hz.services.EnphaseService;
+import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
 import org.hamcrest.Matchers;
@@ -73,5 +74,10 @@ public class EnphaseServiceTest {
 		Assert.assertFalse(Validators.isValidDuration("23Days"));
 		Assert.assertFalse(Validators.isValidDuration("Days"));
 		Assert.assertFalse(Validators.isValidDuration("3alpha"));
+	}
+
+	@Test
+	public void CalculatorsTest() {
+		Assert.assertThat(Calculators.calculateFinancial(6000L, 0.07, "test", 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0.007)));
 	}
 }
