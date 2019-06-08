@@ -4,4 +4,5 @@ import com.hz.models.database.EnvoySystem;
 
 public interface LocalExportInterface extends ExportServiceInterface {
 	public void sendSystemInfo(EnvoySystem envoySystem);
+	public void summariseEvents();
 }

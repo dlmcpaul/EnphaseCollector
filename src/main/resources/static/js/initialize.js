@@ -1,8 +1,12 @@
+/*global Highcharts, makeGaugeChart, makePvcChart, makeHistoryChart, makeStatusList*/
+
 function initLiveCharts(contextPath, refreshInterval) {
+    "use strict";
+
     var consumptionProperties = {
         chart: {
-            renderTo: 'consumption',
-            type: 'gauge'
+            renderTo: "consumption",
+            type: "gauge"
         },
         title: {
             text: null
@@ -17,80 +21,80 @@ function initLiveCharts(contextPath, refreshInterval) {
                 backgroundColor: {
                     linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
-                        [0, '#FFF'],
-                        [1, '#333']
+                        [0, "#FFF"],
+                        [1, "#333"]
                     ]
                 },
                 borderWidth: 0,
-                outerRadius: '109%'
+                outerRadius: "109%"
             }, {
                 backgroundColor: {
                     linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
-                        [0, '#333'],
-                        [1, '#FFF']
+                        [0, "#333"],
+                        [1, "#FFF"]
                     ]
                 },
                 borderWidth: 1,
-                outerRadius: '107%'
+                outerRadius: "107%"
             }, {
                 // default background
             }, {
-                backgroundColor: '#DDD',
+                backgroundColor: "#DDD",
                 borderWidth: 0,
-                outerRadius: '105%',
-                innerRadius: '103%'
+                outerRadius: "105%",
+                innerRadius: "103%"
             }]
         },
         yAxis: {
             min: 0,
             max: 6000,
 
-            minorTickInterval: 'auto',
+            minorTickInterval: "auto",
             minorTickWidth: 1,
             minorTickLength: 10,
-            minorTickPosition: 'inside',
-            minorTickColor: '#666',
+            minorTickPosition: "inside",
+            minorTickColor: "#666",
 
             tickPixelInterval: 30,
             tickWidth: 2,
-            tickPosition: 'inside',
+            tickPosition: "inside",
             tickLength: 10,
-            tickColor: '#666',
+            tickColor: "#666",
             labels: {
                 step: 2,
-                rotation: 'auto'
+                rotation: "auto"
             },
             title: {
-                text: 'W'
+                text: "W"
             },
             plotBands: [{
                 from: 0,
                 to: 1500,
-                color: '#55BF3B' // green
+                color: "#55BF3B" // green
             }, {
                 from: 1500,
                 to: 3000,
-                color: '#DDDF0D' // yellow
+                color: "#DDDF0D" // yellow
             }, {
                 from: 3000,
                 to: 6000,
-                color: '#DF5353' // red
+                color: "#DF5353" // red
             }]
         },
         series: [{
-            name: 'consumption',
+            name: "consumption",
             data: [0],
             tooltip: {
-                valueSuffix: ' W'
+                valueSuffix: " W"
             }
         }]
     };
 
     var productionProperties = {
         chart: {
-            renderTo: 'production',
-            type: 'gauge'
+            renderTo: "production",
+            type: "gauge"
         },
         credits: {
             enabled: false
@@ -105,72 +109,72 @@ function initLiveCharts(contextPath, refreshInterval) {
                 backgroundColor: {
                     linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
-                        [0, '#FFF'],
-                        [1, '#333']
+                        [0, "#FFF"],
+                        [1, "#333"]
                     ]
                 },
                 borderWidth: 0,
-                outerRadius: '109%'
+                outerRadius: "109%"
             }, {
                 backgroundColor: {
                     linearGradient: {x1: 0, y1: 0, x2: 0, y2: 1},
                     stops: [
-                        [0, '#333'],
-                        [1, '#FFF']
+                        [0, "#333"],
+                        [1, "#FFF"]
                     ]
                 },
                 borderWidth: 1,
-                outerRadius: '107%'
+                outerRadius: "107%"
             }, {
                 // default background
             }, {
-                backgroundColor: '#DDD',
+                backgroundColor: "#DDD",
                 borderWidth: 0,
-                outerRadius: '105%',
-                innerRadius: '103%'
+                outerRadius: "105%",
+                innerRadius: "103%"
             }]
         },
         yAxis: {
             min: 0,
             max: 5000,
 
-            minorTickInterval: 'auto',
+            minorTickInterval: "auto",
             minorTickWidth: 1,
             minorTickLength: 10,
-            minorTickPosition: 'inside',
-            minorTickColor: '#666',
+            minorTickPosition: "inside",
+            minorTickColor: "#666",
 
             tickPixelInterval: 30,
             tickWidth: 2,
-            tickPosition: 'inside',
+            tickPosition: "inside",
             tickLength: 10,
-            tickColor: '#666',
+            tickColor: "#666",
             labels: {
                 step: 2,
-                rotation: 'auto'
+                rotation: "auto"
             },
             title: {
-                text: 'W'
+                text: "W"
             },
             plotBands: [{
                 from: 0,
                 to: 1000,
-                color: '#DF5353' // red
+                color: "#DF5353" // red
             }, {
                 from: 1000,
                 to: 2000,
-                color: '#DDDF0D' // yellow
+                color: "#DDDF0D" // yellow
             }, {
                 from: 2000,
                 to: 5000,
-                color: '#55BF3B' // green
+                color: "#55BF3B" // green
             }]
         },
         series: [{
-            name: 'production',
+            name: "production",
             data: [0],
             tooltip: {
-                valueSuffix: ' W'
+                valueSuffix: " W"
             }
         }]
     };
@@ -186,76 +190,78 @@ function initLiveCharts(contextPath, refreshInterval) {
 
     var pvcProperties = {
         chart: {
-            renderTo: 'pvc',
-            height: '30%'
+            renderTo: "pvc",
+            height: "30%"
         },
         credits: {
             enabled: false
         },
         title: {
-            text: 'Production vs Consumption'
+            text: "Production vs Consumption"
         },
         xAxis: {
             title: {
-                text: 'Today'
+                text: "Today"
             },
-            type: 'datetime', //For time series, x-axis labels will be time
+            type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                //You can format the label according to your need
-                format: '{value:%H}'
+                format: "{value:%H}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
         },
         yAxis: {
             labels: {
-                format: '{value}W',
+                format: "{value}W",
                 style: {
                     color: Highcharts.getOptions().colors[1]
                 }
             },
             title: {
-                text: 'Watts'
+                text: "Watts"
             }
         },
         legend: {
-            layout: 'vertical',
-            align: 'left',
+            layout: "vertical",
+            align: "left",
             x: 120,
-            verticalAlign: 'top',
+            verticalAlign: "top",
             y: 50,
             floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || 'rgba(255,255,255,0.25)'
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || "rgba(255,255,255,0.25)"
         },
         series: [
             {
-                type: 'line',
-                name: 'production',
-                color: '#55BF3B',
+                name: "production",
+                type: "line",
+                color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
             {
-                type: 'line',
-                name: 'consumption',
-                color: '#DDDF0D',
+                name: "consumption",
+                type: "line",
+                color: "#DDDF0D",
                 data: [ [now.getTime(), 0] ]
             },
             {
-                type: 'area',
-                name: 'grid',
-                color: '#DF5353',
+                name: "grid",
+                type: "area",
+                color: "#DF5353",
                 fillOpacity: 0.2,
                 data: [ [now.getTime(), 0] ]
-            }]
+            }
+        ]
     };
 
-    makeGuageChart("production", productionProperties, contextPath + '/production', refreshInterval);
-    makeGuageChart("consumption", consumptionProperties, contextPath + '/consumption', refreshInterval);
-    makePvcChart("pvc", pvcProperties, contextPath + '/pvc', refreshInterval);
-    makeStatusList("statusList", contextPath + '/refreshStats', refreshInterval);
+    makeGaugeChart("production", productionProperties, contextPath + "/production", refreshInterval);
+    makeGaugeChart("consumption", consumptionProperties, contextPath + "/consumption", refreshInterval);
+    makePvcChart("pvc", pvcProperties, contextPath + "/pvc", refreshInterval);
+    makeStatusList("statusList", contextPath + "/refreshStats", refreshInterval);
 }
 
-function initHistoryCharts(contextPath, refreshInterval) {
+function initHistoryCharts() {
+    "use strict";
+
     var now = new Date();
 
     //Disable use of UTC
@@ -267,128 +273,165 @@ function initHistoryCharts(contextPath, refreshInterval) {
 
     var weeklyProperties = {
         chart: {
-            renderTo: 'weekly_graph',
-            height: '30%'
+            renderTo: "weekly_graph",
+            height: "30%"
         },
         credits: {
             enabled: false
         },
+        plotOptions: {
+            column: {
+                stacking: "percent"
+            }
+        },
         title: {
-            text: 'Last Weeks Production'
+            text: ""
         },
         xAxis: {
             title: {
-                text: 'Last Week'
+                text: "Last 7 Days"
             },
-            type: 'datetime', //For time series, x-axis labels will be time
+            type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                //You can format the label according to your need
-                format: '{value:%d}'
+                format: "{value:%d}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
         },
         yAxis: {
-            labels: {
-                format: '{value}kW',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
-            },
+            min: 0,
             title: {
-                text: 'KiloWatts'
+                text: "Breakdown"
             }
         },
         series: [
             {
-                type: 'column',
-                name: 'production',
-                color: '#55BF3B',
+                name: "export",
+                type: "column",
+                color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
-            }]
+            },
+            {
+                name: "grid",
+                type: "column",
+                color: "#FF0000",
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: "solar",
+                type: "column",
+                color: "#55BF3B",
+                data: [ [now.getTime(), 0] ]
+            }
+        ]
     };
     var monthlyProperties = {
         chart: {
-            renderTo: 'monthly_graph',
-            height: '30%'
+            renderTo: "monthly_graph",
+            height: "30%"
         },
         credits: {
             enabled: false
         },
+        plotOptions: {
+            column: {
+                stacking: "percent"
+            }
+        },
         title: {
-            text: 'Last Months Production'
+            text: ""
         },
         xAxis: {
             title: {
-                text: 'Last Month'
+                text: "Last Month"
             },
-            type: 'datetime', //For time series, x-axis labels will be time
+            type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                //You can format the label according to your need
-                format: '{value:%d}'
+                format: "{value:%d}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
         },
         yAxis: {
-            labels: {
-                format: '{value}kW',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
-            },
+            min: 0,
             title: {
-                text: 'KiloWatts'
+                text: "Breakdown"
             }
         },
         series: [
             {
-                type: 'column',
-                name: 'production',
-                color: '#55BF3B',
+                name: "solar",
+                type: "column",
+                color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
-            }]
+            },
+            {
+                name: "grid",
+                type: "column",
+                color: "#FF0000",
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: "export",
+                type: "column",
+                color: "#0000FF",
+                data: [ [now.getTime(), 0] ]
+            }
+        ]
     };
     var quarterlyProperties = {
         chart: {
-            renderTo: 'quarterly_graph',
-            height: '30%'
+            renderTo: "quarterly_graph",
+            height: "30%"
         },
         credits: {
             enabled: false
         },
+        plotOptions: {
+            column: {
+                stacking: "percent"
+            }
+        },
         title: {
-            text: 'Last Quarter Production'
+            text: ""
         },
         xAxis: {
             title: {
-                text: 'Last Quarter'
+                text: "Last Quarter"
             },
-            type: 'datetime', //For time series, x-axis labels will be time
+            type: "datetime", //For time series, x-axis labels will be time
             minPadding: 0.05,
             maxPadding: 0.05
         },
         yAxis: {
-            labels: {
-                format: '{value}kW',
-                style: {
-                    color: Highcharts.getOptions().colors[1]
-                }
-            },
+            min: 0,
             title: {
-                text: 'KiloWatts'
+                text: "Breakdown"
             }
         },
         series: [
             {
-                type: 'column',
-                name: 'production',
-                color: '#55BF3B',
+                name: "solar",
+                type: "column",
+                color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
-            }]
+            },
+            {
+                name: "grid",
+                type: "column",
+                color: "#FF0000",
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: "export",
+                type: "column",
+                color: "#0000FF",
+                data: [ [now.getTime(), 0] ]
+            }
+        ]
     };
 
-    makeHistoryChart("weekly_graph", weeklyProperties, contextPath + '/history?duration=7Days', refreshInterval);
-    makeHistoryChart("monthly_graph", monthlyProperties, contextPath + '/history?duration=1Months', refreshInterval);
-    makeHistoryChart("quarterly_graph", quarterlyProperties, contextPath + '/history?duration=3Months', refreshInterval);
+    makeHistoryChart("weekly_graph", weeklyProperties);
+    makeHistoryChart("monthly_graph", monthlyProperties);
+    makeHistoryChart("quarterly_graph", quarterlyProperties);
 }

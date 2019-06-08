@@ -78,6 +78,14 @@ public class EnphaseService {
     	return this.lastStatus == 200;
 	}
 
+	public LocalDateTime getLastReadTime() {
+    	if (lastReadTime > 0L) {
+    		return LocalDateTime.ofInstant(Instant.ofEpochMilli(lastReadTime * 1000L), ZoneId.systemDefault());
+	    }
+
+    	return LocalDateTime.now();
+	}
+
 	public String getSoftwareVersion() {
     	this.getControllerData();
     	if (envoyInfo != null) {

@@ -13,12 +13,12 @@ import java.util.List;
 public class PvC {
 	List<IntValue> production = new ArrayList<>();
 	List<IntValue> consumption = new ArrayList<>();
-	List<IntValue> gridimport = new ArrayList<>();
+	List<IntValue> gridImport = new ArrayList<>();
 
 	public void addEvent(Event event) {
 		consumption.add(new IntValue(event.getTime(), event.getConsumption().multiply(BigDecimal.valueOf(-1))));
 		production.add(new IntValue(event.getTime(), event.getProduction()));
-		gridimport.add(new IntValue(event.getTime(), calculateDiff(event.getProduction(),event.getConsumption())));
+		gridImport.add(new IntValue(event.getTime(), calculateDiff(event.getProduction(),event.getConsumption())));
 	}
 
 	private BigDecimal calculateDiff(BigDecimal production, BigDecimal consumption) {

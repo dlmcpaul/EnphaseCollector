@@ -40,6 +40,17 @@ public class OutputManager {
 		this.gather();
 	}
 
+	// Summarise the Event table at 5 minutes past midnight
+	@Scheduled(cron="0 5 0 * * ?")
+	public void summariseEvents() {
+		LOG.info("Summarising Event table");
+		try {
+			localExportService.summariseEvents();
+		} catch (Exception e) {
+			LOG.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
+		}
+	}
+
 	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
 	public void gather() {
 		try {

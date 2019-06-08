@@ -1,15 +1,18 @@
 package com.hz.controllers;
 
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.controllers.models.FloatValue;
+import com.hz.controllers.models.History;
 import com.hz.controllers.models.PvC;
 import com.hz.controllers.models.Status;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
+import com.hz.models.database.Summary;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +31,8 @@ import java.util.List;
  */
 @Controller
 public class EnphaseController {
+	private static final Logger LOG = LoggerFactory.getLogger(EnphaseController.class);
+
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
@@ -41,44 +46,59 @@ public class EnphaseController {
 
 	private List<Status> populateStatusList() {
 		ArrayList<Status> statusList = new ArrayList<>();
-		EnvoySystem envoySystem = localDBService.getSystemInfo();
-		NumberFormat currency = NumberFormat.getCurrencyInstance();
-		NumberFormat number = NumberFormat.getNumberInstance();
+		try {
+			EnvoySystem envoySystem = localDBService.getSystemInfo();
+			NumberFormat currency = NumberFormat.getCurrencyInstance();
+			NumberFormat number = NumberFormat.getNumberInstance();
 
-		statusList.add(new Status("fas fa-solar-panel","Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
-		if (envoySystem.isWifi()) {
-			statusList.add(new Status("fas fa-wifi", "Home network connection", "Wifi"));
-		} else {
-			statusList.add(new Status("fas fa-network-wired", "Home network connection", "LAN"));
+			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
+			if (envoySystem.isWifi()) {
+				statusList.add(new Status("fas fa-wifi", "Home network connection", "Wifi"));
+			} else {
+				statusList.add(new Status("fas fa-network-wired", "Home network connection", "LAN"));
+			}
+			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
+
+			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
+			statusList.add(new Status("fas fa-dollar-sign", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
+			statusList.add(new Status("fas fa-dollar-sign", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+			statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
+			statusList.add(new Status("fas fa-dollar-sign", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
+
+			statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
+			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
+			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
+			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
+			if (enphaseService.isOk()) {
+				statusList.add(new Status("fas fa-rss", "Enphase data collected at", enphaseService.getLastReadTime().format(timeFormatter)));
+			} else {
+				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", enphaseService.getLastReadTime().format(timeFormatter)));
+			}
+
+			Collections.shuffle(statusList);
+
+			return statusList.subList(0, 9);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
 		}
-		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-		statusList.add(new Status("fas fa-broadcast-tower","Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
-		statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
-		statusList.add(new Status("fas fa-dollar-sign", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
-		statusList.add(new Status("fas fa-dollar-sign", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
-		statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
-		statusList.add(new Status("fas fa-dollar-sign", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
-
-		statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
-		statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
-		statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
-		statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
-
-		Collections.shuffle(statusList);
-
-		return statusList.subList(0,8);
+		return statusList;
 	}
 
 	// Generate main page from template
 	@GetMapping("/")
 	public String home(Model model) {
-		model.addAttribute("consumption", localDBService.getLastEvent().getConsumption().intValue());
-		model.addAttribute("production", localDBService.getLastEvent().getProduction().intValue());
-		model.addAttribute("software_version", enphaseService.getSoftwareVersion());
-		model.addAttribute("serial_number", enphaseService.getSerialNumber());
-		model.addAttribute("refresh_interval", properties.getRefreshSeconds());
-		model.addAttribute("statusList", this.populateStatusList());
+		try {
+			model.addAttribute("consumption", localDBService.getLastEvent().getConsumption().intValue());
+			model.addAttribute("production", localDBService.getLastEvent().getProduction().intValue());
+			model.addAttribute("software_version", enphaseService.getSoftwareVersion());
+			model.addAttribute("serial_number", enphaseService.getSerialNumber());
+			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
+			model.addAttribute("statusList", this.populateStatusList());
+		} catch (Exception e) {
+			LOG.error(e.getMessage(),e);
+		}
 		return "index";
 	}
 
@@ -91,7 +111,13 @@ public class EnphaseController {
 	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")
 	@ResponseBody
 	public Event update() {
-		return localDBService.getLastEvent();
+		try {
+			return localDBService.getLastEvent();
+		} catch (Exception e) {
+			LOG.error("Exception: {}", e.getMessage());
+		}
+
+		return new Event();
 	}
 
 	@GetMapping(value = "/pvc", produces = "application/json; charset=UTF-8")
@@ -99,33 +125,54 @@ public class EnphaseController {
 	public PvC getPvc() {
 		PvC pvc = new PvC();
 
-		localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
-
+		try {
+			localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
+		} catch (Exception e) {
+			LOG.error("Exception: {}", e.getMessage());
+		}
 		return pvc;
 	}
 
 	@GetMapping(value = "/history", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public List<FloatValue> getHistory(@RequestParam String duration) {
-		List<FloatValue> values = new ArrayList<>();
+	public History getHistory(@RequestParam String duration) {
+		History result = new History();
 
 		if (Validators.isValidDuration(duration)) {
-			localDBService.getLastDurationTotals(duration).stream()
-					.forEach(total -> values.add(new FloatValue(total.getDate().atStartOfDay(), Convertors.convertToKiloWattHours(total.getValue(), properties.getRefreshAsMinutes()))));
+			try {
+				localDBService.getLastDurationTotals(duration).stream()
+						.forEach(total -> result.addSummary(new Summary(total.getDate(),
+								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
+								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
+								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
+								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes()))));
+			} catch (Exception e) {
+				LOG.error("Exception: {}", e.getMessage());
+			}
 		}
-		return values;
+		return result;
 	}
 
 	@GetMapping(value = "/production", produces = "application/json; charset=UTF-8")
 	@ResponseBody
 	public Integer production() {
-		return localDBService.getLastEvent().getProduction().intValue();
+		try {
+			return localDBService.getLastEvent().getProduction().intValue();
+		} catch (Exception e) {
+			LOG.error("Exception: {}", e.getMessage());
+		}
+		return Integer.valueOf(0);
 	}
 
 	@GetMapping(value = "/consumption", produces = "application/json; charset=UTF-8")
 	@ResponseBody
 	public Integer consumption() {
-		return localDBService.getLastEvent().getConsumption().intValue();
+		try {
+			return localDBService.getLastEvent().getConsumption().intValue();
+		} catch (Exception e) {
+			LOG.error("Exception: {}", e.getMessage());
+		}
+		return Integer.valueOf(0);
 	}
 
 }

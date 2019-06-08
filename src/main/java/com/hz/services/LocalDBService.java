@@ -4,19 +4,18 @@ import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.interfaces.EnvoySystemRepository;
 import com.hz.interfaces.EventRepository;
 import com.hz.interfaces.LocalExportInterface;
+import com.hz.interfaces.SummaryRepository;
 import com.hz.metrics.Metric;
-import com.hz.models.database.EnvoySystem;
-import com.hz.models.database.Event;
-import com.hz.models.database.Panel;
-import com.hz.models.database.Total;
+import com.hz.models.database.*;
+import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -30,13 +29,15 @@ public class LocalDBService implements LocalExportInterface {
 
 	private final EnvoySystemRepository envoySystemRepository;
 	private final EventRepository eventRepository;
+	private final SummaryRepository summaryRepository;
 	private final EnphaseCollectorProperties properties;
 
 	@Autowired
-	public LocalDBService(EnphaseCollectorProperties properties, EnvoySystemRepository envoySystemRepository, EventRepository eventRepository) {
+	public LocalDBService(EnphaseCollectorProperties properties, EnvoySystemRepository envoySystemRepository, EventRepository eventRepository, SummaryRepository summaryRepository) {
 		this.properties = properties;
 		this.envoySystemRepository = envoySystemRepository;
 		this.eventRepository = eventRepository;
+		this.summaryRepository = summaryRepository;
 	}
 
 	@Override
@@ -55,13 +56,34 @@ public class LocalDBService implements LocalExportInterface {
 		eventRepository.save(event);
 	}
 
-	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
-		return metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(name)).findFirst();
-	}
-
 	@Override
 	public void sendSystemInfo(EnvoySystem envoySystem) {
 		envoySystemRepository.save(envoySystem);
+	}
+
+	/*
+	Summarise each day into production, consumption, grid import and grid export
+	 */
+	@Transactional
+	public void summariseEvents() {
+		List<DailySummary> dailies = eventRepository.findAllBefore(getMidnight());
+		List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(getMidnight());
+		List<Total> gridExports = eventRepository.findAllExcessProductionBefore(getMidnight());
+
+		LOG.info("Storing {} summary records", dailies.size());
+		dailies.stream().forEach(daily -> gridImports.stream().
+			filter(gridImport -> daily.getDate().isEqual(gridImport.getDate())).
+			findFirst().
+			ifPresent(gridImportMatch -> gridExports.stream().
+				filter(gridExport -> daily.getDate().isEqual(gridExport.getDate())).
+				findFirst().
+				ifPresent(gridExportMatch -> summaryRepository.save(new Summary(daily, gridImportMatch, gridExportMatch)))));
+
+		eventRepository.deleteEventsByTimeBefore(getMidnight());
+	}
+
+	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
+		return metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(name)).findFirst();
 	}
 
 	public EnvoySystem getSystemInfo() {
@@ -78,22 +100,22 @@ public class LocalDBService implements LocalExportInterface {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
 	}
 
-	public List<Total> getLastDurationTotals(String duration) {
-		return eventRepository.findDailyTotalProductionAfter(getFromDuration(duration));
+	public List<Summary> getLastDurationTotals(String duration) {
+		return summaryRepository.findSummeriesByDateAfter(getFromDuration(duration));
 	}
 
 	public BigDecimal calculateTodaysCost() {
-		return calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), properties.getChargePerKiloWatt(), "Cost");
+		return Calculators.calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), properties.getChargePerKiloWatt(), "Cost", properties.getRefreshAsMinutes());
 	}
 
 	public BigDecimal calculateTodaysPayment() {
-		return calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), properties.getPaymentPerKiloWatt(), "Payment");
+		return Calculators.calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), properties.getPaymentPerKiloWatt(), "Payment", properties.getRefreshAsMinutes());
 	}
 
 	public BigDecimal calculateTodaysSavings() {
 		Long totalWatts = eventRepository.findTotalProductionAfter(getMidnight());
 		Long excessWatts = eventRepository.findExcessProductionAfter(getMidnight());
-		return calculateFinancial( totalWatts - excessWatts , properties.getChargePerKiloWatt(), "Savings");
+		return Calculators.calculateFinancial( totalWatts - excessWatts , properties.getChargePerKiloWatt(), "Savings", properties.getRefreshAsMinutes());
 	}
 
 	public Long calculateMaxProduction() {
@@ -115,33 +137,13 @@ public class LocalDBService implements LocalExportInterface {
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
-	private BigDecimal calculateFinancial(Long recordedWatts, double price, String type) {
-
-		BigDecimal watts = BigDecimal.ZERO;
-		final NumberFormat numberInstance = NumberFormat.getNumberInstance();
-		final NumberFormat currencyInstance = NumberFormat.getCurrencyInstance();
-
-		if (recordedWatts > 0) {
-			watts = BigDecimal.valueOf(recordedWatts);
-		}
-
-		BigDecimal kiloWattHours = Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
-
-		// Convert to dollars cost = KWh * price per kilowatt
-		BigDecimal moneyValue = kiloWattHours.multiply(BigDecimal.valueOf(price));
-
-		LOG.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);		// NOSONAR
-
-		return moneyValue;
-	}
-
 	private LocalDateTime getMidnight() {
 		LocalDate now = LocalDate.now();
 		return now.atStartOfDay();
 	}
 
-	private LocalDateTime getFromDuration(String duration) {
+	private LocalDate getFromDuration(String duration) {
 		LocalDate now = LocalDate.now();
-		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1L, ChronoUnit.valueOf(duration.substring(1).toUpperCase())).atStartOfDay();
+		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1L, ChronoUnit.valueOf(duration.substring(1).toUpperCase()));
 	}
 }

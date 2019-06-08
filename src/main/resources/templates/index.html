@@ -9,8 +9,6 @@
     <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/5.8.1/css/all.css}"/>
     <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
     <link rel="apple-touch-icon" data-th-href="@{sun.jpeg}">
-    <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts.js}"></script>
-    <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts-more.js}"></script>
 </head>
 <body class="has-background-light">
 <section class="hero is-info is-bold" role="banner">
@@ -30,9 +28,9 @@
         <div class="tabs is-centered" id="tabs" role="navigation">
             <ul>
                 <li class="is-active" id="live"><a onClick="switchTabs('live')">Live</a></li>
-                <li id="weekly"><a onClick="switchTabs('weekly')">Weekly</a></li>
-                <li id="monthly"><a onClick="switchTabs('monthly')">Monthly</a></li>
-                <li id="quarterly"><a onClick="switchTabs('quarterly')">Quarterly</a></li>
+                <li id="weekly"><a data-th-onClick="switchTabs('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Weekly</a></li>
+                <li id="monthly"><a data-th-onClick="switchTabs('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Monthly</a></li>
+                <li id="quarterly"><a data-th-onClick="switchTabs('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarterly</a></li>
             </ul>
         </div>
         <div id="live-data" role="main">
@@ -90,12 +88,14 @@
         </div>
     </div>
 </footer>
+<script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts.js}"></script>
+<script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts-more.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
-    initHistoryCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
+    initHistoryCharts();
 </script>
 </body>
 </html>
