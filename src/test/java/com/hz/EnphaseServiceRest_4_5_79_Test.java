@@ -23,15 +23,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/enphase")
+@AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D4.5.79")
 @ActiveProfiles("testing")
-public class EnphaseServiceRestTest {
+public class EnphaseServiceRest_4_5_79_Test {
 
 	@TestConfiguration
 	static class EmployeeServiceImplTestContextConfiguration {
@@ -84,6 +85,8 @@ public class EnphaseServiceRestTest {
 		Assert.assertThat(this.enphaseService.getSoftwareVersion(), Matchers.equalTo("D4.5.79"));
 		Assert.assertThat(this.enphaseService.getSerialNumber(), Matchers.equalTo("121703XXXXXX"));
 		Assert.assertThat(system.get().getProduction().getMicroInvertorsList().size(), Matchers.equalTo(16));
+		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsLifetime(), Matchers.comparesEqualTo(BigDecimal.valueOf(13337263.955)));
+		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsNow(), Matchers.comparesEqualTo(BigDecimal.valueOf(1.326)));
 		Assert.assertThat(system.get().getProduction().getBatteryList().size(), Matchers.equalTo(0));
 		Assert.assertThat(this.enphaseService.isOk(), Matchers.equalTo(true));
 

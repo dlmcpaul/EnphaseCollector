@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/home.json",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"software_build_epoch\":1464913042,\"is_nonvoy\":false,\"db_size\":\"14 MB\",\"db_percent_full\":\"3\",\"timezone\":\"US/Eastern\",\"current_date\":\"05/13/2019\",\"current_time\":\"19:55\",\"network\":{\"web_comm\":true,\"ever_reported_to_enlighten\":true,\"last_enlighten_report_time\":1557774153,\"primary_interface\":\"ppp0\",\"interfaces\":[{\"signal_strength\":25,\"signal_strength_max\":31,\"network\":true,\"type\":\"cellular\",\"interface\":\"ppp0\",\"dhcp\":true,\"ip\":\"10.44.102.163\",\"carrier\":true},{\"type\":\"ethernet\",\"interface\":\"eth0\",\"mac\":\"00:1D:C0:66:6E:C5\",\"dhcp\":true,\"ip\":\"169.254.120.1\",\"signal_strength\":0,\"signal_strength_max\":1,\"carrier\":false},{\"signal_strength\":3,\"signal_strength_max\":5,\"type\":\"wifi\",\"interface\":\"wlan0\",\"mac\":\"68:9E:19:19:3E:84\",\"dhcp\":true,\"ip\":\"192.168.2.158\",\"carrier\":true,\"supported\":true,\"present\":true,\"configured\":true,\"status\":\"connected\"}]},\"comm\":{\"num\":20,\"level\":5},\"alerts\":[],\"update_status\":\"satisfied\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

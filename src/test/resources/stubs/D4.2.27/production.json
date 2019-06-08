@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/production.json?details=1",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"production\":[{\"type\":\"inverters\",\"wNow\":1,\"whLifetime\":12653472.193611111,\"readingTime\":1557791836,\"activeCount\":20},{\"type\":\"eim\",\"activeCount\":1,\"whLifetime\":12605195.311,\"whLastSevenDays\":158680.311,\"whToday\":13499.311,\"wNow\":-1.707,\"rmsCurrent\":2.322,\"rmsVoltage\":242.506,\"reactPwr\":272.909,\"apprntPwr\":281.518,\"pwrFactor\":-0.01,\"readingTime\":1557791836}],\"consumption\":[{\"type\":\"eim\",\"activeCount\":1,\"whLifetime\":12604234.122,\"whLastSevenDays\":158671.122,\"whToday\":13498.122,\"wNow\":-1.707,\"varhLeadToday\":1.195,\"varhLagToday\":4704.803,\"vahToday\":683.805,\"varhLeadLifetime\":4742.195,\"varhLagLifetime\":6193093.803,\"vahLifetime\":530587.805,\"rmsCurrent\":2.599,\"rmsVoltage\":242.49,\"reactPwr\":272.49,\"apprntPwr\":630.211,\"pwrFactor\":-0.0,\"readingTime\":1557791836}]}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
