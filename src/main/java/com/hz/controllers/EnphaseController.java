@@ -80,7 +80,7 @@ public class EnphaseController {
 
 			return statusList.subList(0, 9);
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("populateStatusList Exception: {} {}", e.getMessage(), e);
 		}
 
 		return statusList;
@@ -97,7 +97,7 @@ public class EnphaseController {
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 		} catch (Exception e) {
-			LOG.error(e.getMessage(),e);
+			LOG.error("index Page Exception {} {}", e.getMessage(), e);
 		}
 		return "index";
 	}
@@ -110,11 +110,11 @@ public class EnphaseController {
 
 	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public Event update() {
+	public Event getEvent() {
 		try {
 			return localDBService.getLastEvent();
 		} catch (Exception e) {
-			LOG.error("Exception: {}", e.getMessage());
+			LOG.error("getEvent Exception: {} {}", e.getMessage(), e);
 		}
 
 		return new Event();
@@ -128,7 +128,7 @@ public class EnphaseController {
 		try {
 			localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
 		} catch (Exception e) {
-			LOG.error("Exception: {}", e.getMessage());
+			LOG.error("getPvc Exception: {} {}", e.getMessage(), e);
 		}
 		return pvc;
 	}
@@ -147,7 +147,7 @@ public class EnphaseController {
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes()))));
 			} catch (Exception e) {
-				LOG.error("Exception: {}", e.getMessage());
+				LOG.error("getHistory Exception: {} {}", e.getMessage(), e);
 			}
 		}
 		return result;
@@ -155,22 +155,22 @@ public class EnphaseController {
 
 	@GetMapping(value = "/production", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public Integer production() {
+	public Integer getProduction() {
 		try {
 			return localDBService.getLastEvent().getProduction().intValue();
 		} catch (Exception e) {
-			LOG.error("Exception: {}", e.getMessage());
+			LOG.error("getProduction Exception: {} {}", e.getMessage(), e);
 		}
 		return Integer.valueOf(0);
 	}
 
 	@GetMapping(value = "/consumption", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public Integer consumption() {
+	public Integer getConsumption() {
 		try {
 			return localDBService.getLastEvent().getConsumption().intValue();
 		} catch (Exception e) {
-			LOG.error("Exception: {}", e.getMessage());
+			LOG.error("getConsumption Exception: {} {}", e.getMessage(), e);
 		}
 		return Integer.valueOf(0);
 	}
