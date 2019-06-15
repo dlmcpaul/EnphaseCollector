@@ -79,5 +79,6 @@ public class EnphaseServiceTest {
 	@Test
 	public void CalculatorsTest() {
 		Assert.assertThat(Calculators.calculateFinancial(6000L, 0.07, "test", 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0.007)));
+		Assert.assertThat(Calculators.calculateFinancial(0L, 0.07, "test", 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0)));
 	}
 }
