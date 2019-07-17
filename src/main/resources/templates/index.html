@@ -51,6 +51,10 @@
                     <div id="weekly_graph"></div>
                 </div>
             </div>
+            <div class="buttons has-addons">
+                <span id="weeklyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('weekly')">Normal</span>
+                <span id="weeklyPercentButton" class="button" data-th-onClick="switchStacking('weekly')">Percent</span>
+            </div>
         </div>
         <div class="is-hidden" id="monthly-data" role="main">
             <div class="columns">
@@ -58,12 +62,20 @@
                     <div id="monthly_graph"></div>
                 </div>
             </div>
+            <div class="buttons has-addons">
+                <span id="monthlyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('monthly')">Normal</span>
+                <span id="monthlyPercentButton" class="button" data-th-onClick="switchStacking('monthly')">Percent</span>
+            </div>
         </div>
         <div class="is-hidden" id="quarterly-data" role="main">
             <div class="columns">
                 <div class="column is-12 is-narrow">
                     <div id="quarterly_graph"></div>
                 </div>
+            </div>
+            <div class="buttons has-addons">
+                <span id="quarterlyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('quarterly')">Normal</span>
+                <span id="quarterlyPercentButton" class="button" data-th-onClick="switchStacking('quarterly')">Percent</span>
             </div>
         </div>
     </div>
@@ -94,6 +106,7 @@
 <script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
+    initHighCharts();
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
     initHistoryCharts();
 </script>

@@ -101,7 +101,7 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public List<Summary> getLastDurationTotals(String duration) {
-		return summaryRepository.findSummeriesByDateAfter(getFromDuration(duration));
+		return summaryRepository.findSummeriesByDateGreaterThanEqual(getFromDuration(duration));
 	}
 
 	public BigDecimal calculateTodaysCost() {

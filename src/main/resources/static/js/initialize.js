@@ -1,5 +1,16 @@
 /*global Highcharts, makeGaugeChart, makePvcChart, makeHistoryChart, makeStatusList*/
 
+function initHighCharts() {
+    "use strict";
+
+    //Disable use of UTC
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+    });
+}
+
 function initLiveCharts(contextPath, refreshInterval) {
     "use strict";
 
@@ -181,13 +192,6 @@ function initLiveCharts(contextPath, refreshInterval) {
 
     var now = new Date();
 
-    //Disable use of UTC
-    Highcharts.setOptions({
-        global: {
-            useUTC: false
-        }
-    });
-
     var pvcProperties = {
         chart: {
             renderTo: "pvc",
@@ -264,13 +268,6 @@ function initHistoryCharts() {
 
     var now = new Date();
 
-    //Disable use of UTC
-    Highcharts.setOptions({
-        global: {
-            useUTC: false
-        }
-    });
-
     var weeklyProperties = {
         chart: {
             renderTo: "weekly_graph",
@@ -281,8 +278,12 @@ function initHistoryCharts() {
         },
         plotOptions: {
             column: {
-                stacking: "percent"
+                stacking: "normal"
             }
+        },
+        tooltip: {
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            shared: true
         },
         title: {
             text: ""
@@ -293,34 +294,51 @@ function initHistoryCharts() {
             },
             type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                format: "{value:%d}"
+                format: "{value:%a}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
         },
-        yAxis: {
-            min: 0,
-            title: {
-                text: "Breakdown"
-            }
-        },
+        yAxis: [
+            {
+                min: 0,
+                title: {
+                    text: "Solar Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                }
+            },
+            {
+                min: 0,
+                title: {
+                    text: "Grid Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                },
+                opposite: true
+            }],
         series: [
             {
                 name: "export",
                 type: "column",
+                yAxis: 0,
                 color: "#0000FF",
-                data: [ [now.getTime(), 0] ]
-            },
-            {
-                name: "grid",
-                type: "column",
-                color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             },
             {
                 name: "solar",
                 type: "column",
+                yAxis: 0,
                 color: "#55BF3B",
+                data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: "grid",
+                type: "line",
+                yAxis: 1,
+                color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             }
         ]
@@ -335,8 +353,12 @@ function initHistoryCharts() {
         },
         plotOptions: {
             column: {
-                stacking: "percent"
+                stacking: "normal"
             }
+        },
+        tooltip: {
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            shared: true
         },
         title: {
             text: ""
@@ -347,34 +369,51 @@ function initHistoryCharts() {
             },
             type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                format: "{value:%d}"
+                format: "{value:%e %b}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
         },
-        yAxis: {
-            min: 0,
-            title: {
-                text: "Breakdown"
-            }
-        },
+        yAxis: [
+            {
+                min: 0,
+                title: {
+                    text: "Solar Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                }
+            },
+            {
+                min: 0,
+                title: {
+                    text: "Grid Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                },
+                opposite: true
+            }],
         series: [
+            {
+                name: "export",
+                type: "column",
+                yAxis: 0,
+                color: "#0000FF",
+                data: [ [now.getTime(), 0] ]
+            },
             {
                 name: "solar",
                 type: "column",
+                yAxis: 0,
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
             {
                 name: "grid",
-                type: "column",
+                type: "line",
+                yAxis: 1,
                 color: "#FF0000",
-                data: [ [now.getTime(), 0] ]
-            },
-            {
-                name: "export",
-                type: "column",
-                color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             }
         ]
@@ -389,8 +428,12 @@ function initHistoryCharts() {
         },
         plotOptions: {
             column: {
-                stacking: "percent"
+                stacking: "normal"
             }
+        },
+        tooltip: {
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            shared: true
         },
         title: {
             text: ""
@@ -400,32 +443,53 @@ function initHistoryCharts() {
                 text: "Last Quarter"
             },
             type: "datetime", //For time series, x-axis labels will be time
+            labels: {
+                format: "{value:%e %b}",
+                rotation: 45
+            },
             minPadding: 0.05,
             maxPadding: 0.05
         },
-        yAxis: {
-            min: 0,
-            title: {
-                text: "Breakdown"
-            }
-        },
+        yAxis: [
+            {
+                min: 0,
+                title: {
+                    text: "Solar Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                }
+            },
+            {
+                min: 0,
+                title: {
+                    text: "Grid Usage"
+                },
+                labels: {
+                    format: "{value} kW"
+                },
+                opposite: true
+            }],
         series: [
+            {
+                name: "export",
+                type: "column",
+                yAxis: 0,
+                color: "#0000FF",
+                data: [ [now.getTime(), 0] ]
+            },
             {
                 name: "solar",
                 type: "column",
+                yAxis: 0,
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
             {
                 name: "grid",
-                type: "column",
+                type: "line",
+                yAxis: 1,
                 color: "#FF0000",
-                data: [ [now.getTime(), 0] ]
-            },
-            {
-                name: "export",
-                type: "column",
-                color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             }
         ]

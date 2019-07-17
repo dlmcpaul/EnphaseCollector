@@ -1,5 +1,61 @@
 /*global Highcharts, console */
 
+function getChart(target) {
+    "use strict";
+
+    var chartDom = document.getElementById(target);
+    return Highcharts.charts[Highcharts.attr(chartDom, "data-highcharts-chart")];
+}
+
+function switchStacking(target) {
+    "use strict";
+
+    if (!event.srcElement.classList.contains("is-selected")) {
+
+        // Swap is-info is-selected
+        var normalButton = document.getElementById(target + "NormalButton");
+        var percentButton = document.getElementById(target + "PercentButton");
+
+        var switchValue = normalButton.classList.contains("is-selected");
+        if (switchValue) {
+            normalButton.classList.remove("is-info", "is-selected");
+            percentButton.classList.add("is-info", "is-selected");
+        } else {
+            normalButton.classList.add("is-info", "is-selected");
+            percentButton.classList.remove("is-info", "is-selected");
+        }
+        var chart = getChart(target + "_graph");
+
+        chart.update({
+            plotOptions: {
+                column: {
+                    stacking: switchValue ? "percent" : "normal"
+                }
+            },
+            yAxis: [
+                {
+                    min: 0,
+                    title: {
+                        text: "Solar Usage"
+                    },
+                    labels: {
+                        format: switchValue ? "{value} %" : "{value} kW"
+                    }
+                },
+                {
+                    min: 0,
+                    title: {
+                        text: "Grid Usage"
+                    },
+                    labels: {
+                        format: "{value} kW"
+                    },
+                    opposite: true
+                }]
+        });
+    }
+}
+
 function refreshGaugeChart(chart, url, target) {
     "use strict";
 
@@ -88,8 +144,8 @@ function refreshHistoryChart(chart, url) {
     request.onload = function () {
         if (request.status === 200) {
             chart.series[0].setData(request.response.gridExport);
-            chart.series[1].setData(request.response.gridImport);
-            chart.series[2].setData(request.response.solarConsumption);
+            chart.series[1].setData(request.response.solarConsumption);
+            chart.series[2].setData(request.response.gridImport);
         }
     };
     request.send();
@@ -109,7 +165,7 @@ function refreshStatusList(target, url) {
     var request = new XMLHttpRequest();
     request.open("GET", url, true);
     request.onerror = function () {
-        console.log("Statuss List Error");
+        console.log("Status List Error");
         return;
     };
     request.onload = function () {

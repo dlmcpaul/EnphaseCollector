@@ -16,6 +16,9 @@ public class Convertors {
 	}
 
 	public static BigDecimal convertToKiloWattHours(BigDecimal watts, int minutesOfOperation) {
+		if (watts == null) {
+			return BigDecimal.ZERO;
+		}
 		BigDecimal wattHours = Convertors.convertToWattHours(watts, minutesOfOperation);
 		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 	}
