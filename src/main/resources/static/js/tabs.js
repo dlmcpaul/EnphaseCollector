@@ -10,24 +10,25 @@ function updateHistory(target, response) {
     chart.series[2].setData(response.gridImport);
 }
 
+// Function works if content element is named the same as the tab id with -data appended
 function switchToTab(target, refreshUrl) {
     "use strict";
 
-    // Find Source tab and remove active
+    // Find current tab and remove active
     var currentTab = document.querySelector("#tabs li.is-active");
     currentTab.classList.remove("is-active");
-    // Find Source Data and make hidden
-    var currentDataId = currentTab.id + "-data";
-    var currentContent = document.getElementById(currentDataId);
+    // Find associated content element and make hidden
+    var currentContentId = currentTab.id + "-data";
+    var currentContent = document.getElementById(currentContentId);
     currentContent.classList.add("is-hidden");
 
-    // Use supplied destination and add active
-    var destinationTab = document.getElementById(target);
-    destinationTab.classList.add("is-active");
-    // Find destination Data and make visible
-    var destinationDataId = target + "-data";
-    var destinationContent = document.getElementById(destinationDataId);
-    destinationContent.classList.remove("is-hidden");
+    // Use supplied target and add active
+    var targetTab = document.getElementById(target);
+    targetTab.classList.add("is-active");
+    // Find target content element and make visible
+    var targetContentId = target + "-data";
+    var targetContent = document.getElementById(targetContentId);
+    targetContent.classList.remove("is-hidden");
 
     if (refreshUrl !== null) {
         refreshTarget(target + "_graph", refreshUrl, "json", updateHistory);
