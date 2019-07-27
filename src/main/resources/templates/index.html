@@ -27,10 +27,10 @@
     <div class="container">
         <div class="tabs is-centered" id="tabs" role="navigation">
             <ul>
-                <li class="is-active" id="live"><a onClick="switchTabs('live')">Live</a></li>
-                <li id="weekly"><a data-th-onClick="switchTabs('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Weekly</a></li>
-                <li id="monthly"><a data-th-onClick="switchTabs('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Monthly</a></li>
-                <li id="quarterly"><a data-th-onClick="switchTabs('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarterly</a></li>
+                <li id="live" class="is-active"><a data-th-onClick="switchToTab('live', null)">Live</a></li>
+                <li id="weekly"><a data-th-onClick="switchToTab('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Weekly</a></li>
+                <li id="monthly"><a data-th-onClick="switchToTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Monthly</a></li>
+                <li id="quarterly"><a data-th-onClick="switchToTab('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarterly</a></li>
             </ul>
         </div>
         <div id="live-data" role="main">

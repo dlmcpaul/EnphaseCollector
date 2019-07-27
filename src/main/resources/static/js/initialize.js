@@ -1,4 +1,4 @@
-/*global Highcharts, makeGaugeChart, makePvcChart, makeHistoryChart, makeStatusList*/
+/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList*/
 
 function initHighCharts() {
     "use strict";
@@ -257,9 +257,9 @@ function initLiveCharts(contextPath, refreshInterval) {
         ]
     };
 
-    makeGaugeChart("production", productionProperties, contextPath + "/production", refreshInterval);
-    makeGaugeChart("consumption", consumptionProperties, contextPath + "/consumption", refreshInterval);
-    makePvcChart("pvc", pvcProperties, contextPath + "/pvc", refreshInterval);
+    makeRefreshChart("production", productionProperties, contextPath + "/production", refreshInterval, updateGauge);
+    makeRefreshChart("consumption", consumptionProperties, contextPath + "/consumption", refreshInterval, updateGauge);
+    makeRefreshChart("pvc", pvcProperties, contextPath + "/pvc", refreshInterval, updatePvc);
     makeStatusList("statusList", contextPath + "/refreshStats", refreshInterval);
 }
 
@@ -495,7 +495,7 @@ function initHistoryCharts() {
         ]
     };
 
-    makeHistoryChart("weekly_graph", weeklyProperties);
-    makeHistoryChart("monthly_graph", monthlyProperties);
-    makeHistoryChart("quarterly_graph", quarterlyProperties);
+    makeChart("weekly_graph", weeklyProperties);
+    makeChart("monthly_graph", monthlyProperties);
+    makeChart("quarterly_graph", quarterlyProperties);
 }
