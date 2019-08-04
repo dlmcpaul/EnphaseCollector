@@ -53,9 +53,9 @@ public class EnphaseController {
 
 			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 			if (envoySystem.isWifi()) {
-				statusList.add(new Status("fas fa-wifi", "Home network connection", "Wifi"));
+				statusList.add(new Status("fas fa-wifi", "Home network", envoySystem.getNetwork()));
 			} else {
-				statusList.add(new Status("fas fa-network-wired", "Home network connection", "LAN"));
+				statusList.add(new Status("fas fa-network-wired", "Home network", "LAN"));
 			}
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));

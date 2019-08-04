@@ -39,4 +39,5 @@ public class System {
 
     private Production production;  // Populated from production.json
     private List<Inventory> inventoryList;  // populated from inventory.json
+    private Wireless wireless;  // populated from wireless_display.json
 }

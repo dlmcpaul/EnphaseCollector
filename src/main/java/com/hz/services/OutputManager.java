@@ -69,8 +69,10 @@ public class OutputManager {
 		envoySystem.setEnvoySerial(enphaseImportService.getSerialNumber());
 		envoySystem.setEnvoyVersion(enphaseImportService.getSoftwareVersion());
 
-		envoySystem.setWifi(system.getNetwork().isWifi());
-		envoySystem.setNetwork("");
+		if (system.getNetwork().isWifi()) {
+			envoySystem.setWifi(true);
+			envoySystem.setNetwork(system.getWireless().getCurrentNetwork().getSsid());
+		}
 
 		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
 		envoySystem.setLastReadTime(enphaseImportService.getCollectionTime(system));

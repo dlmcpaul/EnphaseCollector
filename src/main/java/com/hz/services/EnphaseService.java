@@ -130,6 +130,9 @@ public class EnphaseService {
 				    	system.setInventoryList(inventoryList);
 				    }
 				    getIndividualPanelData(system);
+				    if (system.getNetwork().isWifi()) {
+				    	getWirelessInfo(system);
+				    }
 
 				    return Optional.of(system);
 			    } else {
@@ -144,7 +147,7 @@ public class EnphaseService {
 		return Optional.empty();
 	}
 
-    public LocalDateTime getCollectionTime(@NotNull System system) {
+	public LocalDateTime getCollectionTime(@NotNull System system) {
 	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
 	    // Envoy only produces time in seconds
 	    return productionEim.map(typeBase -> LocalDateTime.ofInstant(Instant.ofEpochMilli(typeBase.getReadingTime() * 1000L), ZoneId.systemDefault()))
@@ -249,7 +252,19 @@ public class EnphaseService {
 	    }
     }
 
-    private void getControllerData() {
+	private void getWirelessInfo(System system) {
+		ResponseEntity<Wireless> wirelessResponse =
+				enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
+		this.lastStatus = wirelessResponse.getStatusCodeValue();
+
+		if (wirelessResponse.getStatusCodeValue() == 200) {
+			system.setWireless(wirelessResponse.getBody());
+		} else {
+			LOG.error("Reading Wireless failed {}", wirelessResponse.getStatusCode());
+		}
+	}
+
+	private void getControllerData() {
     	if (envoyInfo == null) {
 		    String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
 

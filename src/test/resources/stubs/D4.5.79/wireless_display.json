@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/admin/lib/wireless_display.json?site_info=0",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\",supported\":true,\"present\":true,\"configured\":true,\"up\":true,\"carrier\":true,\"current_network\":{\"ssid\":\"HZ_LOW_SPEED\",\"status\":\"connected\",\"ip_address\":\"192.168.0.63\",\"gateway_ip\":\"192.168.0.1\",\"security_mode\":\"WPA2-PSK\",\"encryption_type\":\"CCMP\",\"ap_bssid\":\"F0:9F:C2:2B:39:E6\",\"channel\":\"149\",\"bars\":2},\"device_info\":{\"vendor\":\"Enphase\",\"device\":\"platform:wl18xx\",\"vendor_id\":\"\",\"device_id\":\"\",\"manufacturer\":\"Enphase\",\"model\":\"platform:wl18xx\",\"serial\":\"\",\"hw_version\":\"\",\"usb_spec\":\"\",\"usb_slot\":\"\",\"driver\":\"wl18xx_driver\",\"mac\":\"D4:F5:13:FE:08:25\"},\"ap_mode\":{\"enabled\":false,\"name\":\"ENVOY_010838\"},\"selected_region\":\"AU\",\"regions\":[\"00\",\"AE\",\"AL\",\"AM\",\"AN\",\"AR\",\"AT\",\"AU\",\"AW\",\"AZ\",\"BA\",\"BB\",\"BD\",\"BE\",\"BG\",\"BH\",\"BL\",\"BN\",\"BO\",\"BR\",\"BY\",\"BZ\",\"CA\",\"CH\",\"CL\",\"CN\",\"CO\",\"CR\",\"CS\",\"CY\",\"CZ\",\"DE\",\"DK\",\"DO\",\"DZ\",\"EC\",\"EE\",\"EG\",\"ES\",\"FI\",\"FR\",\"GB\",\"GD\",\"GE\",\"GL\",\"GR\",\"GT\",\"GU\",\"HK\",\"HN\",\"HR\",\"HT\",\"HU\",\"ID\",\"IE\",\"IL\",\"IN\",\"IR\",\"IS\",\"IT\",\"JM\",\"JO\",\"JP\",\"KE\",\"KH\",\"KP\",\"KR\",\"KW\",\"KZ\",\"LB\",\"LI\",\"LK\",\"LT\",\"LU\",\"LV\",\"MA\",\"MC\",\"MK\",\"MO\",\"MT\",\"MX\",\"MY\",\"NL\",\"NO\",\"NP\",\"NZ\",\"OM\",\"PA\",\"PE\",\"PG\",\"PH\",\"PK\",\"PL\",\"PR\",\"PT\",\"QA\",\"RO\",\"RU\",\"SA\",\"SE\",\"SG\",\"SI\",\"SK\",\"SV\",\"SY\",\"TH\",\"TN\",\"TR\",\"TT\",\"TW\",\"UA\",\"US\",\"UY\",\"UZ\",\"VE\",\"VN\",\"YE\",\"ZA\",\"ZW\"]}",
+  "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

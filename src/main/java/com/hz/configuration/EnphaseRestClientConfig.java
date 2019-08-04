@@ -31,6 +31,8 @@ public class EnphaseRestClientConfig {
     public static final String INVENTORY = "/inventory.json?deleted=1";
     public static final String PRODUCTION = "/production.json?details=1";
     public static final String CONTROLLER = "/info.xml";
+    public static final String WIFI_INFO = "/admin/lib/wireless_display.json?site_info=0";
+	public static final String WAN_INFO = "/admin/lib/network_display.json";
 
     // Needs Digest authentication
     public static final String INVERTERS = "/api/v1/production/inverters";
