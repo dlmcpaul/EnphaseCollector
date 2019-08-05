@@ -89,6 +89,8 @@ public class EnphaseServiceRest_4_5_79_Test {
 		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsNow(), Matchers.comparesEqualTo(BigDecimal.valueOf(1.326)));
 		Assert.assertThat(system.get().getProduction().getBatteryList().size(), Matchers.equalTo(0));
 		Assert.assertThat(this.enphaseService.isOk(), Matchers.equalTo(true));
+		Assert.assertThat(system.get().getWireless().isSupported(), Matchers.equalTo(true));
+		Assert.assertThat(system.get().getWireless().getCurrentNetwork().getStatus(),Matchers.equalTo("connected"));
 
 		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
 

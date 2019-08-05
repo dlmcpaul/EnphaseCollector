@@ -15,6 +15,7 @@ public class CurrentNetwork {
 	private String gatewayIp;
 	@JsonProperty(value="security_mode")
 	private String securityMode;
+	@JsonProperty(value="encryption_type")
 	private String encryptionType;
 	@JsonProperty(value="ap_bssid")
 	private String apBssid;
