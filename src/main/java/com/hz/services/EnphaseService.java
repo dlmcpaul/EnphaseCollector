@@ -265,7 +265,7 @@ public class EnphaseService {
 	}
 
 	private void getControllerData() {
-    	if (envoyInfo == null) {
+    	if (null == envoyInfo) {
 		    String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
 
 		    try {
