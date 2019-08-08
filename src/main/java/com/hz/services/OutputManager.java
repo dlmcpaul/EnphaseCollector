@@ -38,6 +38,7 @@ public class OutputManager {
 	@PostConstruct
 	public void init() {
 		this.gather();
+		this.summariseEvents();
 	}
 
 	// Summarise the Event table at 5 minutes past midnight
