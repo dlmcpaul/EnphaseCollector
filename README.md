@@ -4,6 +4,14 @@ Uses the undocumented API in the Envoy device to collect individual solar panel 
 
 Can be run as a java application or using the docker image
 
+Main Page             |  Weekly History Tab
+----------------------|-------------------------
+<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png">|<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">
+
+<a href="https://www.mozilla.org/en-US/MPL/2.0/"><img alt="mpl2" src="https://img.shields.io/github/license/dlmcpaul/EnphaseCollector"></a>
+<a href="https://bulma.io"><img src="https://img.shields.io/badge/Made_with-Bulma-brightgreen"></a>
+<a href="https://www.thymeleaf.org/"><img alt="Thymeleaf" src="https://img.shields.io/badge/Rendered_using-Thymeleaf-brightgreen"></a>
+
 If using the docker image
 
 Example #1 using influxDB for storage
@@ -29,7 +37,7 @@ docker run \
 -p 8080:8080 \
 dlmcpaul/enphasecollector
 ```
-and a web page available at http://localhost:8080 like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
+and a web page available at http://localhost:8080 and looks like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
 
 Example #3 sending data to pvoutput
 ```
