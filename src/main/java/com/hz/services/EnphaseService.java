@@ -122,14 +122,9 @@ public class EnphaseService {
 				    Optional<EimType> eim = system.getProduction().getProductionEim();
 				    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
-				    if (fullReadCount <= 0) {
-				    	fullReadCount = 10;  // Only update every 10 calls.
-					    getInventory(system);
-					    inventoryList = system.getInventoryList();
-				    } else {
-				    	system.setInventoryList(inventoryList);
-				    }
+				    getInventory(system);
 				    getIndividualPanelData(system);
+
 				    if (system.getNetwork().isWifi()) {
 				    	getWirelessInfo(system);
 				    }
@@ -224,14 +219,21 @@ public class EnphaseService {
     }
 
     private void getInventory(@NotNull System system) {
-	    ResponseEntity<List<Inventory>> inventoryResponse =
-			    enphaseRestTemplate.exchange(EnphaseRestClientConfig.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
-	    this.lastStatus = inventoryResponse.getStatusCodeValue();
+	    if (fullReadCount-- <= 0) {
+		    fullReadCount = 10;  // Only update every 10 calls.
 
-	    if (inventoryResponse.getStatusCodeValue() == 200) {
-		    system.setInventoryList(inventoryResponse.getBody());
+		    ResponseEntity<List<Inventory>> inventoryResponse =
+				    enphaseRestTemplate.exchange(EnphaseRestClientConfig.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+	        this.lastStatus = inventoryResponse.getStatusCodeValue();
+
+		    if (inventoryResponse.getStatusCodeValue() == 200) {
+			    system.setInventoryList(inventoryResponse.getBody());
+			    inventoryList = system.getInventoryList();
+	        } else {
+		        LOG.error("Reading Inventory failed {}", inventoryResponse.getStatusCode());
+	        }
 	    } else {
-		    LOG.error("Reading Inventory failed {}", inventoryResponse.getStatusCode());
+		    system.setInventoryList(inventoryList);
 	    }
     }
 
