@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<div th:fragment="historyChart (baseId)" th:id="${baseId} + '-data'" class="is-hidden" role="main">
+    <div class="columns">
+        <div class="column is-12 is-narrow">
+            <div th:id="${baseId} + '-graph'"></div>
+        </div>
+    </div>
+    <nav class="level">
+        <div class="level-left">
+            <div class="level-item">
+                <div class="buttons has-addons">
+                    <span th:data-base-id="${baseId}" th:id="'btn-' + ${baseId} + '-normal'" class="button is-info is-selected" onClick="switchStacking()">Normal</span>
+                    <span th:data-base-id="${baseId}" th:id="'btn-' + ${baseId} + '-percent'" class="button" onClick="switchStacking()">Percent</span>
+                </div>
+            </div>
+            <div class="level-item">
+                <label class="label" th:id="${baseId} + '-bill'">$25</label>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+
+</html>

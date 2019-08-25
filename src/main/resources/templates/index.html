@@ -28,9 +28,9 @@
         <div class="tabs is-centered" id="tabs" role="navigation">
             <ul>
                 <li id="live" class="is-active"><a data-th-onClick="switchToTab('live', null)">Live</a></li>
-                <li id="weekly"><a data-th-onClick="switchToTab('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Weekly</a></li>
-                <li id="monthly"><a data-th-onClick="switchToTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Monthly</a></li>
-                <li id="quarterly"><a data-th-onClick="switchToTab('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarterly</a></li>
+                <li id="weekly"><a data-th-onClick="switchToTab('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Week</a></li>
+                <li id="monthly"><a data-th-onClick="switchToTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Month</a></li>
+                <li id="quarterly"><a data-th-onClick="switchToTab('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
             </ul>
         </div>
         <div id="live-data" role="main">
@@ -45,39 +45,9 @@
                 </div>
             </div>
         </div>
-        <div class="is-hidden" id="weekly-data" role="main">
-            <div class="columns">
-                <div class="column is-12 is-narrow">
-                    <div id="weekly_graph"></div>
-                </div>
-            </div>
-            <div class="buttons has-addons">
-                <span id="weeklyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('weekly')">Normal</span>
-                <span id="weeklyPercentButton" class="button" data-th-onClick="switchStacking('weekly')">Percent</span>
-            </div>
-        </div>
-        <div class="is-hidden" id="monthly-data" role="main">
-            <div class="columns">
-                <div class="column is-12 is-narrow">
-                    <div id="monthly_graph"></div>
-                </div>
-            </div>
-            <div class="buttons has-addons">
-                <span id="monthlyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('monthly')">Normal</span>
-                <span id="monthlyPercentButton" class="button" data-th-onClick="switchStacking('monthly')">Percent</span>
-            </div>
-        </div>
-        <div class="is-hidden" id="quarterly-data" role="main">
-            <div class="columns">
-                <div class="column is-12 is-narrow">
-                    <div id="quarterly_graph"></div>
-                </div>
-            </div>
-            <div class="buttons has-addons">
-                <span id="quarterlyNormalButton" class="button is-info is-selected" data-th-onClick="switchStacking('quarterly')">Normal</span>
-                <span id="quarterlyPercentButton" class="button" data-th-onClick="switchStacking('quarterly')">Percent</span>
-            </div>
-        </div>
+        <div data-th-replace="~{historyChartFragment :: historyChart('weekly')}"></div>
+        <div data-th-replace="~{historyChartFragment :: historyChart('monthly')}"></div>
+        <div data-th-replace="~{historyChartFragment :: historyChart('quarterly')}"></div>
     </div>
 </section>
 <footer class="footer is-paddingless has-background-white" role="contentinfo">
@@ -100,7 +70,7 @@
         </div>
     </div>
 </footer>
-<script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts.js}"></script>
+<script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highstock.js}"></script>
 <script type="text/javascript" data-th-src="@{/webjars/highcharts/7.1.0/highcharts-more.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/charts.js}"></script>

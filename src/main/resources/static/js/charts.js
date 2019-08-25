@@ -15,14 +15,16 @@ function makeChart(target, properties) {
     Highcharts.chart(properties);
 }
 
-function switchStacking(target) {
+function switchStacking() {
     "use strict";
 
     if (!event.srcElement.classList.contains("is-selected")) {
 
+        var target = event.srcElement.getAttribute("data-base-id");
+
         // Swap is-info is-selected
-        var normalButton = document.getElementById(target + "NormalButton");
-        var percentButton = document.getElementById(target + "PercentButton");
+        var normalButton = document.getElementById("btn-" + target + "-normal");
+        var percentButton = document.getElementById("btn-" + target + "-percent");
 
         var switchValue = normalButton.classList.contains("is-selected");
         if (switchValue) {
@@ -32,7 +34,7 @@ function switchStacking(target) {
             normalButton.classList.add("is-info", "is-selected");
             percentButton.classList.remove("is-info", "is-selected");
         }
-        var chart = getChart(target + "_graph");
+        var chart = getChart(target + "-graph");
 
         chart.update({
             plotOptions: {
@@ -96,7 +98,7 @@ function updateGauge(target, response) {
     var chart = getChart(target);
     var point = chart.series[0].points[0];
     point.update(Number(response));
-    updateElement(target + "_label", response);
+    updateElement(target + "-label", response);
 }
 
 function updatePvc(target, response) {

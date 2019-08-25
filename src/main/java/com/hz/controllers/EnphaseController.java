@@ -60,7 +60,7 @@ public class EnphaseController {
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
-			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", String.valueOf(localDBService.calculateMaxProduction()) + " W"));
+			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
 			statusList.add(new Status("fas fa-dollar-sign", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
 			statusList.add(new Status("fas fa-dollar-sign", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
 			statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
@@ -126,7 +126,7 @@ public class EnphaseController {
 		PvC pvc = new PvC();
 
 		try {
-			localDBService.getTodaysEvents().stream().forEach(pvc::addEvent);
+			localDBService.getTodaysEvents().forEach(event -> pvc.addEvent(event));
 		} catch (Exception e) {
 			LOG.error("getPvc Exception: {} {}", e.getMessage(), e);
 		}
@@ -140,12 +140,12 @@ public class EnphaseController {
 
 		if (Validators.isValidDuration(duration)) {
 			try {
-				localDBService.getLastDurationTotals(duration).stream()
+				localDBService.getLastDurationTotals(duration)
 						.forEach(total -> result.addSummary(new Summary(total.getDate(),
 								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes()))));
+								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), properties));
 			} catch (Exception e) {
 				LOG.error("getHistory Exception: {} {}", e.getMessage(), e);
 			}
@@ -161,7 +161,7 @@ public class EnphaseController {
 		} catch (Exception e) {
 			LOG.error("getProduction Exception: {} {}", e.getMessage(), e);
 		}
-		return Integer.valueOf(0);
+		return 0;
 	}
 
 	@GetMapping(value = "/consumption", produces = "application/json; charset=UTF-8")
@@ -172,7 +172,7 @@ public class EnphaseController {
 		} catch (Exception e) {
 			LOG.error("getConsumption Exception: {} {}", e.getMessage(), e);
 		}
-		return Integer.valueOf(0);
+		return 0;
 	}
 
 }

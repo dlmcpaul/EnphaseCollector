@@ -8,6 +8,12 @@ function updateHistory(target, response) {
     chart.series[0].setData(response.gridExport);
     chart.series[1].setData(response.solarConsumption);
     chart.series[2].setData(response.gridImport);
+
+    var billTarget = target.substring(0,target.length-6) + "-bill";
+
+    var labelValue = document.getElementById(billTarget);
+    labelValue.innerText = "Estimated Cost is $" + parseFloat(response.billEstimate).toFixed(2);
+
 }
 
 // Function works if content element is named the same as the tab id with -data appended
@@ -31,6 +37,6 @@ function switchToTab(target, refreshUrl) {
     targetContent.classList.remove("is-hidden");
 
     if (refreshUrl !== null) {
-        refreshTarget(target + "_graph", refreshUrl, "json", updateHistory);
+        refreshTarget(target + "-graph", refreshUrl, "json", updateHistory);
     }
 }

@@ -270,7 +270,6 @@ function initHistoryCharts() {
 
     var weeklyProperties = {
         chart: {
-            renderTo: "weekly_graph",
             height: "30%"
         },
         credits: {
@@ -345,13 +344,22 @@ function initHistoryCharts() {
     };
     var monthlyProperties = {
         chart: {
-            renderTo: "monthly_graph",
             height: "30%"
         },
         credits: {
             enabled: false
         },
         plotOptions: {
+            series: {
+                dataGrouping: {
+                    approximation: "sum",
+                    enabled: true,
+                    forced: true,
+                    units: [
+                        [ "week", [1] ]
+                    ]
+                }
+            },
             column: {
                 stacking: "normal"
             }
@@ -399,6 +407,9 @@ function initHistoryCharts() {
                 name: "export",
                 type: "column",
                 yAxis: 0,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             },
@@ -406,6 +417,9 @@ function initHistoryCharts() {
                 name: "solar",
                 type: "column",
                 yAxis: 0,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
@@ -413,6 +427,9 @@ function initHistoryCharts() {
                 name: "grid",
                 type: "line",
                 yAxis: 1,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             }
@@ -420,13 +437,22 @@ function initHistoryCharts() {
     };
     var quarterlyProperties = {
         chart: {
-            renderTo: "quarterly_graph",
             height: "30%"
         },
         credits: {
             enabled: false
         },
         plotOptions: {
+            series: {
+                dataGrouping: {
+                    approximation: "sum",
+                    enabled: true,
+                    forced: true,
+                    units: [
+                        [ "month", [1] ]
+                    ]
+                }
+            },
             column: {
                 stacking: "normal"
             }
@@ -444,8 +470,7 @@ function initHistoryCharts() {
             },
             type: "datetime", //For time series, x-axis labels will be time
             labels: {
-                format: "{value:%e %b}",
-                rotation: 45
+                format: "{value: %b}"
             },
             minPadding: 0.05,
             maxPadding: 0.05
@@ -475,6 +500,9 @@ function initHistoryCharts() {
                 name: "export",
                 type: "column",
                 yAxis: 0,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             },
@@ -482,6 +510,9 @@ function initHistoryCharts() {
                 name: "solar",
                 type: "column",
                 yAxis: 0,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
@@ -489,13 +520,16 @@ function initHistoryCharts() {
                 name: "grid",
                 type: "line",
                 yAxis: 1,
+                dataGrouping: {
+                    type: "column"
+                },
                 color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             }
         ]
     };
 
-    makeChart("weekly_graph", weeklyProperties);
-    makeChart("monthly_graph", monthlyProperties);
-    makeChart("quarterly_graph", quarterlyProperties);
+    makeChart("weekly-graph", weeklyProperties);
+    makeChart("monthly-graph", monthlyProperties);
+    makeChart("quarterly-graph", quarterlyProperties);
 }
