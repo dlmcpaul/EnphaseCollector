@@ -126,7 +126,7 @@ public class EnphaseController {
 		PvC pvc = new PvC();
 
 		try {
-			localDBService.getTodaysEvents().forEach(event -> pvc.addEvent(event));
+			localDBService.getTodaysEvents().forEach(pvc::addEvent);
 		} catch (Exception e) {
 			LOG.error("getPvc Exception: {} {}", e.getMessage(), e);
 		}
