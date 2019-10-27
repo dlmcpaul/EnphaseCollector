@@ -2,12 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
+<!--/*@thymesVar id="baseId" type="java.lang.String"*/-->
 <div th:fragment="historyChart (baseId)" th:id="${baseId} + '-data'" class="is-hidden" role="main">
-    <div class="columns">
-        <div class="column is-12 is-narrow">
-            <div th:id="${baseId} + '-graph'"></div>
-        </div>
-    </div>
     <nav class="level">
         <div class="level-left">
             <div class="level-item">
@@ -21,6 +17,11 @@
             </div>
         </div>
     </nav>
+    <div class="columns">
+        <div class="column is-12 is-narrow">
+            <div th:id="${baseId} + '-graph'"></div>
+        </div>
+    </div>
 </div>
 </body>
 
