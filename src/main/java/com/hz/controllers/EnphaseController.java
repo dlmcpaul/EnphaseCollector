@@ -66,9 +66,9 @@ public class EnphaseController {
 			statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
 			statusList.add(new Status("fas fa-dollar-sign", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
 
-			statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kW"));
-			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kW"));
-			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kW"));
+			statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
+			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
+			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kWh"));
 			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
 			if (enphaseService.isOk()) {
 				statusList.add(new Status("fas fa-rss", "Enphase data collected at", enphaseService.getLastReadTime().format(timeFormatter)));

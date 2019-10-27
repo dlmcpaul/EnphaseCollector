@@ -18,9 +18,9 @@ function makeChart(target, properties) {
 function switchStacking() {
     "use strict";
 
-    if (!event.srcElement.classList.contains("is-selected")) {
+    if (!event.target.classList.contains("is-selected")) {
 
-        var target = event.srcElement.getAttribute("data-base-id");
+        var target = event.target.getAttribute("data-base-id");
 
         // Swap is-info is-selected
         var normalButton = document.getElementById("btn-" + target + "-normal");
@@ -49,7 +49,7 @@ function switchStacking() {
                         text: "Solar Usage"
                     },
                     labels: {
-                        format: switchValue ? "{value} %" : "{value} kW"
+                        format: switchValue ? "{value} %" : "{value} kWh"
                     }
                 },
                 {
@@ -58,7 +58,7 @@ function switchStacking() {
                         text: "Grid Usage"
                     },
                     labels: {
-                        format: "{value} kW"
+                        format: "{value} kWh"
                     },
                     opposite: true
                 }]

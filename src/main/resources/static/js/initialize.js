@@ -281,7 +281,7 @@ function initHistoryCharts() {
             }
         },
         tooltip: {
-            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kWh<br/>",
             shared: true
         },
         title: {
@@ -305,7 +305,7 @@ function initHistoryCharts() {
                     text: "Solar Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 }
             },
             {
@@ -314,7 +314,7 @@ function initHistoryCharts() {
                     text: "Grid Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 },
                 opposite: true
             }],
@@ -365,7 +365,7 @@ function initHistoryCharts() {
             }
         },
         tooltip: {
-            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kWh<br/>",
             shared: true
         },
         title: {
@@ -389,7 +389,7 @@ function initHistoryCharts() {
                     text: "Solar Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 }
             },
             {
@@ -398,7 +398,7 @@ function initHistoryCharts() {
                     text: "Grid Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 },
                 opposite: true
             }],
@@ -458,7 +458,7 @@ function initHistoryCharts() {
             }
         },
         tooltip: {
-            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kW<br/>",
+            pointFormat: "{series.name}: <b>{point.y:.2f}</b> kWh<br/>",
             shared: true
         },
         title: {
@@ -482,7 +482,7 @@ function initHistoryCharts() {
                     text: "Solar Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 }
             },
             {
@@ -491,7 +491,7 @@ function initHistoryCharts() {
                     text: "Grid Usage"
                 },
                 labels: {
-                    format: "{value} kW"
+                    format: "{value} kWh"
                 },
                 opposite: true
             }],
