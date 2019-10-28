@@ -11,6 +11,7 @@ Can be run as a java application or using the docker image
 Main Page             |  Weekly History Tab
 ----------------------|-------------------------
 <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png">|<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">
+
 If using the jar file you will need a Java 11 that you can get from https://adoptopenjdk.net/
 
 Example #1 with default internal website
