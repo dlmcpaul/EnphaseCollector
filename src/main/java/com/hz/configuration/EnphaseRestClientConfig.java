@@ -93,9 +93,9 @@ public class EnphaseRestClientConfig {
 
 	@Bean
 	public HttpMessageConverters customConverters() {
-		MappingJackson2HttpMessageConverter OctetStreamConverter = new MappingJackson2HttpMessageConverter();
-		OctetStreamConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
-		return new HttpMessageConverters(OctetStreamConverter);
+		MappingJackson2HttpMessageConverter octetStreamConverter = new MappingJackson2HttpMessageConverter();
+		octetStreamConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+		return new HttpMessageConverters(octetStreamConverter);
 	}
 
 }
