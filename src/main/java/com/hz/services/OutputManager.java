@@ -6,6 +6,7 @@ import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
+import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +84,7 @@ public class OutputManager {
 			envoySystem.setNetwork(system.getWireless().getCurrentNetwork().getSsid());
 		}
 
-		envoySystem.setLastCommunication(LocalDateTime.ofInstant(system.getNetwork().getLastReportTime().toInstant(), ZoneId.systemDefault()));
+		envoySystem.setLastCommunication(Convertors.convertToLocalDateTime(system.getNetwork().getLastReportTime()));
 		envoySystem.setLastReadTime(enphaseImportService.getCollectionTime(system));
 		envoySystem.setPanelCount(system.getProduction().getMicroInvertorsList().size());
 

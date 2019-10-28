@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +18,7 @@ public class Network {
 	@JsonProperty(value="interfaces")
 	private List<NetInterface> netInterfaces;
 
-	public Date getLastReportTime() {
-		return new Date(lastReportTime * 1000L);
-	}
-
-	private Optional<NetInterface> findPrimary() {
+	public Optional<NetInterface> findPrimary() {
 		return netInterfaces.stream().filter(netInterface -> netInterface.getInterfaceName().equalsIgnoreCase(primaryInterface)).findFirst();
 	}
 
