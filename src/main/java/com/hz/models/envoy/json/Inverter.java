@@ -9,8 +9,6 @@ import java.util.Date;
 /**
  * Created by David on 22-Oct-17.
  * Need to process http://192.168.0.63/api/v1/production/inverters with
- * user envoy
- * password 010838
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
