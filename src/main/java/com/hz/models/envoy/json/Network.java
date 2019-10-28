@@ -28,9 +28,16 @@ public class Network {
 	}
 
 	public boolean isWifi() {
-		Optional<NetInterface> netInterface = findPrimary();
 
-		return netInterface.isPresent() && netInterface.get().getType().equalsIgnoreCase("wifi");
+		Optional<NetInterface> wifi = netInterfaces.stream().
+				filter(netInterface -> netInterface.isPresent() &&
+						netInterface.isConfigured() &&
+						netInterface.isSupported() &&
+						netInterface.getType().equalsIgnoreCase("wifi") &&
+						netInterface.getStatus().equalsIgnoreCase("connected")).
+				findFirst();
+
+		return wifi.isPresent();
 	}
 
 }
