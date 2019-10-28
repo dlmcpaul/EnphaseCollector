@@ -3,6 +3,7 @@ package com.hz.services;
 import com.hz.interfaces.InfluxExportInterface;
 import com.hz.interfaces.LocalExportInterface;
 import com.hz.interfaces.PvOutputExportInterface;
+import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,14 +54,21 @@ public class OutputManager {
 		}
 	}
 
+	private void send(System system, List<Metric> metrics, LocalDateTime collectionTime) {
+		influxExportService.sendMetrics(metrics, collectionTime);
+
+		localExportService.sendSystemInfo(makeSystemInfo(system));
+		localExportService.sendMetrics(metrics, collectionTime);
+
+		pvoutputExportService.sendMetrics(metrics, collectionTime);
+	}
+
 	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
 	public void gather() {
 		try {
 			Optional<System> system = enphaseImportService.collectEnphaseData();
-			system.ifPresent(s -> influxExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
-			system.ifPresent(s -> localExportService.sendSystemInfo(makeSystemInfo(s)));
-			system.ifPresent(s -> localExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
-			system.ifPresent(s -> pvoutputExportService.sendMetrics(enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+
+			system.ifPresent(s -> send(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
 		} catch (Exception e) {
 			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
 		}
