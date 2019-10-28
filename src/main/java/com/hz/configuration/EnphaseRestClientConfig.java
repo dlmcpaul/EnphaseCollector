@@ -9,13 +9,17 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.Collections;
 
 import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 
@@ -33,6 +37,9 @@ public class EnphaseRestClientConfig {
     public static final String CONTROLLER = "/info.xml";
     public static final String WIFI_INFO = "/admin/lib/wireless_display.json?site_info=0";
 	public static final String WAN_INFO = "/admin/lib/network_display.json";
+	public static final String METER_STREAM = "/stream/meter";  // needs installer user and password
+	public static final String DEVICE_METERS = "/ivp/meters";
+	public static final String POWER_METERS = "/ivp/meters/readings";
 
     // Needs Digest authentication
     public static final String INVERTERS = "/api/v1/production/inverters";
@@ -83,5 +90,12 @@ public class EnphaseRestClientConfig {
 			    .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
 			    .build();
     }
+
+	@Bean
+	public HttpMessageConverters customConverters() {
+		MappingJackson2HttpMessageConverter OctetStreamConverter = new MappingJackson2HttpMessageConverter();
+		OctetStreamConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+		return new HttpMessageConverters(OctetStreamConverter);
+	}
 
 }
