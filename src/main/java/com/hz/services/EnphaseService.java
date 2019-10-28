@@ -200,7 +200,7 @@ public class EnphaseService {
 		BigDecimal consumption = BigDecimal.ZERO;
 	    if (productionEim.isPresent() && inverter.isPresent()) {
 		    production = system.getProduction().getProductionWatts();
-	    	LOG.info("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
+	    	LOG.debug("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
 		    metricList.add(new Metric("solar.production.current", production, 5));
 		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
 		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
