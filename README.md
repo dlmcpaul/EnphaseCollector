@@ -11,6 +11,13 @@ Can be run as a java application or using the docker image
 Main Page             |  Weekly History Tab
 ----------------------|-------------------------
 <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png">|<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">
+If using the jar file you will need a Java 11 that you can get from https://adoptopenjdk.net/
+
+Example #1 with default internal website
+```
+java -jar enphasecollector-DEV -e envoy.controller.password=envoy-password
+```
+where envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
 If using the docker image
 
@@ -25,9 +32,9 @@ docker run \
 -e SPRING_PROFILES_ACTIVE=influxdb \
 dlmcpaul/enphasecollector
 ```
-where password is likely to be the last 6 characters of your envoy controller serial number
+where envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
-Example #2 in standalone mode with no storage
+Example #2 in standalone mode with internal database storage
 
 ```
 docker run \
@@ -37,7 +44,9 @@ docker run \
 -p 8080:8080 \
 dlmcpaul/enphasecollector
 ```
-and a web page available at http://localhost:8080 and looks like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
+and a web page available at http://localhost:8080/solar and looks like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
+
+You can also link the internal database to an external file system so the database is not cleared on upgrade of the image using the mount point /internal_db
 
 Example #3 sending data to pvoutput
 ```
@@ -65,8 +74,10 @@ Available environment variables descriptions:
 - ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
 - ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
 - ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93 is 93c/day
+- SERVER_SERVLET_CONTEXT-PATH     Context path for local view
+
 ## Dependencies
-- Docker (or Java)
+- Docker (or Java 11)
 
 - If profile set to influxdb then an 
 Influx DB is needed for storage of the statistics (Will autocreate 2 databases called 'solardb' and 'collectorStats')
@@ -75,4 +86,4 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 
 - You can set both profiles separated by a comma eg influxdb,pvoutput
 
-- The internal database is always populated so the local view is always available
+- The internal database is always populated so the local view is always available at /solar
