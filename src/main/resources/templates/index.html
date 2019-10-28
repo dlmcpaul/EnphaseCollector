@@ -7,7 +7,7 @@
     <title>Enphase Solar System Visualiser</title>
     <link rel="stylesheet" data-th-href="@{/webjars/bulma/0.7.5/css/bulma.min.css}"/>
     <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/5.8.1/css/all.css}"/>
-    <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
+    <link rel="stylesheet" data-th-href="@{/css/default.css}" defer/>
     <link rel="apple-touch-icon" data-th-href="@{sun.jpeg}">
 </head>
 <body class="has-background-light">
@@ -35,7 +35,7 @@
         </nav>
         <div id="live-data" role="main">
             <div class="columns is-multiline is-centered">
-                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{power.gif},'Consumption',${consumption})}"></div>
+                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{power.png},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{sun.jpeg},'Production',${production})}"></div>
                 <div data-th-replace="~{statusListFragment :: statusList}"></div>
             </div>
