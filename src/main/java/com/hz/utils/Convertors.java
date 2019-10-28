@@ -2,6 +2,9 @@ package com.hz.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class Convertors {
 
@@ -25,5 +28,9 @@ public class Convertors {
 
 	public static BigDecimal convertToKiloWattHours(Long watts, int minutesOfOperation) {
 		return convertToKiloWattHours(BigDecimal.valueOf(watts), minutesOfOperation);
+	}
+
+	public static LocalDateTime convertToLocalDateTime(long time) {
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(time * 1000L), ZoneId.systemDefault());
 	}
 }
