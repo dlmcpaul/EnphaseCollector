@@ -4,7 +4,7 @@
     "url": "/production.json?details=1",
     "headers": {
       "Accept": {
-        "equalTo": "application/json, application/*+json"
+        "contains": "application/json, application/*+json"
       }
     }
   },

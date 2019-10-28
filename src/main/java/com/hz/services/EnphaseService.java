@@ -5,6 +5,7 @@ import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.*;
 import com.hz.models.envoy.xml.EnvoyInfo;
+import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,6 @@ public class EnphaseService {
 	}
 
 	public Optional<System> collectEnphaseData() {
-    	// TODO no need to collect all data every request, only individual panels really
     	try {
 		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
 			this.lastStatus = systemResponse.getStatusCodeValue();
@@ -125,6 +125,8 @@ public class EnphaseService {
 				    getInventory(system);
 				    getIndividualPanelData(system);
 
+				    getDeviceMeters(system);
+				    getPowerMeters(system);
 				    if (system.getNetwork().isWifi()) {
 				    	getWirelessInfo(system);
 				    }
@@ -193,27 +195,28 @@ public class EnphaseService {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
 	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
+		Optional<InvertersType> inverter = system.getProduction().getInverter();
 	    BigDecimal production = BigDecimal.ZERO;
 		BigDecimal consumption = BigDecimal.ZERO;
-	    if (productionEim.isPresent()) {
-	    	LOG.debug("production {} {}", productionEim.get().getReadingTime(), productionEim.get().getWattsNow());
-		    production = productionEim.get().getWattsNow();
-		    metricList.add(new Metric("solar.production.current", production));
-		    metricList.add(new Metric("solar.production.total", productionEim.get().getWattsLifetime()));
+	    if (productionEim.isPresent() && inverter.isPresent()) {
+		    production = system.getProduction().getProductionWatts();
+	    	LOG.info("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
+		    metricList.add(new Metric("solar.production.current", production, 5));
+		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
 		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
 	    }
 
-	    Optional<EimType> consumptionEim = system.getProduction().getConsumptionEim();
+	    Optional<EimType> consumptionEim = system.getProduction().getTotalConsumptionEim();
 	    if (consumptionEim.isPresent()) {
-		    LOG.debug("consumption {} {}", consumptionEim.get().getReadingTime(), consumptionEim.get().getWattsNow());
-		    consumption = consumptionEim.get().getWattsNow();
+		    consumption = system.getProduction().getConsumptionWatts();
+		    LOG.debug("consumption {} {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumption);
 		    metricList.add(new Metric("solar.consumption.current", consumption));
 		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
 	    }
 
 	    calculateSavings(metricList, production, consumption);
 
-	    system.getProduction().getMicroInvertorsList().forEach(inverter -> metricList.add(new Metric("solar.panel-" + map(inverter.getSerialNumber()), inverter.getLastReportWatts())));
+	    system.getProduction().getMicroInvertorsList().forEach(micro -> metricList.add(new Metric("solar.panel-" + map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
 
 	    return metricList;
     }
@@ -241,6 +244,42 @@ public class EnphaseService {
 		system.setProduction( enphaseRestTemplate.getForObject(EnphaseRestClientConfig.PRODUCTION, Production.class) );
 	}
 
+	private void getDeviceMeters(@NotNull System system) {
+    	try {
+		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
+				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<DeviceMeter>>() {
+				    });
+		    this.lastStatus = deviceMeterResponse.getStatusCodeValue();
+
+		    if (deviceMeterResponse.getStatusCodeValue() == 200) {
+			    system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
+		    } else {
+			    LOG.error("Reading Device Meters failed {}", deviceMeterResponse.getStatusCode());
+		    }
+	    } catch (RestClientException e) {
+    		LOG.warn("Reading Device Meters failed {}", e.getMessage());
+		    system.getProduction().setDeviceMeterList(new ArrayList<>());
+	    }
+
+	}
+
+	private void getPowerMeters(@NotNull System system) {
+    	try {
+			ResponseEntity<List<PowerMeter>> powerMeterResponse =
+					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<PowerMeter>>() { });
+			this.lastStatus = powerMeterResponse.getStatusCodeValue();
+
+			if (powerMeterResponse.getStatusCodeValue() == 200) {
+				system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
+			} else {
+				LOG.error("Reading Power Meters failed {}", powerMeterResponse.getStatusCode());
+			}
+		} catch (RestClientException e) {
+			LOG.warn("Reading Power Meters failed {}", e.getMessage());
+		    system.getProduction().setPowerMeterList(new ArrayList<>());
+		}
+	}
+
 	private void getIndividualPanelData(@NotNull System system) {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
@@ -254,7 +293,7 @@ public class EnphaseService {
 	    }
     }
 
-	private void getWirelessInfo(System system) {
+    private void getWirelessInfo(System system) {
 		ResponseEntity<Wireless> wirelessResponse =
 				enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
 		this.lastStatus = wirelessResponse.getStatusCodeValue();

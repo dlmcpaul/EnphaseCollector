@@ -4,7 +4,7 @@
     "url": "/admin/lib/wireless_display.json?site_info=0",
     "headers": {
       "Accept": {
-        "equalTo": "application/json, application/*+json"
+        "contains": "application/json, application/*+json"
       }
     }
   },

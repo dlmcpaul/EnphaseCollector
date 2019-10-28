@@ -4,7 +4,7 @@
     "url": "/api/v1/production/inverters",
     "headers": {
       "Accept": {
-        "equalTo": "application/json, application/*+json"
+        "contains": "application/json, application/*+json"
       }
     }
   },

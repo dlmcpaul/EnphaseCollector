@@ -4,7 +4,7 @@
     "url": "/home.json",
     "headers": {
       "Accept": {
-        "equalTo": "application/octet-stream, application/json, application/*+json"
+        "contains": "application/json, application/*+json"
       }
     }
   },

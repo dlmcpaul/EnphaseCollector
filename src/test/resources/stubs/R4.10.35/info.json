@@ -4,7 +4,7 @@
     "url": "/info.xml",
     "headers": {
       "Accept": {
-        "equalTo": "text/plain, application/json, application/*+json, */*"
+        "contains": "text/plain"
       }
     }
   },

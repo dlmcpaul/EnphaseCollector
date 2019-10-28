@@ -12,9 +12,14 @@ public class Metric {
 	private String name;
 	private float value;
 
+	public Metric(String name, float value, int limit) {
+		this.name = name;
+		this.value = value < limit ? 0 : value;
+	}
+
 	public Metric(String name, float value) {
 		this.name = name;
-		this.value = value < 10 ? 0 : value;
+		this.value = value;
 	}
 
 	public Metric(String name, float value1, float value2) {
@@ -29,6 +34,11 @@ public class Metric {
 
 	public Metric(String name, BigDecimal value) {
 		this.name = name;
-		this.value = value.floatValue() < 10 ? 0 : value.floatValue();
+		this.value = value.floatValue();
+	}
+
+	public Metric(String name, BigDecimal value, int limit) {
+		this.name = name;
+		this.value = value.floatValue() < limit ? 0 : value.floatValue();
 	}
 }

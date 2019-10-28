@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/ivp/meters",
+    "headers": {
+      "Accept": {
+        "contains": "application/octet-stream"
+      }
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
