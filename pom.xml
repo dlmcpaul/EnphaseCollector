@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
+        <version>2.1.9.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -31,9 +31,9 @@
         <java.jaxb.version>2.3.1</java.jaxb.version>
         <highcharts.version>7.1.0</highcharts.version>
         <bulma.version>0.7.5</bulma.version>
-        <influxdb.connector.version>2.15</influxdb.connector.version>
+        <influxdb.connector.version>2.16</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
-        <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
+        <spring-cloud.version>Greenwich.SR3</spring-cloud.version>
     </properties>
 
     <dependencyManagement>
@@ -85,11 +85,11 @@
             <artifactId>influxdb-java</artifactId>
             <version>${influxdb.connector.version}</version>
         </dependency>
-        <!-- needed until influxdb next release -->
+        <!-- No idea why I need to force this.  influxdb declares a dependency on 3.14.3 but something drops it back to older version (3.8.1) -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.14.2</version>
+            <version>3.14.3</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -154,6 +154,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <rules><dependencyConvergence/></rules>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
