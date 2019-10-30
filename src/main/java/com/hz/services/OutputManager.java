@@ -6,6 +6,7 @@ import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
+import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +29,15 @@ public class OutputManager {
 	private InfluxExportInterface influxExportService;
 	private LocalExportInterface localExportService;
 	private PvOutputExportInterface pvoutputExportService;
+	private EnvoyInfo envoyInfo;
 
 	@Autowired
-	public OutputManager(EnphaseService enphaseImportService, InfluxExportInterface influxExportService, LocalExportInterface localExportService, PvOutputExportInterface pvoutputExportService) {
+	public OutputManager(EnphaseService enphaseImportService, InfluxExportInterface influxExportService, LocalExportInterface localExportService, PvOutputExportInterface pvoutputExportService, EnvoyInfo envoyInfo) {
 		this.enphaseImportService = enphaseImportService;
 		this.influxExportService = influxExportService;
 		this.localExportService = localExportService;
 		this.pvoutputExportService = pvoutputExportService;
+		this.envoyInfo = envoyInfo;
 	}
 
 	@PostConstruct
@@ -76,8 +79,8 @@ public class OutputManager {
 
 	private EnvoySystem makeSystemInfo(System system) {
 		EnvoySystem envoySystem = new EnvoySystem();
-		envoySystem.setEnvoySerial(enphaseImportService.getSerialNumber());
-		envoySystem.setEnvoyVersion(enphaseImportService.getSoftwareVersion());
+		envoySystem.setEnvoySerial(envoyInfo.getSerialNumber());
+		envoySystem.setEnvoyVersion(envoyInfo.getSoftwareVersion());
 
 		if (system.getNetwork().isWifi()) {
 			envoySystem.setWifi(true);

@@ -1,10 +1,10 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseRestClientConfig;
+import com.hz.configuration.EnphaseSecureRestClientConfig;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.*;
-import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.utils.Convertors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +16,8 @@ import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.xml.transform.StringSource;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -42,7 +40,6 @@ public class EnphaseService {
 	private int lastStatus = 200;
 	private int fullReadCount = 0;
 
-	private EnvoyInfo envoyInfo = null;
 	private List<Inventory> inventoryList = null;
 
 	private final Unmarshaller enphaseMarshaller;
@@ -85,24 +82,6 @@ public class EnphaseService {
 	    }
 
     	return LocalDateTime.now();
-	}
-
-	public String getSoftwareVersion() {
-    	this.getControllerData();
-    	if (envoyInfo != null) {
-    		return envoyInfo.envoyDevice.software;
-	    }
-
-    	return "Unknown";
-	}
-
-	public String getSerialNumber() {
-		this.getControllerData();
-		if (envoyInfo != null) {
-			return envoyInfo.envoyDevice.sn;
-		}
-
-		return "Unknown";
 	}
 
 	public Optional<System> collectEnphaseData() {
@@ -283,7 +262,7 @@ public class EnphaseService {
 	private void getIndividualPanelData(@NotNull System system) {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
-			    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
+			    enphaseSecureRestTemplate.exchange(EnphaseSecureRestClientConfig.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
 		this.lastStatus = inverterResponse.getStatusCodeValue();
 
 	    if (inverterResponse.getStatusCodeValue() == 200) {
@@ -304,20 +283,5 @@ public class EnphaseService {
 			LOG.error("Reading Wireless failed {}", wirelessResponse.getStatusCode());
 		}
 	}
-
-	private void getControllerData() {
-    	if (null == envoyInfo) {
-		    String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
-
-		    try {
-		    	if (infoXml != null) {
-				    envoyInfo = (EnvoyInfo) enphaseMarshaller.unmarshal(new StringSource(infoXml));
-			    }
-		    } catch (IOException e) {
-		    	LOG.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
-		    }
-	    }
-
-    }
 
 }

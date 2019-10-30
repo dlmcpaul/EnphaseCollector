@@ -77,13 +77,16 @@ public class EnphaseServiceRest_4_5_79_Test {
 	@Autowired
 	private EnphaseService enphaseService;
 
+	@Autowired
+	private EnvoyInfo envoyInfo;
+
 	@Test
 	public void enphase_4_5_79_ServiceTest() {
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assert.assertTrue(system.isPresent());
-		Assert.assertThat(this.enphaseService.getSoftwareVersion(), Matchers.equalTo("D4.5.79"));
-		Assert.assertThat(this.enphaseService.getSerialNumber(), Matchers.equalTo("121703XXXXXX"));
+		Assert.assertThat(this.envoyInfo.getSoftwareVersion(), Matchers.equalTo("D4.5.79"));
+		Assert.assertThat(this.envoyInfo.getSerialNumber(), Matchers.equalTo("121703XXXXXX"));
 		Assert.assertThat(system.get().getProduction().getMicroInvertorsList().size(), Matchers.equalTo(16));
 		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsLifetime(), Matchers.comparesEqualTo(BigDecimal.valueOf(13337263.955)));
 		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsNow(), Matchers.comparesEqualTo(BigDecimal.valueOf(1.326)));

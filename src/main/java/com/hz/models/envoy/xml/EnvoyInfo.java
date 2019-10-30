@@ -12,4 +12,19 @@ public class EnvoyInfo {
 	public EnvoyDevice envoyDevice;
 	@XmlElement(name = "package")
 	public List<EnvoyPackage> packages;
+
+	public String getSoftwareVersion() {
+		if (envoyDevice.software.isEmpty()) {
+			return "Unknown";
+		}
+		return envoyDevice.software;
+	}
+
+	public String getSerialNumber() {
+		if (envoyDevice.sn.isEmpty()) {
+			return "000000000000";
+		}
+		return envoyDevice.sn;
+	}
+
 }

@@ -7,6 +7,7 @@ import com.hz.controllers.models.Status;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.models.database.Summary;
+import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
@@ -36,12 +37,14 @@ public class EnphaseController {
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
+	private final EnvoyInfo envoyInfo;
 
 	@Autowired
-	public EnphaseController(EnphaseCollectorProperties properties, EnphaseService enphaseService, LocalDBService localDBService) {
+	public EnphaseController(EnphaseCollectorProperties properties, EnphaseService enphaseService, LocalDBService localDBService, EnvoyInfo envoyInfo) {
 		this.enphaseService = enphaseService;
 		this.properties = properties;
 		this.localDBService = localDBService;
+		this.envoyInfo = envoyInfo;
 	}
 
 	private List<Status> populateStatusList() {
@@ -92,8 +95,8 @@ public class EnphaseController {
 		try {
 			model.addAttribute("consumption", localDBService.getLastEvent().getConsumption().intValue());
 			model.addAttribute("production", localDBService.getLastEvent().getProduction().intValue());
-			model.addAttribute("software_version", enphaseService.getSoftwareVersion());
-			model.addAttribute("serial_number", enphaseService.getSerialNumber());
+			model.addAttribute("software_version", envoyInfo.getSoftwareVersion());
+			model.addAttribute("serial_number", envoyInfo.getSerialNumber());
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 		} catch (Exception e) {
