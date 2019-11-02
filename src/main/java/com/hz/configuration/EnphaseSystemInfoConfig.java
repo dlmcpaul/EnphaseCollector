@@ -3,9 +3,8 @@ package com.hz.configuration;
 import com.hz.models.envoy.xml.EnvoyDevice;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.models.envoy.xml.EnvoyPackage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.Unmarshaller;
@@ -16,18 +15,12 @@ import org.springframework.xml.transform.StringSource;
 import java.io.IOException;
 
 @Configuration
+@RequiredArgsConstructor
+@Log4j2
 public class EnphaseSystemInfoConfig {
-
-	private static final Logger LOG = LoggerFactory.getLogger(EnphaseSystemInfoConfig.class);
 
 	private final EnphaseCollectorProperties config;
 	private final RestTemplate enphaseRestTemplate;
-
-	@Autowired
-	public EnphaseSystemInfoConfig(EnphaseCollectorProperties config, RestTemplate enphaseRestTemplate) {
-		this.config = config;
-		this.enphaseRestTemplate = enphaseRestTemplate;
-	}
 
 	@Bean
 	public Unmarshaller enphaseMarshaller() {
@@ -46,7 +39,7 @@ public class EnphaseSystemInfoConfig {
 				return (EnvoyInfo) enphaseMarshaller.unmarshal(new StringSource(infoXml));
 			}
 		} catch (IOException e) {
-			LOG.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
+			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 
 		return new EnvoyInfo();

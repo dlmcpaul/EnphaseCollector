@@ -1,15 +1,14 @@
 package com.hz.configuration;
 
 import com.hz.models.envoy.xml.EnvoyInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +23,9 @@ import static org.apache.http.auth.AuthScope.ANY_SCHEME;
  * Created by David on 22-Oct-17.
  */
 @Configuration
+@RequiredArgsConstructor
+@Log4j2
 public class EnphaseSecureRestClientConfig {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EnphaseSecureRestClientConfig.class);
 
     // Needs Digest authentication
     public static final String INVERTERS = "/api/v1/production/inverters";
@@ -34,12 +33,6 @@ public class EnphaseSecureRestClientConfig {
 
     private final EnphaseCollectorProperties config;
     private final EnvoyInfo envoyInfo;
-
-	@Autowired
-	public EnphaseSecureRestClientConfig(EnphaseCollectorProperties config, EnvoyInfo envoyInfo) {
-		this.config = config;
-		this.envoyInfo = envoyInfo;
-	}
 
 	private String getControllerPassword() {
 		if (config.getController().getPassword() == null || config.getController().getPassword().isEmpty()) {
@@ -60,7 +53,7 @@ public class EnphaseSecureRestClientConfig {
     @Bean
     public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
 
-	    LOG.info("Reading from protected Envoy controller endpoint {}", config.getController().getUrl());
+	    log.info("Reading from protected Envoy controller endpoint {}", config.getController().getUrl());
 
 	    HttpClient httpClient = HttpClients
 			    .custom()

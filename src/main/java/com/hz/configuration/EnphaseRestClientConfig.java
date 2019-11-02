@@ -1,8 +1,9 @@
 package com.hz.configuration;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ import java.util.Collections;
  * Created by David on 22-Oct-17.
  */
 @Configuration
+@RequiredArgsConstructor
+@Log4j2
 public class EnphaseRestClientConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(EnphaseRestClientConfig.class);
@@ -34,15 +37,10 @@ public class EnphaseRestClientConfig {
 
     private final EnphaseCollectorProperties config;
 
-	@Autowired
-	public EnphaseRestClientConfig(EnphaseCollectorProperties config) {
-		this.config = config;
-	}
-
 	@Bean
 	public RestTemplate enphaseRestTemplate(RestTemplateBuilder builder) {
 
-		LOG.info("Reading from insecure Envoy controller endpoint {}", config.getController().getUrl());
+		log.info("Reading from insecure Envoy controller endpoint {}", config.getController().getUrl());
 
 		return builder
 				.rootUri(config.getController().getUrl())

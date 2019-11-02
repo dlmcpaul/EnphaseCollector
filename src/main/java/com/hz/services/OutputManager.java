@@ -8,9 +8,8 @@ import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.utils.Convertors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,24 +20,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Log4j2
 @Profile("!testing")
 public class OutputManager {
-	private static final Logger LOG = LoggerFactory.getLogger(OutputManager.class);
-
 	private EnphaseService enphaseImportService;
 	private InfluxExportInterface influxExportService;
 	private LocalExportInterface localExportService;
 	private PvOutputExportInterface pvoutputExportService;
 	private EnvoyInfo envoyInfo;
-
-	@Autowired
-	public OutputManager(EnphaseService enphaseImportService, InfluxExportInterface influxExportService, LocalExportInterface localExportService, PvOutputExportInterface pvoutputExportService, EnvoyInfo envoyInfo) {
-		this.enphaseImportService = enphaseImportService;
-		this.influxExportService = influxExportService;
-		this.localExportService = localExportService;
-		this.pvoutputExportService = pvoutputExportService;
-		this.envoyInfo = envoyInfo;
-	}
 
 	@PostConstruct
 	public void init() {
@@ -49,11 +39,11 @@ public class OutputManager {
 	// Summarise the Event table at 5 minutes past midnight
 	@Scheduled(cron="0 5 0 * * ?")
 	public void summariseEvents() {
-		LOG.info("Summarising Event table");
+		log.info("Summarising Event table");
 		try {
 			localExportService.summariseEvents();
 		} catch (Exception e) {
-			LOG.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
+			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
 		}
 	}
 
@@ -73,7 +63,7 @@ public class OutputManager {
 
 			system.ifPresent(s -> send(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
 		} catch (Exception e) {
-			LOG.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
+			log.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
 		}
 	}
 

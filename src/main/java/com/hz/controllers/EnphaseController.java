@@ -12,9 +12,8 @@ import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,21 +30,14 @@ import java.util.List;
  * Created by David on 23-Oct-17.
  */
 @Controller
+@RequiredArgsConstructor
+@Log4j2
 public class EnphaseController {
-	private static final Logger LOG = LoggerFactory.getLogger(EnphaseController.class);
 
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
 	private final EnvoyInfo envoyInfo;
-
-	@Autowired
-	public EnphaseController(EnphaseCollectorProperties properties, EnphaseService enphaseService, LocalDBService localDBService, EnvoyInfo envoyInfo) {
-		this.enphaseService = enphaseService;
-		this.properties = properties;
-		this.localDBService = localDBService;
-		this.envoyInfo = envoyInfo;
-	}
 
 	private List<Status> populateStatusList() {
 		ArrayList<Status> statusList = new ArrayList<>();
@@ -83,7 +75,7 @@ public class EnphaseController {
 
 			return statusList.subList(0, 9);
 		} catch (Exception e) {
-			LOG.error("populateStatusList Exception: {} {}", e.getMessage(), e);
+			log.error("populateStatusList Exception: {} {}", e.getMessage(), e);
 		}
 
 		return statusList;
@@ -100,7 +92,7 @@ public class EnphaseController {
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 		} catch (Exception e) {
-			LOG.error("index Page Exception {} {}", e.getMessage(), e);
+			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
 		return "index";
 	}
@@ -117,7 +109,7 @@ public class EnphaseController {
 		try {
 			return localDBService.getLastEvent();
 		} catch (Exception e) {
-			LOG.error("getEvent Exception: {} {}", e.getMessage(), e);
+			log.error("getEvent Exception: {} {}", e.getMessage(), e);
 		}
 
 		return new Event();
@@ -131,7 +123,7 @@ public class EnphaseController {
 		try {
 			localDBService.getTodaysEvents().forEach(pvc::addEvent);
 		} catch (Exception e) {
-			LOG.error("getPvc Exception: {} {}", e.getMessage(), e);
+			log.error("getPvc Exception: {} {}", e.getMessage(), e);
 		}
 		return pvc;
 	}
@@ -150,7 +142,7 @@ public class EnphaseController {
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), properties));
 			} catch (Exception e) {
-				LOG.error("getHistory Exception: {} {}", e.getMessage(), e);
+				log.error("getHistory Exception: {} {}", e.getMessage(), e);
 			}
 		}
 		return result;
@@ -162,7 +154,7 @@ public class EnphaseController {
 		try {
 			return localDBService.getLastEvent().getProduction().intValue();
 		} catch (Exception e) {
-			LOG.error("getProduction Exception: {} {}", e.getMessage(), e);
+			log.error("getProduction Exception: {} {}", e.getMessage(), e);
 		}
 		return 0;
 	}
@@ -173,7 +165,7 @@ public class EnphaseController {
 		try {
 			return localDBService.getLastEvent().getConsumption().intValue();
 		} catch (Exception e) {
-			LOG.error("getConsumption Exception: {} {}", e.getMessage(), e);
+			log.error("getConsumption Exception: {} {}", e.getMessage(), e);
 		}
 		return 0;
 	}

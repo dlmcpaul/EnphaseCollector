@@ -1,8 +1,7 @@
 package com.hz.configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +16,11 @@ import java.io.IOException;
 import java.time.Duration;
 
 @Configuration
+@RequiredArgsConstructor
+@Log4j2
 @Profile("pvoutput")
 public class PvOutputClientConfig {
-	private static final Logger LOG = LoggerFactory.getLogger(PvOutputClientConfig.class);
-
 	private EnphaseCollectorProperties config;
-
-	@Autowired
-	public PvOutputClientConfig(EnphaseCollectorProperties config) {
-		this.config = config;
-	}
 
 	public static final String ADD_STATUS = "/service/r2/addstatus.jsp";
 	public static final String GET_STATUS = "/service/r2/getstatus.jsp";
@@ -52,7 +46,7 @@ public class PvOutputClientConfig {
 	@Bean(name="pvRestTemplate")
 	public RestTemplate pvRestTemplate(RestTemplateBuilder builder) {
 
-		LOG.info("Writing to Pv Output endpoint {} using key {}", config.getPvOutputResource().getUrl(), config.getPvOutputResource().getKey());
+		log.info("Writing to Pv Output endpoint {} using key {}", config.getPvOutputResource().getUrl(), config.getPvOutputResource().getKey());
 
 		return builder
 				.rootUri(config.getPvOutputResource().getUrl())

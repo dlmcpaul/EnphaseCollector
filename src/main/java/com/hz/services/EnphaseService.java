@@ -6,9 +6,8 @@ import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.*;
 import com.hz.utils.Convertors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +31,9 @@ import java.util.Optional;
  * Created by David on 22-Oct-17.
  */
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class EnphaseService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EnphaseService.class);
 
 	private long lastReadTime = 0L;
 	private int lastStatus = 200;
@@ -42,9 +41,9 @@ public class EnphaseService {
 
 	private List<Inventory> inventoryList = null;
 
-	private final Unmarshaller enphaseMarshaller;
     private final RestTemplate enphaseRestTemplate;
     private final RestTemplate enphaseSecureRestTemplate;
+	private final Unmarshaller enphaseMarshaller;
 
     // Table of my serial numbers to map to simpler values
 	private List<String> mySerialNumbers = Arrays.asList(
@@ -64,13 +63,6 @@ public class EnphaseService {
 		    "121707050098",
 		    "121707049864",
 		    "121707050570");
-
-    @Autowired
-	public EnphaseService(RestTemplate enphaseRestTemplate, RestTemplate enphaseSecureRestTemplate, Unmarshaller enphaseMarshaller) {
-		this.enphaseRestTemplate = enphaseRestTemplate;
-		this.enphaseSecureRestTemplate = enphaseSecureRestTemplate;
-		this.enphaseMarshaller = enphaseMarshaller;
-    }
 
 	public boolean isOk() {
     	return this.lastStatus == 200;
@@ -112,13 +104,13 @@ public class EnphaseService {
 
 				    return Optional.of(system);
 			    } else {
-				    LOG.error("Envoy Production read failed");
+				    log.error("Envoy Production read failed");
 			    }
 		    } else {
-			    LOG.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
+			    log.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
 		    }
 	    } catch (RestClientException e) {
-		    LOG.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage());
+		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage());
 	    }
 		return Optional.empty();
 	}
@@ -179,7 +171,7 @@ public class EnphaseService {
 		BigDecimal consumption = BigDecimal.ZERO;
 	    if (productionEim.isPresent() && inverter.isPresent()) {
 		    production = system.getProduction().getProductionWatts();
-	    	LOG.debug("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
+	    	log.debug("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
 		    metricList.add(new Metric("solar.production.current", production, 5));
 		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
 		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
@@ -188,7 +180,7 @@ public class EnphaseService {
 	    Optional<EimType> consumptionEim = system.getProduction().getTotalConsumptionEim();
 	    if (consumptionEim.isPresent()) {
 		    consumption = system.getProduction().getConsumptionWatts();
-		    LOG.debug("consumption {} {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumption);
+		    log.debug("consumption {} {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumption);
 		    metricList.add(new Metric("solar.consumption.current", consumption));
 		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
 	    }
@@ -212,7 +204,7 @@ public class EnphaseService {
 			    system.setInventoryList(inventoryResponse.getBody());
 			    inventoryList = system.getInventoryList();
 	        } else {
-		        LOG.error("Reading Inventory failed {}", inventoryResponse.getStatusCode());
+		        log.error("Reading Inventory failed {}", inventoryResponse.getStatusCode());
 	        }
 	    } else {
 		    system.setInventoryList(inventoryList);
@@ -233,10 +225,10 @@ public class EnphaseService {
 		    if (deviceMeterResponse.getStatusCodeValue() == 200) {
 			    system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
 		    } else {
-			    LOG.error("Reading Device Meters failed {}", deviceMeterResponse.getStatusCode());
+			    log.error("Reading Device Meters failed {}", deviceMeterResponse.getStatusCode());
 		    }
 	    } catch (RestClientException e) {
-    		LOG.warn("Reading Device Meters failed {}", e.getMessage());
+    		log.warn("Reading Device Meters failed {}", e.getMessage());
 		    system.getProduction().setDeviceMeterList(new ArrayList<>());
 	    }
 
@@ -251,10 +243,10 @@ public class EnphaseService {
 			if (powerMeterResponse.getStatusCodeValue() == 200) {
 				system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
 			} else {
-				LOG.error("Reading Power Meters failed {}", powerMeterResponse.getStatusCode());
+				log.error("Reading Power Meters failed {}", powerMeterResponse.getStatusCode());
 			}
 		} catch (RestClientException e) {
-			LOG.warn("Reading Power Meters failed {}", e.getMessage());
+			log.warn("Reading Power Meters failed {}", e.getMessage());
 		    system.getProduction().setPowerMeterList(new ArrayList<>());
 		}
 	}
@@ -268,7 +260,7 @@ public class EnphaseService {
 	    if (inverterResponse.getStatusCodeValue() == 200) {
 		    system.getProduction().setInverterList(inverterResponse.getBody());
 	    } else {
-	    	LOG.error("Reading Inverters failed {}", inverterResponse.getStatusCode());
+	    	log.error("Reading Inverters failed {}", inverterResponse.getStatusCode());
 	    }
     }
 
@@ -280,7 +272,7 @@ public class EnphaseService {
 		if (wirelessResponse.getStatusCodeValue() == 200) {
 			system.setWireless(wirelessResponse.getBody());
 		} else {
-			LOG.error("Reading Wireless failed {}", wirelessResponse.getStatusCode());
+			log.error("Reading Wireless failed {}", wirelessResponse.getStatusCode());
 		}
 	}
 

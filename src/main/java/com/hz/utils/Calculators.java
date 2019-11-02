@@ -1,14 +1,12 @@
 package com.hz.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 
+@Log4j2
 public class Calculators {
-
-	private static final Logger LOG = LoggerFactory.getLogger(Calculators.class);
 
 	private Calculators() {}
 
@@ -27,7 +25,7 @@ public class Calculators {
 		// Convert to dollars cost = KWh * price per kilowatt
 		BigDecimal moneyValue = kiloWattHours.multiply(BigDecimal.valueOf(price));
 
-		LOG.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);		// NOSONAR
+		log.debug("{} - {} calculated from {} Kwh using {} per Kwh and input of {} W ", type, currencyInstance.format(moneyValue), numberInstance.format(kiloWattHours), price, watts);		// NOSONAR
 
 		return moneyValue;
 	}

@@ -3,35 +3,29 @@ package com.hz.configuration;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import org.influxdb.InfluxDBFactory;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
+@RequiredArgsConstructor
+@Log4j2
 public class InfluxDBConfig {
-	private static final Logger LOG = LoggerFactory.getLogger(InfluxDBConfig.class);
 
 	private final EnphaseCollectorProperties config;
 
 	private static final String DATABASE_NAME = "solardb";
 
-	@Autowired
-	public InfluxDBConfig(EnphaseCollectorProperties config) {
-		this.config = config;
-	}
-
 	@Bean
 	@Profile({"influxdb"})
 	public InfluxMeterRegistry influxMeterRegistry() {
-		LOG.info("Writing metrics to influx database at {}", config.getInfluxdbResource().getUrl());
+		log.info("Writing metrics to influx database at {}", config.getInfluxdbResource().getUrl());
 
 		InfluxConfig metricsConfig = new InfluxConfig() {
 
@@ -67,7 +61,7 @@ public class InfluxDBConfig {
 	@Bean
 	@Profile({"influxdb"})
 	public InfluxDB destinationInfluxDB() {
-		LOG.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
+		log.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
 
 		InfluxDB database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
 		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
