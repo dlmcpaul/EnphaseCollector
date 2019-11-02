@@ -11,7 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -43,7 +42,6 @@ public class EnphaseService {
 
     private final RestTemplate enphaseRestTemplate;
     private final RestTemplate enphaseSecureRestTemplate;
-	private final Unmarshaller enphaseMarshaller;
 
     // Table of my serial numbers to map to simpler values
 	private List<String> mySerialNumbers = Arrays.asList(
