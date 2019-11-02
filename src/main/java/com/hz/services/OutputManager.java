@@ -10,11 +10,12 @@ import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,14 +25,15 @@ import java.util.Optional;
 @Log4j2
 @Profile("!testing")
 public class OutputManager {
-	private EnphaseService enphaseImportService;
-	private InfluxExportInterface influxExportService;
-	private LocalExportInterface localExportService;
-	private PvOutputExportInterface pvoutputExportService;
-	private EnvoyInfo envoyInfo;
+	private final EnphaseService enphaseImportService;
+	private final InfluxExportInterface influxExportService;
+	private final LocalExportInterface localExportService;
+	private final PvOutputExportInterface pvoutputExportService;
+	private final EnvoyInfo envoyInfo;
 
-	@PostConstruct
-	public void init() {
+	@EventListener(ApplicationReadyEvent.class)
+	public void AppReady() {
+		log.info("Application Started");
 		this.gather();
 		this.summariseEvents();
 	}
