@@ -42,6 +42,6 @@ public class EnphaseSystemInfoConfig {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 
-		return new EnvoyInfo();
+		return new EnvoyInfo("Unknown", "Unknown");
 	}
 }

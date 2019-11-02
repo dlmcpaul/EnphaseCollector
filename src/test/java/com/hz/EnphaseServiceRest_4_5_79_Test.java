@@ -2,9 +2,7 @@ package com.hz;
 
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
-import com.hz.models.envoy.xml.EnvoyDevice;
 import com.hz.models.envoy.xml.EnvoyInfo;
-import com.hz.models.envoy.xml.EnvoyPackage;
 import com.hz.services.EnphaseService;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -18,7 +16,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.oxm.Unmarshaller;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +41,11 @@ public class EnphaseServiceRest_4_5_79_Test {
 		private RestTemplateBuilder restTemplateBuilder;
 
 		@Bean
+		public EnvoyInfo envoyInfo(Unmarshaller enphaseMarshaller) {
+			return new EnvoyInfo("D4.5.79", "121703XXXXXX");
+		}
+
+		@Bean
 		public RestTemplate enphaseRestTemplate() {
 			return restTemplateBuilder
 					.rootUri("http://localhost:" + this.environment.getProperty("wiremock.server.port"))
@@ -59,18 +61,6 @@ public class EnphaseServiceRest_4_5_79_Test {
 					.setConnectTimeout(Duration.ofSeconds(5))
 					.setReadTimeout(Duration.ofSeconds(30))
 					.build();
-		}
-
-		@Bean
-		public Unmarshaller enphaseMarshaller() {
-			Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-			marshaller.setClassesToBeBound(EnvoyInfo.class, EnvoyPackage.class, EnvoyDevice.class);
-			return marshaller;
-		}
-
-		@Bean
-		public EnphaseService enphaseService(RestTemplate enphaseRestTemplate, Unmarshaller enphaseMarshaller) {
-			return new EnphaseService(enphaseRestTemplate, enphaseRestTemplate, enphaseMarshaller);
 		}
 	}
 
