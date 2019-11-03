@@ -32,7 +32,7 @@ public class OutputManager {
 	private final EnvoyInfo envoyInfo;
 
 	@EventListener(ApplicationReadyEvent.class)
-	public void AppReady() {
+	public void applicationReady() {
 		log.info("Application Started");
 		this.gather();
 		this.summariseEvents();
