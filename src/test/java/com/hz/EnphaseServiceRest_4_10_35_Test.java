@@ -75,7 +75,7 @@ public class EnphaseServiceRest_4_10_35_Test {
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assert.assertTrue(system.isPresent());
-		Assert.assertThat(this.envoyInfo.getSoftwareVersion(), Matchers.equalTo("R4.10.35"));
+		Assert.assertThat(this.envoyInfo.getSoftwareVersion(), Matchers.equalTo("D4.10.35"));
 		Assert.assertThat(this.envoyInfo.getSerialNumber(), Matchers.equalTo("121806XXXXXX"));
 		Assert.assertThat(system.get().getProduction().getMicroInvertorsList().size(), Matchers.equalTo(41));
 		Assert.assertThat(system.get().getProduction().getProductionEim().get().getWattsLifetime(), Matchers.comparesEqualTo(BigDecimal.valueOf(13827622.064)));
