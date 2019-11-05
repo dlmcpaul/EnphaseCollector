@@ -16,7 +16,7 @@ If using the jar file you will need a Java 11 that you can get from https://adop
 
 Example #1 with default internal website
 ```
-java -jar enphasecollector-DEV -e envoy.controller.password=envoy-password
+java -jar enphasecollector-DEV.jar --envoy.controller.password=envoy-password
 ```
 where envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
