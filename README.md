@@ -20,6 +20,14 @@ java -jar enphasecollector-DEV.jar --envoy.controller.password=envoy-password
 ```
 where envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
+Example #2 when envoy.local is not resolved and you need to specify the ip address
+```
+java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.controller.password=envoy-password
+```
+where envoy-ip is the ip address of your envoy controller
+and envoy-password is likely to be the last 6 characters of your envoy controller serial number
+
+
 If using the docker image
 
 Example #1 using influxDB for storage
