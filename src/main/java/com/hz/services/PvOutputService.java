@@ -7,7 +7,9 @@ import com.hz.metrics.Metric;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,7 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,10 +52,9 @@ public class PvOutputService implements PvOutputExportInterface {
 	private static final int GENERATED_TOTAL = 2;
 	private static final int CONSUMED_TOTAL = 4;
 
-	// TODO allow for 5,10,15 min intervals
 	// pvoutput has a min of 5 minutes
-	@PostConstruct
-	private void initAccumulatorsFromPvOutput() {
+	@EventListener(ApplicationReadyEvent.class)
+	public void applicationReady() {
 		// Roll forward nextUpdate to nearest 5 min in future
 		LocalDateTime now = LocalDateTime.now();
 		while (now.isAfter(nextUpdate)) {
