@@ -2,8 +2,6 @@ package com.hz.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +20,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 @Log4j2
 public class EnphaseRestClientConfig {
-
-    private static final Logger LOG = LoggerFactory.getLogger(EnphaseRestClientConfig.class);
 
     public static final String SYSTEM = "/home.json";
     public static final String INVENTORY = "/inventory.json?deleted=1";
