@@ -7,12 +7,12 @@ ENV JAVA_MINIMAL=/opt/jre
 ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
 
-RUN MODULES=$(jdeps --print-module-deps /app.jar) \
+RUN MODULES=$($JAVA_HOME/bin/jdeps --print-module-deps /app.jar) \
     && echo modules identified = $MODULES \
-    && jlink \
+    && $JAVA_HOME/bin/jlink \
     --verbose \
     --add-modules \
-        "$MODULES",java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument \
+        "$MODULES",java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument,jdk.unsupported \
     --compress 2 \
     --strip-debug \
     --no-header-files \
@@ -39,4 +39,4 @@ ENV LANGUAGE en_US.UTF-8
 # expose the internal actuator endpoints
 EXPOSE 8080
 
-CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "/app.jar"]
