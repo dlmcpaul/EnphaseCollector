@@ -1,5 +1,11 @@
 /*global Highcharts, getChart, refreshTarget, console */
 
+function add(x, y) {
+    "use strict";
+
+    return x + y;
+}
+
 function updateHistory(target, response) {
     "use strict";
 
@@ -12,8 +18,13 @@ function updateHistory(target, response) {
     var billTarget = target.substring(0,target.length-6) + "-bill";
 
     var labelValue = document.getElementById(billTarget);
-    labelValue.innerText = "Estimated Cost is $" + parseFloat(response.billEstimate).toFixed(2);
-
+    labelValue.innerText = "Estimated Cost for this period is $" +
+        parseFloat(response.billEstimate).toFixed(2) +
+        " which is calculated from $" +
+        add(parseFloat(response.importCost), (parseFloat(response.baseCost))).toFixed(2) +
+        " in electricity costs and $" +
+        parseFloat(response.exportEarnings).toFixed(2) +
+        " of export credits";
 }
 
 // Function works if content element is named the same as the tab id with -data appended

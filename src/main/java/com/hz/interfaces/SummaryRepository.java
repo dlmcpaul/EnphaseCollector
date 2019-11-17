@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface SummaryRepository extends CrudRepository<Summary, Long> {
-	public List<Summary> findSummeriesByDateGreaterThanEqual(LocalDate date);
+	public List<Summary> findSummeriesByDateBetween(LocalDate from, LocalDate to);
 }

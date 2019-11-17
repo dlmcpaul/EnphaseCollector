@@ -29,7 +29,7 @@
             <ul>
                 <li id="live" class="is-active"><a data-th-onClick="switchToTab('live', null)">Live</a></li>
                 <li id="weekly"><a data-th-onClick="switchToTab('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Week</a></li>
-                <li id="monthly"><a data-th-onClick="switchToTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=1Months')">Month</a></li>
+                <li id="monthly"><a data-th-onClick="switchToTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
                 <li id="quarterly"><a data-th-onClick="switchToTab('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
             </ul>
         </nav>

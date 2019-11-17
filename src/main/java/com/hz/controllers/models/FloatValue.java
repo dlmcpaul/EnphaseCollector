@@ -25,4 +25,8 @@ public class FloatValue {
 		this.watts = watts.floatValue();
 	}
 
+	public void addWatts(BigDecimal watts) {
+		this.watts += watts.floatValue();
+	}
+
 }

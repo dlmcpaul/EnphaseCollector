@@ -5,7 +5,7 @@
 
     <groupId>com.hz</groupId>
     <artifactId>enphasecollector</artifactId>
-    <version>DEV</version>
+    <version>1.0.14</version>
     <packaging>jar</packaging>
 
     <name>EnphaseCollector</name>
@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.9.RELEASE</version>
+        <version>2.2.0.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -110,7 +110,6 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
-
         <!-- JAXB removed from Java 11 forwards so add runtime jar back in -->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
@@ -118,7 +117,6 @@
             <version>${java.jaxb.version}</version>
             <scope>runtime</scope>
         </dependency>
-
         <!-- Web View dependencies -->
         <dependency>
             <groupId>org.webjars</groupId>
@@ -135,7 +133,6 @@
             <artifactId>bulma</artifactId>
             <version>${bulma.version}</version>
         </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -157,14 +154,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
-                <configuration>
-                    <rules><dependencyConvergence/></rules>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
                     <nonFilteredFileExtensions>
@@ -179,6 +168,11 @@
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

@@ -350,16 +350,6 @@ function initHistoryCharts() {
             enabled: false
         },
         plotOptions: {
-            series: {
-                dataGrouping: {
-                    approximation: "sum",
-                    enabled: true,
-                    forced: true,
-                    units: [
-                        [ "week", [1] ]
-                    ]
-                }
-            },
             column: {
                 stacking: "normal"
             }
@@ -373,7 +363,7 @@ function initHistoryCharts() {
         },
         xAxis: {
             title: {
-                text: "Last Month"
+                text: "Last 4 Weeks"
             },
             type: "datetime", //For time series, x-axis labels will be time
             labels: {
@@ -407,9 +397,6 @@ function initHistoryCharts() {
                 name: "export",
                 type: "column",
                 yAxis: 0,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             },
@@ -417,9 +404,6 @@ function initHistoryCharts() {
                 name: "solar",
                 type: "column",
                 yAxis: 0,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
@@ -427,9 +411,6 @@ function initHistoryCharts() {
                 name: "grid",
                 type: "line",
                 yAxis: 1,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             }
@@ -443,16 +424,6 @@ function initHistoryCharts() {
             enabled: false
         },
         plotOptions: {
-            series: {
-                dataGrouping: {
-                    approximation: "sum",
-                    enabled: true,
-                    forced: true,
-                    units: [
-                        [ "month", [1] ]
-                    ]
-                }
-            },
             column: {
                 stacking: "normal"
             }
@@ -500,9 +471,6 @@ function initHistoryCharts() {
                 name: "export",
                 type: "column",
                 yAxis: 0,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#0000FF",
                 data: [ [now.getTime(), 0] ]
             },
@@ -510,9 +478,6 @@ function initHistoryCharts() {
                 name: "solar",
                 type: "column",
                 yAxis: 0,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#55BF3B",
                 data: [ [now.getTime(), 0] ]
             },
@@ -520,9 +485,6 @@ function initHistoryCharts() {
                 name: "grid",
                 type: "line",
                 yAxis: 1,
-                dataGrouping: {
-                    type: "column"
-                },
                 color: "#FF0000",
                 data: [ [now.getTime(), 0] ]
             }

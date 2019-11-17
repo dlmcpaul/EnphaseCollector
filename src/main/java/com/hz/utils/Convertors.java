@@ -3,6 +3,7 @@ package com.hz.utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -32,5 +33,9 @@ public class Convertors {
 
 	public static LocalDateTime convertToLocalDateTime(long time) {
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(time * 1000L), ZoneId.systemDefault());
+	}
+
+	public static LocalDate convertToLocalDate(long date) {
+		return LocalDate.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault());
 	}
 }

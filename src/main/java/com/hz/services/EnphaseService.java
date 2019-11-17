@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -113,14 +112,14 @@ public class EnphaseService {
 		return Optional.empty();
 	}
 
-	public LocalDateTime getCollectionTime(@NotNull System system) {
+	public LocalDateTime getCollectionTime(System system) {
 	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
 	    // Envoy only produces time in seconds
 	    return productionEim.map(typeBase -> LocalDateTime.ofInstant(Instant.ofEpochMilli(typeBase.getReadingTime() * 1000L), ZoneId.systemDefault()))
 			    .orElseGet(() -> LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
-    private boolean systemNotReady(@NotNull System system) {
+    private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
 
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
@@ -169,16 +168,16 @@ public class EnphaseService {
 		BigDecimal consumption = BigDecimal.ZERO;
 	    if (productionEim.isPresent() && inverter.isPresent()) {
 		    production = system.getProduction().getProductionWatts();
-	    	log.debug("production eim time {} eim {} inverter time {} inverter {} {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), production, inverter.get().getWattsNow());
+	    	log.debug("production: eim time {} eim {} inverter time {} inverter {} calculated {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), inverter.get().getWattsNow(), production);
 		    metricList.add(new Metric("solar.production.current", production, 5));
 		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
-		    metricList.add(new Metric("solar.production.voltage", productionEim.get().getRmsVoltage().floatValue()));
+		    metricList.add(new Metric("solar.production.voltage", system.getProduction().getProductionVoltage().floatValue()));
 	    }
 
 	    Optional<EimType> consumptionEim = system.getProduction().getTotalConsumptionEim();
 	    if (consumptionEim.isPresent()) {
 		    consumption = system.getProduction().getConsumptionWatts();
-		    log.debug("consumption {} {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumption);
+		    log.debug("consumption: eim time {} eim {} calculated {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumptionEim.get().getWattsNow(), consumption);
 		    metricList.add(new Metric("solar.consumption.current", consumption));
 		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
 	    }
@@ -190,7 +189,7 @@ public class EnphaseService {
 	    return metricList;
     }
 
-    private void getInventory(@NotNull System system) {
+    private void getInventory(System system) {
 	    if (fullReadCount-- <= 0) {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
@@ -209,11 +208,11 @@ public class EnphaseService {
 	    }
     }
 
-	private void getProductionData(@NotNull System system) {
+	private void getProductionData(System system) {
 		system.setProduction( enphaseRestTemplate.getForObject(EnphaseRestClientConfig.PRODUCTION, Production.class) );
 	}
 
-	private void getDeviceMeters(@NotNull System system) {
+	private void getDeviceMeters(System system) {
     	try {
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
 				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<DeviceMeter>>() {
@@ -232,7 +231,7 @@ public class EnphaseService {
 
 	}
 
-	private void getPowerMeters(@NotNull System system) {
+	private void getPowerMeters(System system) {
     	try {
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
 					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<PowerMeter>>() { });
@@ -249,7 +248,7 @@ public class EnphaseService {
 		}
 	}
 
-	private void getIndividualPanelData(@NotNull System system) {
+	private void getIndividualPanelData(System system) {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
 			    enphaseSecureRestTemplate.exchange(EnphaseSecureRestClientConfig.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });

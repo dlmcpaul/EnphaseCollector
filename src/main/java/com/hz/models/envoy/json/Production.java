@@ -103,6 +103,21 @@ public class Production {
 	}
 
 	@JsonIgnore
+	public BigDecimal getProductionVoltage() {
+
+		if (getProductionMeter().isPresent()) {
+			return getProductionMeter().get().getVoltage();
+		}
+
+		if (getProductionEim().isPresent()) {
+			return getProductionEim().get().getRmsVoltage();
+		}
+
+		return BigDecimal.ZERO;
+	}
+
+
+	@JsonIgnore
 	public BigDecimal getProductionWatts() {
 
 		if (getProductionMeter().isPresent()) {

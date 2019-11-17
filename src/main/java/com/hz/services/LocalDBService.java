@@ -9,13 +9,13 @@ import com.hz.metrics.Metric;
 import com.hz.models.database.*;
 import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,26 +23,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Log4j2
 public class LocalDBService implements LocalExportInterface {
 
-	private static final Logger LOG = LoggerFactory.getLogger(LocalDBService.class);
-
+	private final EnphaseCollectorProperties properties;
 	private final EnvoySystemRepository envoySystemRepository;
 	private final EventRepository eventRepository;
 	private final SummaryRepository summaryRepository;
-	private final EnphaseCollectorProperties properties;
-
-	@Autowired
-	public LocalDBService(EnphaseCollectorProperties properties, EnvoySystemRepository envoySystemRepository, EventRepository eventRepository, SummaryRepository summaryRepository) {
-		this.properties = properties;
-		this.envoySystemRepository = envoySystemRepository;
-		this.eventRepository = eventRepository;
-		this.summaryRepository = summaryRepository;
-	}
 
 	@Override
 	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
-		LOG.debug("Writing stats at {} with {} items", readTime, metrics.size());
+		log.debug("Writing stats at {} with {} items", readTime, metrics.size());
 
 		Event event = new Event();
 		event.setTime(readTime);
@@ -70,7 +62,7 @@ public class LocalDBService implements LocalExportInterface {
 		List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(getMidnight());
 		List<Total> gridExports = eventRepository.findAllExcessProductionBefore(getMidnight());
 
-		LOG.info("Storing {} summary records", dailies.size());
+		log.info("Storing {} summary records", dailies.size());
 		dailies.stream().forEach(daily -> gridImports.stream().
 			filter(gridImport -> daily.getDate().isEqual(gridImport.getDate())).
 			findFirst().
@@ -101,7 +93,7 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public List<Summary> getLastDurationTotals(String duration) {
-		return summaryRepository.findSummeriesByDateGreaterThanEqual(getFromDuration(duration));
+		return summaryRepository.findSummeriesByDateBetween(calculateFromDateDuration(duration), calculateToDateDuration(duration));
 	}
 
 	public BigDecimal calculateTodaysCost() {
@@ -142,8 +134,36 @@ public class LocalDBService implements LocalExportInterface {
 		return now.atStartOfDay();
 	}
 
-	private LocalDate getFromDuration(String duration) {
-		LocalDate now = LocalDate.now();
-		return now.plus(Integer.valueOf(duration.substring(0,1)) * -1L, ChronoUnit.valueOf(duration.substring(1).toUpperCase()));
+	private LocalDate calculateFromDateDuration(String duration) {
+		LocalDate base = LocalDate.now();
+
+		Integer amount = Integer.parseInt(duration.substring(0,1));
+		String unit = duration.substring(1).toUpperCase();
+
+		if (unit.equalsIgnoreCase("WEEKS")) {
+			if (base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
+				base = base.minusDays(base.getDayOfWeek().getValue());
+			}
+		}
+		if (unit.equalsIgnoreCase("MONTHS")) {
+			base = base.minusDays(base.getDayOfMonth()).plusDays(1);
+		}
+		return base.plus(amount * -1L, ChronoUnit.valueOf(unit));
+	}
+
+	private LocalDate calculateToDateDuration(String duration) {
+		LocalDate base = LocalDate.now();
+		String unit = duration.substring(1).toUpperCase();
+
+		if (unit.equalsIgnoreCase("WEEKS")) {
+			// We want SUN to SAT as a WEEK
+			if (base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
+				base = base.minusDays(base.getDayOfWeek().getValue());
+			}
+		}
+		if (unit.equalsIgnoreCase("MONTHS")) {
+			return base.minusDays(base.getDayOfMonth());
+		}
+		return base.minusDays(1);
 	}
 }
