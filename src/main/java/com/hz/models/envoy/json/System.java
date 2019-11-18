@@ -28,8 +28,8 @@ public class System {
     private String currentTime;
     private Network network;
     private Comm comm;
-    @JsonProperty(value="alerts")
-    private List<String> alertList;
+    //@JsonProperty(value="alerts")  This looks to be problematic.  The subtype is probably not string
+    //private List<String> alertList;
     @JsonProperty(value="update_status")
     private String updateStatus;
 
