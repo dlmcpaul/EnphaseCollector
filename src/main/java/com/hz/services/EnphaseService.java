@@ -107,7 +107,7 @@ public class EnphaseService {
 			    log.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
 		    }
 	    } catch (RestClientException e) {
-		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage());
+		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
 	    }
 		return Optional.empty();
 	}

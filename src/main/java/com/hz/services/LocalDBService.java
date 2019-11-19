@@ -140,10 +140,8 @@ public class LocalDBService implements LocalExportInterface {
 		Integer amount = Integer.parseInt(duration.substring(0,1));
 		String unit = duration.substring(1).toUpperCase();
 
-		if (unit.equalsIgnoreCase("WEEKS")) {
-			if (base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
-				base = base.minusDays(base.getDayOfWeek().getValue());
-			}
+		if (unit.equalsIgnoreCase("WEEKS") && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
+			base = base.minusDays(base.getDayOfWeek().getValue());
 		}
 		if (unit.equalsIgnoreCase("MONTHS")) {
 			base = base.minusDays(base.getDayOfMonth()).plusDays(1);
@@ -155,11 +153,9 @@ public class LocalDBService implements LocalExportInterface {
 		LocalDate base = LocalDate.now();
 		String unit = duration.substring(1).toUpperCase();
 
-		if (unit.equalsIgnoreCase("WEEKS")) {
-			// We want SUN to SAT as a WEEK
-			if (base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
-				base = base.minusDays(base.getDayOfWeek().getValue());
-			}
+		// We want SUN to SAT as a WEEK
+		if (unit.equalsIgnoreCase("WEEKS") && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
+			base = base.minusDays(base.getDayOfWeek().getValue());
 		}
 		if (unit.equalsIgnoreCase("MONTHS")) {
 			return base.minusDays(base.getDayOfMonth());
