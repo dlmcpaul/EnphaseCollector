@@ -20,7 +20,7 @@ import java.time.Duration;
 @Log4j2
 @Profile("pvoutput")
 public class PvOutputClientConfig {
-	private EnphaseCollectorProperties config;
+	private final EnphaseCollectorProperties config;
 
 	public static final String ADD_STATUS = "/service/r2/addstatus.jsp";
 	public static final String GET_STATUS = "/service/r2/getstatus.jsp";
