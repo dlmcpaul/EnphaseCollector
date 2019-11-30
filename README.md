@@ -14,13 +14,13 @@ Main Page             |  Weekly History Tab
 
 If using the jar file you will need a Java 11 that you can get from https://adoptopenjdk.net/
 
-Example #1 with default internal website
+Example #1 with default internal website (assuming jar is named enphasecollector-DEV.jar)
 ```
-java -jar enphasecollector-DEV.jar --envoy.controller.password=envoy-password
+java -jar enphasecollector-DEV.jar
 ```
-where envoy-password is likely to be the last 6 characters of your envoy controller serial number
+where the application will attempt to guess the envoy location and password.
 
-Example #2 when envoy.local is not resolved and you need to specify the ip address
+Example #2 when envoy.local is not resolved and you need to specify the ip address and the password cannot be guessed.
 ```
 java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.controller.password=envoy-password
 ```
@@ -79,7 +79,7 @@ Available environment variables descriptions:
 - ENVOY_PVOUTPUTRESOURCE_SYSTEMID Set to your pvoutput systemid
 - ENBOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
 - SPRING_PROFILES_ACTIVE          Determines destination for stats.  if not set only an internal database gets the stats.  Values can be influxdb and pvoutput
-- ENVOY_REFRESH_SECONDS           How often to poll the Envoy Controller.  Default 60000 (60s)
+- ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60000 (60s)
 - ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
 - ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
 - ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93 is 93c/day
