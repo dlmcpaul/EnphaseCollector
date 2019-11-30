@@ -47,12 +47,8 @@ public class History {
 			return true;
 		}
 
-		if ((duration.toLowerCase().contains("weeks") && (date.getDayOfWeek().getValue() == 7))
-			|| (duration.toLowerCase().contains("months") && (date.getDayOfMonth() == 1))) {
-			return true;
-		}
-
-		return false;
+		return ((duration.toLowerCase().contains("weeks") && (date.getDayOfWeek().getValue() == 7))
+			|| (duration.toLowerCase().contains("months") && (date.getDayOfMonth() == 1)));
 	}
 
 	public void addSummary(Summary summary, EnphaseCollectorProperties properties, String duration) {
