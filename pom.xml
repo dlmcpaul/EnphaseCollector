@@ -30,7 +30,7 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <java.jaxb.version>2.3.1</java.jaxb.version>
         <highcharts.version>7.1.0</highcharts.version>
-        <bulma.version>0.7.5</bulma.version>
+        <bulma.version>0.8.0</bulma.version>
         <influxdb.connector.version>2.16</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
         <spring-cloud.version>Greenwich.SR3</spring-cloud.version>
@@ -164,6 +164,26 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.3.9</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
@@ -177,7 +197,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.3</version>
+                <version>0.8.5</version>
                 <executions>
                     <execution>
                         <goals>

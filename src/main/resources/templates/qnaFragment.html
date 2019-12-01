@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+<div th:fragment="qna (visible)" th:id="qna-fragment" th:class="${visible} ? '' : 'is-hidden'" role="main">
+    <div class="columns">
+        <h2 class="column title has-text-centered">Questions and Answers</h2>
+    </div>
+    <!--/*@thymesVar id="question" type="com.hz.controllers.models.Question"*/-->
+    <form method="post" th:action="@{/answers}" th:object="${question}" id="qna-form" onsubmit="return getAnswers('qna')">
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">From</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-left">
+                        <input class="input" th:field="*{fromDate}" type="date">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="field-label is-normal">
+                <label class="label">To</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control has-icons-left">
+                        <input class="input" th:field="*{toDate}" type="date">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="field-label is-normal">
+                <!-- Left empty for spacing -->
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-primary">Answer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Estimated Bill</p>
+                    <p class="title" th:text="*{#numbers.formatCurrency(billEstimate)}"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Earnings</p>
+                    <p class="title" th:text="*{#numbers.formatCurrency(exportEarnings)}"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Savings</p>
+                    <p class="title" th:text="*{#numbers.formatCurrency(importSavings)}"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Import</p>
+                    <p class="title" th:text="*{#numbers.formatCurrency(getTotalImportCost())}"></p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Payback</p>
+                    <p class="title" th:text="*{#numbers.formatCurrency(getTotalPayback())}"></p>
+                </div>
+            </div>
+        </nav>
+    </form>
+</div>
+</body>
+
+</html>

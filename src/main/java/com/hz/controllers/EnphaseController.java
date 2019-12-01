@@ -3,6 +3,7 @@ package com.hz.controllers;
 import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.controllers.models.History;
 import com.hz.controllers.models.PvC;
+import com.hz.controllers.models.Question;
 import com.hz.controllers.models.Status;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
@@ -16,9 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
@@ -91,10 +90,25 @@ public class EnphaseController {
 			model.addAttribute("serial_number", envoyInfo.getSerialNumber());
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
+			model.addAttribute("question", new Question());
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
 		return "index";
+	}
+
+	@PostMapping("/answers")
+	public String getAnswers(@ModelAttribute("question") Question question, Model model) {
+		localDBService.getSummaries(question.getFromDate(), question.getToDate())
+				.forEach(total -> question.addSummary(new Summary(total.getDate(),
+						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
+						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
+						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
+						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), properties));
+
+
+		model.addAttribute("question", question);
+		return "qnaFragment :: qna(visible=true)";
 	}
 
 	@GetMapping("/refreshStats")

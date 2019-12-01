@@ -1,4 +1,4 @@
-/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList*/
+/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList */
 
 function initHighCharts() {
     "use strict";

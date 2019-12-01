@@ -93,7 +93,11 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public List<Summary> getLastDurationTotals(String duration) {
-		return summaryRepository.findSummeriesByDateBetween(calculateFromDateDuration(duration), calculateToDateDuration(duration));
+		return this.getSummaries(calculateFromDateDuration(duration), calculateToDateDuration(duration));
+	}
+
+	public List<Summary> getSummaries(LocalDate from, LocalDate to) {
+		return summaryRepository.findSummeriesByDateBetween(from, to);
 	}
 
 	public BigDecimal calculateTodaysCost() {

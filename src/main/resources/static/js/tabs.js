@@ -28,7 +28,7 @@ function updateHistory(target, response) {
 }
 
 // Function works if content element is named the same as the tab id with -data appended
-function switchToTab(target, refreshUrl) {
+function switchToTab(target) {
     "use strict";
 
     // Find current tab and remove active
@@ -46,6 +46,13 @@ function switchToTab(target, refreshUrl) {
     var targetContentId = target + "-data";
     var targetContent = document.getElementById(targetContentId);
     targetContent.classList.remove("is-hidden");
+}
+
+// Function works if content element is named the same as the tab id with -data appended
+function switchToHistoryTab(target, refreshUrl) {
+    "use strict";
+
+    switchToTab(target);
 
     if (refreshUrl !== null) {
         refreshTarget(target + "-graph", refreshUrl, "json", updateHistory);
