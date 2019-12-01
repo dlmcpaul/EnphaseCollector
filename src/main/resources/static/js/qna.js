@@ -13,7 +13,7 @@ function getAnswers(target) {
             console.log("Refresh Error for " + target);
         };
         if (request.status === 200) {
-            document.getElementById(target + "-fragment").outerHTML = request.response;
+            document.getElementById(target + "-data").outerHTML = request.response;
         }
     };
     request.send(new FormData(form));
