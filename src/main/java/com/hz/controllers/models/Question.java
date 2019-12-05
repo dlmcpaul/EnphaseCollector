@@ -13,8 +13,11 @@ import java.time.format.DateTimeFormatter;
 @NoArgsConstructor
 @Data
 public class Question {
+	// Because this object is passed to and from the browser
+	// it needs to conform to RFC3339 Section 5.6
+	// which sets the standard for the date wire format
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate fromDate = LocalDate.now();
+	private LocalDate fromDate = LocalDate.now().minusYears(1);
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate toDate = LocalDate.now();
 
