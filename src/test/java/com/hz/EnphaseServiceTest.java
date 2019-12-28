@@ -7,13 +7,12 @@ import com.hz.services.EnphaseService;
 import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,9 +21,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EnphaseServiceTest {
 
 	@Mock
@@ -54,31 +55,32 @@ public class EnphaseServiceTest {
 		// When
 		LocalDateTime collectionTime = this.mockEnphaseService.getCollectionTime(this.mockEnphaseService.collectEnphaseData().get());
 		// Then
-		Assert.assertThat(collectionTime, Matchers.equalTo(now));
+		Assertions.assertEquals(now, collectionTime);
 	}
 
 	@Test
 	public void ConvertorsTest() {
-		Assert.assertThat(Convertors.convertToWattHours(BigDecimal.ZERO, 0), Matchers.comparesEqualTo(BigDecimal.ZERO));
-		Assert.assertThat(Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1), Matchers.comparesEqualTo(BigDecimal.valueOf(16.6667)));
-		Assert.assertThat(Convertors.convertToKiloWattHours(10000L, 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0.1667)));
-		Assert.assertThat(Convertors.convertToKiloWattHours(60000L, 1), Matchers.comparesEqualTo(BigDecimal.valueOf(1)));
+		assertThat(BigDecimal.ZERO, comparesEqualTo(Convertors.convertToWattHours(BigDecimal.ZERO, 0)));
+		assertThat(BigDecimal.valueOf(16.6667), comparesEqualTo(Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1)));
+
+		assertThat(BigDecimal.valueOf(0.1667), comparesEqualTo(Convertors.convertToKiloWattHours(10000L, 1)));
+		assertThat(BigDecimal.valueOf(1), comparesEqualTo(Convertors.convertToKiloWattHours(60000L, 1)));
 	}
 
 	@Test
 	public void ValidatorsTest() {
-		Assert.assertTrue(Validators.isValidDuration("7days"));
-		Assert.assertTrue(Validators.isValidDuration("2WEeks"));
-		Assert.assertTrue(Validators.isValidDuration("3Months"));
+		Assertions.assertTrue(Validators.isValidDuration("7days"));
+		Assertions.assertTrue(Validators.isValidDuration("2WEeks"));
+		Assertions.assertTrue(Validators.isValidDuration("3Months"));
 
-		Assert.assertFalse(Validators.isValidDuration("23Days"));
-		Assert.assertFalse(Validators.isValidDuration("Days"));
-		Assert.assertFalse(Validators.isValidDuration("3alpha"));
+		Assertions.assertFalse(Validators.isValidDuration("23Days"));
+		Assertions.assertFalse(Validators.isValidDuration("Days"));
+		Assertions.assertFalse(Validators.isValidDuration("3alpha"));
 	}
 
 	@Test
 	public void CalculatorsTest() {
-		Assert.assertThat(Calculators.calculateFinancial(6000L, 0.07, "test", 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0.007)));
-		Assert.assertThat(Calculators.calculateFinancial(0L, 0.07, "test", 1), Matchers.comparesEqualTo(BigDecimal.valueOf(0)));
+		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(6000L, 0.07, "test", 1)));
+		assertThat(BigDecimal.valueOf(0), comparesEqualTo(Calculators.calculateFinancial(0L, 0.07, "test", 1)));
 	}
 }
