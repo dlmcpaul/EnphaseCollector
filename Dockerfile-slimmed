@@ -21,6 +21,7 @@ RUN MODULES=$($JAVA_HOME/bin/jdeps --print-module-deps /app.jar) \
 
 # Start with fresh copy of alpine linux
 FROM alpine:latest
+LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
 
