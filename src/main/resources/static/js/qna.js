@@ -3,9 +3,9 @@
 function getAnswers(target) {
     "use strict";
 
-    var form = document.getElementById(target + "-form");
+    const form = document.getElementById(target + "-form");
 
-    var request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.open("POST", form.action, true);
     request.responseType = "";
     request.onload = function () {

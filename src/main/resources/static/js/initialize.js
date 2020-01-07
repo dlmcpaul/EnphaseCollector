@@ -14,7 +14,7 @@ function initHighCharts() {
 function initLiveCharts(contextPath, refreshInterval) {
     "use strict";
 
-    var consumptionProperties = {
+    const consumptionProperties = {
         chart: {
             renderTo: "consumption",
             type: "gauge"
@@ -80,14 +80,17 @@ function initLiveCharts(contextPath, refreshInterval) {
                 text: "W"
             },
             plotBands: [{
+                id: "low",
                 from: 0,
                 to: 1500,
                 color: "#55BF3B" // green
             }, {
+                id: "middle",
                 from: 1500,
                 to: 3000,
                 color: "#DDDF0D" // yellow
             }, {
+                id: "high",
                 from: 3000,
                 to: 6000,
                 color: "#DF5353" // red
@@ -102,7 +105,7 @@ function initLiveCharts(contextPath, refreshInterval) {
         }]
     };
 
-    var productionProperties = {
+    const productionProperties = {
         chart: {
             renderTo: "production",
             type: "gauge"
@@ -168,14 +171,17 @@ function initLiveCharts(contextPath, refreshInterval) {
                 text: "W"
             },
             plotBands: [{
+                id: "low",
                 from: 0,
                 to: 1000,
                 color: "#DF5353" // red
             }, {
+                id: "middle",
                 from: 1000,
                 to: 2000,
                 color: "#DDDF0D" // yellow
             }, {
+                id: "high",
                 from: 2000,
                 to: 5000,
                 color: "#55BF3B" // green
@@ -190,9 +196,9 @@ function initLiveCharts(contextPath, refreshInterval) {
         }]
     };
 
-    var now = new Date();
+    const now = new Date();
 
-    var pvcProperties = {
+    const pvcProperties = {
         chart: {
             renderTo: "pvc",
             height: "30%"
@@ -266,9 +272,9 @@ function initLiveCharts(contextPath, refreshInterval) {
 function initHistoryCharts() {
     "use strict";
 
-    var now = new Date();
+    const now = new Date();
 
-    var weeklyProperties = {
+    const weeklyProperties = {
         chart: {
             height: "30%"
         },
@@ -342,7 +348,7 @@ function initHistoryCharts() {
             }
         ]
     };
-    var monthlyProperties = {
+    const monthlyProperties = {
         chart: {
             height: "30%"
         },
@@ -416,7 +422,7 @@ function initHistoryCharts() {
             }
         ]
     };
-    var quarterlyProperties = {
+    const quarterlyProperties = {
         chart: {
             height: "30%"
         },
