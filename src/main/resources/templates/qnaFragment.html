@@ -9,74 +9,162 @@
     <!--/*@thymesVar id="question" type="com.hz.controllers.models.Question"*/-->
     <form method="post" th:action="@{/answers}" th:object="${question}" id="qna-form"
           onsubmit="return getAnswers('qna')">
-        <div class="field is-horizontal">
-            <div class="field-label is-normal">
-                <label class="label">From</label>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control has-icons-left">
-                        <input class="input" th:field="*{fromDate}" type="date">
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-calendar"></i>
-                        </span>
+        <div class="columns is-gapless">
+            <div class="column field is-horizontal">
+                <div class="field-label grow-3">
+                    <label class="label">From</label>
+                </div>
+                <div class="field-body grow-4">
+                    <div class="field is-narrow">
+                        <p class="control has-icons-left">
+                            <input class="input" th:field="*{fromDate}" type="date">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="field-label is-normal">
-                <label class="label">To</label>
-            </div>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control has-icons-left">
-                        <input class="input" th:field="*{toDate}" type="date">
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-calendar"></i>
-                        </span>
+            <div class="column field is-horizontal">
+                <div class="field-label grow-3">
+                    <label class="label">To</label>
+                </div>
+                <div class="field-body grow-4">
+                    <div class="field is-narrow">
+                        <p class="control has-icons-left">
+                            <input class="input" th:field="*{toDate}" type="date">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
-            <div class="field-label is-normal">
-                <!-- Left empty for spacing -->
+            <div class="column">
             </div>
-            <div class="field-body">
-                <div class="field">
-                    <div class="control">
-                        <button type="submit" class="button is-primary">Answer</button>
+        </div>
+        <div class="columns is-gapless">
+            <div class="column field is-horizontal">
+                <div class="field-label grow-3">
+                    <label class="label">Daily Charge</label>
+                </div>
+                <div class="field-body grow-4">
+                    <div class="field is-narrow">
+                        <p class="control has-icons-left">
+                            <input class="input" th:field="*{dailySupplyCharge}" type="number"step="any">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="column field is-horizontal">
+                <div class="field-label grow-3">
+                    <label class="label">Charge Per Kilowatt</label>
+                </div>
+                <div class="field-body grow-4">
+                    <div class="field is-narrow">
+                        <p class="control has-icons-left">
+                           <input class="input" th:field="*{chargePerKiloWatt}" type="number" step="any">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="column field is-horizontal">
+                <div class="field-label grow-3">
+                    <label class="label">Payment Per Kilowatt</label>
+                </div>
+                <div class="field-body grow-4">
+                    <div class="field is-narrow">
+                        <p class="control has-icons-left">
+                            <input class="input" th:field="*{paymentPerKiloWatt}" type="number"step="any">
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="columns is-centered is-gapless">
+            <div class="column is-one-fifth">
+                <button type="submit" class="button is-primary is-fullwidth">Answer</button>
+            </div>
+        </div>
+        <hr>
+        <h3 class="subtitle">Current</h3>
         <div class="box">
             <nav class="level">
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Estimated Bill</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate)}"></p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getEstimatedBill())}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(exportEarnings)}"></p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Savings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(importSavings)}"></p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.importSavings)}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Import</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(getTotalImportCost())}"></p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getTotalImportCost())}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="heading">Payback</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(getTotalPayback())}"></p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getTotalPayback())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Days</p>
+                        <p class="title" th:text="*{showTotalDays()}"></p>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <h3 class="subtitle">Comparison</h3>
+        <div class="box">
+            <nav class="level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Estimated Bill</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getEstimatedBill())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Earnings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Savings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.importSavings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Import</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getTotalImportCost())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Payback</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getTotalPayback())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Days</p>
+                        <p class="title" th:text="*{showTotalDays()}"></p>
                     </div>
                 </div>
             </nav>

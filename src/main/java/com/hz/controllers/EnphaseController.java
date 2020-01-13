@@ -104,7 +104,7 @@ public class EnphaseController {
 						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
 						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
 						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), properties));
+						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate())));
 
 
 		model.addAttribute("question", question);
@@ -154,7 +154,7 @@ public class EnphaseController {
 								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), properties, duration));
+								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate()), duration));
 			} catch (Exception e) {
 				log.error("getHistory Exception: {} {}", e.getMessage(), e);
 			}

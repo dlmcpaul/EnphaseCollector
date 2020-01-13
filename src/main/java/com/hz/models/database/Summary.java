@@ -19,6 +19,7 @@ public class Summary {
 	private BigDecimal gridExport = BigDecimal.ZERO;
 	private BigDecimal consumption = BigDecimal.ZERO;
 	private BigDecimal production = BigDecimal.ZERO;
+	private Long highestOutput = 0L;
 
 	public Summary(LocalDate date, BigDecimal gridImport, BigDecimal gridExport, BigDecimal consumption, BigDecimal production) {
 		this.date = date;
@@ -28,11 +29,12 @@ public class Summary {
 		this.production = production == null ? BigDecimal.ZERO : production;
 	}
 
-	public Summary(DailySummary daily, Total gridImport, Total gridExport) {
+	public Summary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput) {
 		this.date = daily.getDate();
 		this.consumption = daily.getConsumption();
 		this.production = daily.getProduction();
 		this.gridImport = BigDecimal.valueOf(gridImport.getValue());
 		this.gridExport = BigDecimal.valueOf(gridExport.getValue());
+		this.highestOutput = highestOutput.getValue();
 	}
 }

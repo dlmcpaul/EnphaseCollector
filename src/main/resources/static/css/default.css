@@ -29,3 +29,11 @@
 .red-icon {
     color: red;
 }
+
+.grow-3 {
+    flex-grow: 3;
+}
+
+.grow-4 {
+    flex-grow: 4;
+}

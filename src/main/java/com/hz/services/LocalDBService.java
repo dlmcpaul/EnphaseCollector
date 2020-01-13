@@ -1,10 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.interfaces.EnvoySystemRepository;
-import com.hz.interfaces.EventRepository;
-import com.hz.interfaces.LocalExportInterface;
-import com.hz.interfaces.SummaryRepository;
+import com.hz.interfaces.*;
 import com.hz.metrics.Metric;
 import com.hz.models.database.*;
 import com.hz.utils.Calculators;
@@ -31,6 +28,7 @@ public class LocalDBService implements LocalExportInterface {
 	private final EnvoySystemRepository envoySystemRepository;
 	private final EventRepository eventRepository;
 	private final SummaryRepository summaryRepository;
+	private final ElectricityRateRepository electricityRateRepository;
 
 	@Override
 	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
@@ -61,17 +59,37 @@ public class LocalDBService implements LocalExportInterface {
 		List<DailySummary> dailies = eventRepository.findAllBefore(getMidnight());
 		List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(getMidnight());
 		List<Total> gridExports = eventRepository.findAllExcessProductionBefore(getMidnight());
+		List<Total> maxProduction = eventRepository.findAllMaxProductionBefore(getMidnight());
 
 		log.info("Storing {} summary records", dailies.size());
-		dailies.stream().forEach(daily -> gridImports.stream().
-			filter(gridImport -> daily.getDate().isEqual(gridImport.getDate())).
-			findFirst().
-			ifPresent(gridImportMatch -> gridExports.stream().
-				filter(gridExport -> daily.getDate().isEqual(gridExport.getDate())).
-				findFirst().
-				ifPresent(gridExportMatch -> summaryRepository.save(new Summary(daily, gridImportMatch, gridExportMatch)))));
+		dailies.forEach(daily -> findMatching(maxProduction, daily.getDate()).
+			ifPresent(maxProductionMatch -> findMatching(gridImports, daily.getDate()).
+			ifPresent(gridImportMatch -> findMatching(gridExports, daily.getDate()).
+			ifPresent(gridExportMatch -> saveSummary(daily, gridImportMatch, gridExportMatch, maxProductionMatch)))));
 
 		eventRepository.deleteEventsByTimeBefore(getMidnight());
+	}
+
+	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput) {
+		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput));
+	}
+
+	public void saveElectricityRate(LocalDate effectiveDate, ElectricityRate electricityRate) {
+		electricityRate.setEffectiveDate(effectiveDate);
+		electricityRateRepository.save(electricityRate);
+	}
+
+	public void saveElectricityRate(ElectricityRate electricityRate) {
+		Summary summary = summaryRepository.findFirst();
+		this.saveElectricityRate(summary.getDate(), electricityRate);
+	}
+
+	private Optional<Total> findMatching(List<Total> values, LocalDate matchDate) {
+		return values.stream().filter(value -> matchDate.isEqual(value.getDate())).findFirst();
+	}
+
+	public ElectricityRate getRateForDate(LocalDate date) {
+		return electricityRateRepository.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDesc(date);
 	}
 
 	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
@@ -97,7 +115,9 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public List<Summary> getSummaries(LocalDate from, LocalDate to) {
-		return summaryRepository.findSummeriesByDateBetween(from, to);
+		List<Summary> summaries = summaryRepository.findSummeriesByDateBetween(from, to);
+		log.info("Days returned {}", summaries.size());
+		return summaries;
 	}
 
 	public BigDecimal calculateTodaysCost() {
@@ -141,7 +161,7 @@ public class LocalDBService implements LocalExportInterface {
 	private LocalDate calculateFromDateDuration(String duration) {
 		LocalDate base = LocalDate.now();
 
-		Integer amount = Integer.parseInt(duration.substring(0,1));
+		int amount = Integer.parseInt(duration.substring(0,1));
 		String unit = duration.substring(1).toUpperCase();
 
 		if (unit.equalsIgnoreCase("WEEKS") && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
@@ -166,4 +186,5 @@ public class LocalDBService implements LocalExportInterface {
 		}
 		return base.minusDays(1);
 	}
+
 }

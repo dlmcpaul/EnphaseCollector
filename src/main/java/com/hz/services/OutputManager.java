@@ -1,9 +1,10 @@
 package com.hz.services;
 
+import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.interfaces.InfluxExportInterface;
-import com.hz.interfaces.LocalExportInterface;
 import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
+import com.hz.models.database.ElectricityRate;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -16,6 +17,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +29,16 @@ import java.util.Optional;
 public class OutputManager {
 	private final EnphaseService enphaseImportService;
 	private final InfluxExportInterface influxExportService;
-	private final LocalExportInterface localExportService;
+	private final LocalDBService localExportService;
 	private final PvOutputExportInterface pvoutputExportService;
 	private final EnvoyInfo envoyInfo;
+	private final EnphaseCollectorProperties properties;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
 		log.info("Application Started");
 		this.gather();
+		this.upgradeRates();
 		this.summariseEvents();
 	}
 
@@ -46,6 +50,20 @@ public class OutputManager {
 			localExportService.summariseEvents();
 		} catch (Exception e) {
 			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
+		}
+	}
+
+	private void upgradeRates() {
+		ElectricityRate rate = localExportService.getRateForDate(LocalDate.now());
+		if (rate == null) {
+			// First creation set effective to first summary event
+			localExportService.saveElectricityRate(new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
+		} else if (properties.getEffectiveRateDate() == null && rate.getChargePerKiloWatt().compareTo(properties.getChargePerKiloWatt()) != 0) {
+			// Rate has changes set new rate from today
+			localExportService.saveElectricityRate(LocalDate.now(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
+		} else if (properties.getEffectiveRateDate().isAfter(LocalDate.now())) {
+			// Rate is changing in future
+			localExportService.saveElectricityRate(properties.getEffectiveRateDate(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
 		}
 	}
 

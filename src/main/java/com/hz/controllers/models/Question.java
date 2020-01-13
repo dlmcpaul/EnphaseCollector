@@ -1,6 +1,6 @@
 package com.hz.controllers.models;
 
-import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.models.database.ElectricityRate;
 import com.hz.models.database.Summary;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @NoArgsConstructor
 @Data
@@ -21,20 +23,30 @@ public class Question {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate toDate = LocalDate.now();
 
-	private BigDecimal baseCost = BigDecimal.ZERO;
-	private BigDecimal importCost = BigDecimal.ZERO;
-	private BigDecimal exportEarnings = BigDecimal.ZERO;
-	private BigDecimal importSavings = BigDecimal.ZERO;
-	private BigDecimal billEstimate = BigDecimal.ZERO;
+	private Double paymentPerKiloWatt = 0.0;
+	private Double chargePerKiloWatt = 0.0;
+	private Double dailySupplyCharge = 0.0;
 
-	public void addSummary(Summary summary, EnphaseCollectorProperties properties) {
+	private long totalSummaries = 0;
 
-		// Calculate costs and estimated bill
-		baseCost = baseCost.add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
-		importCost = importCost.add(summary.getGridImport().multiply(BigDecimal.valueOf(properties.getChargePerKiloWatt())));
-		exportEarnings = exportEarnings.add(summary.getGridExport().multiply(BigDecimal.valueOf(properties.getPaymentPerKiloWatt())));
-		importSavings = importSavings.add(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()).multiply(BigDecimal.valueOf(properties.getChargePerKiloWatt())));
-		billEstimate = baseCost.add(importCost).subtract(exportEarnings);
+	private Answer billEstimate = new Answer();
+	private Answer comparisonEstimate = new Answer();
+
+	public void addSummary(Summary summary, ElectricityRate electricityRate) {
+
+		totalSummaries++;
+
+		// Calculate estimated Bill costs
+		billEstimate.addBaseCost(BigDecimal.valueOf(electricityRate.getDailySupplyCharge()));
+		billEstimate.addImportCost(summary.getGridImport().multiply(BigDecimal.valueOf(electricityRate.getChargePerKiloWatt())));
+		billEstimate.addExportEarnings(summary.getGridExport().multiply(BigDecimal.valueOf(electricityRate.getPaymentPerKiloWatt())));
+		billEstimate.addImportSavings(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()).multiply(BigDecimal.valueOf(electricityRate.getChargePerKiloWatt())));
+
+		// Calculate comparison costs
+		comparisonEstimate.addBaseCost(BigDecimal.valueOf(dailySupplyCharge));
+		comparisonEstimate.addImportCost(summary.getGridImport().multiply(BigDecimal.valueOf(chargePerKiloWatt)));
+		comparisonEstimate.addExportEarnings(summary.getGridExport().multiply(BigDecimal.valueOf(paymentPerKiloWatt)));
+		comparisonEstimate.addImportSavings(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()).multiply(BigDecimal.valueOf(chargePerKiloWatt)));
 	}
 
 	// Calculate how much of our consumption is from solar
@@ -42,12 +54,16 @@ public class Question {
 		return consumption.subtract(gridImport);
 	}
 
-	public BigDecimal getTotalImportCost() {
-		return baseCost.add(importCost);
+	public long daysInPeriod() {
+		return DAYS.between(fromDate, toDate) + 1;
 	}
 
-	public BigDecimal getTotalPayback() {
-		return importSavings.add(exportEarnings);
+	public String showTotalDays() {
+		if (daysInPeriod() == totalSummaries) {
+			return String.valueOf(totalSummaries);
+		}
+
+		return String.valueOf(totalSummaries) + " missing " + (daysInPeriod() - totalSummaries);
 	}
 
 	public String toString() {

@@ -1,6 +1,6 @@
 package com.hz.controllers.models;
 
-import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.models.database.ElectricityRate;
 import com.hz.models.database.Summary;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,7 +51,7 @@ public class History {
 			|| (duration.toLowerCase().contains("months") && (date.getDayOfMonth() == 1)));
 	}
 
-	public void addSummary(Summary summary, EnphaseCollectorProperties properties, String duration) {
+	public void addSummary(Summary summary, ElectricityRate electricityRate, String duration) {
 
 		if (isAdd(summary.getDate(), duration)) {
 			add(summary);
@@ -60,10 +60,10 @@ public class History {
 		}
 
 		// Calculate costs and estimated bill
-		baseCost = baseCost.add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
-		importCost = importCost.add(summary.getGridImport().multiply(BigDecimal.valueOf(properties.getChargePerKiloWatt())));
-		exportEarnings = exportEarnings.add(summary.getGridExport().multiply(BigDecimal.valueOf(properties.getPaymentPerKiloWatt())));
-		importSavings = importSavings.add(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()).multiply(BigDecimal.valueOf(properties.getChargePerKiloWatt())));
+		baseCost = baseCost.add(BigDecimal.valueOf(electricityRate.getDailySupplyCharge()));
+		importCost = importCost.add(summary.getGridImport().multiply(BigDecimal.valueOf(electricityRate.getChargePerKiloWatt())));
+		exportEarnings = exportEarnings.add(summary.getGridExport().multiply(BigDecimal.valueOf(electricityRate.getPaymentPerKiloWatt())));
+		importSavings = importSavings.add(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()).multiply(BigDecimal.valueOf(electricityRate.getChargePerKiloWatt())));
 		billEstimate = baseCost.add(importCost).subtract(exportEarnings);
 	}
 
