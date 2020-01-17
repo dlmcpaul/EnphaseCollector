@@ -5,7 +5,7 @@
 
     <groupId>com.hz</groupId>
     <artifactId>enphasecollector</artifactId>
-    <version>0.0.16</version>
+    <version>0.0.17</version>
     <packaging>jar</packaging>
 
     <name>EnphaseCollector</name>
@@ -80,16 +80,21 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.influxdb</groupId>
-            <artifactId>influxdb-java</artifactId>
-            <version>${influxdb.connector.version}</version>
-        </dependency>
         <!-- No idea why I need to force this.  influxdb declares a dependency on 3.14.3 but something drops it back to older version (3.8.1) -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>3.14.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <version>3.14.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>${influxdb.connector.version}</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
