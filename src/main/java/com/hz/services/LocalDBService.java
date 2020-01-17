@@ -81,7 +81,12 @@ public class LocalDBService implements LocalExportInterface {
 
 	public void saveElectricityRate(ElectricityRate electricityRate) {
 		Summary summary = summaryRepository.findFirst();
-		this.saveElectricityRate(summary.getDate(), electricityRate);
+		if (summary == null) {
+			// No Summaries yet
+			this.saveElectricityRate(LocalDate.now(), electricityRate);
+		} else {
+			this.saveElectricityRate(summary.getDate(), electricityRate);
+		}
 	}
 
 	private Optional<Total> findMatching(List<Total> values, LocalDate matchDate) {
