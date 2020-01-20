@@ -125,26 +125,28 @@ function updatePlotBands(target, chart, guageValue) {
 
     const maximum = calculateMaximum(chart.yAxis[0].max, guageValue);
 
-    chart.update({
-        yAxis: {
-            min: 0,
-            max: maximum,
-            plotBands: [{
-                from: 0,
-                to: calculateBand(maximum,4),
-                color: getColor(0, target)
-            }, {
-                from: calculateBand(maximum,4),
-                to: calculateBand(maximum, 2),
-                color: getColor(1, target)
-            }, {
-                from: calculateBand(maximum,2),
-                to: maximum,
-                color: getColor(2, target)
-            }]
-        }
-    });
-
+    // Only update if new maximum is greater than old
+    if (maximum > chart.yAxis[0].max) {
+        chart.update({
+            yAxis: {
+                min: 0,
+                max: maximum,
+                plotBands: [{
+                    from: 0,
+                    to: calculateBand(maximum, 4),
+                    color: getColor(0, target)
+                }, {
+                    from: calculateBand(maximum, 4),
+                    to: calculateBand(maximum, 2),
+                    color: getColor(1, target)
+                }, {
+                    from: calculateBand(maximum, 2),
+                    to: maximum,
+                    color: getColor(2, target)
+                }]
+            }
+        });
+    }
 }
 
 function updatePoint(chart, guageValue) {
