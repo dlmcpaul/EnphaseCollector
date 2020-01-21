@@ -61,7 +61,7 @@ public class OutputManager {
 		} else if (properties.getEffectiveRateDate() == null && rate.getChargePerKiloWatt().compareTo(properties.getChargePerKiloWatt()) != 0) {
 			// Rate has changes set new rate from today
 			localExportService.saveElectricityRate(LocalDate.now(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
-		} else if (properties.getEffectiveRateDate().isAfter(LocalDate.now())) {
+		} else if (properties.getEffectiveRateDate() != null && properties.getEffectiveRateDate().isAfter(LocalDate.now())) {
 			// Rate is changing in future
 			localExportService.saveElectricityRate(properties.getEffectiveRateDate(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
 		}
