@@ -7,8 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.LocalDate;
 
 /**
@@ -42,16 +40,6 @@ public class EnphaseCollectorProperties {
         private String context;
 
         public String getUrl() {
-            if (host.matches("[a-zA-Z.]*")) {
-                // convert host to IP address
-                try {
-                   InetAddress address = InetAddress.getByName(host);
-                   host = address.getHostAddress();
-                } catch (UnknownHostException e) {
-                    log.error(e.getMessage(),e);
-                }
-            }
-
             if (port == 80) {
                 return "http://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
             }
