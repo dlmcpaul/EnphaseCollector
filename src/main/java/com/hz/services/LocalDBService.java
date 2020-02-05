@@ -121,7 +121,7 @@ public class LocalDBService implements LocalExportInterface {
 
 	public List<Summary> getSummaries(LocalDate from, LocalDate to) {
 		List<Summary> summaries = summaryRepository.findSummeriesByDateBetween(from, to);
-		log.info("Days returned {}", summaries.size());
+		log.debug("Days returned {}", summaries.size());
 		return summaries;
 	}
 
