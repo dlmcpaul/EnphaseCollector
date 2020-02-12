@@ -16,7 +16,7 @@ public class SecurityHeaderFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse httpServletResponse=(HttpServletResponse)response;
-		httpServletResponse.setHeader("Content-Security-Policy","default-src 'self' 'unsafe-inline'");
+		httpServletResponse.setHeader("Content-Security-Policy","default-src 'self' 'unsafe-inline';");
 		httpServletResponse.setHeader("X-Frame-Options","SAMEORIGIN");
 		httpServletResponse.setHeader("X-Content-Type-Options","nosniff");
 		httpServletResponse.setHeader("Referrer-Policy","no-referrer");
