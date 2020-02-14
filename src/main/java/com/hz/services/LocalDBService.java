@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -75,6 +76,7 @@ public class LocalDBService implements LocalExportInterface {
 	}
 
 	public void saveElectricityRate(LocalDate effectiveDate, ElectricityRate electricityRate) {
+		log.info("Storing new Rate effective {}", effectiveDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
 		electricityRate.setEffectiveDate(effectiveDate);
 		electricityRateRepository.save(electricityRate);
 	}
