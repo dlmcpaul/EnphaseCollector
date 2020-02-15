@@ -5,7 +5,7 @@
 
     <groupId>com.hz</groupId>
     <artifactId>enphasecollector</artifactId>
-    <version>0.0.17.1</version>
+    <version>0.0.18</version>
     <packaging>jar</packaging>
 
     <name>EnphaseCollector</name>
@@ -31,7 +31,7 @@
         <java.jaxb.version>2.3.1</java.jaxb.version>
         <highcharts.version>8.0.0</highcharts.version>
         <bulma.version>0.8.0</bulma.version>
-        <influxdb.connector.version>2.16</influxdb.connector.version>
+        <influxdb.connector.version>2.17</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
         <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
     </properties>
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>3.14.3</version>
+            <version>3.14.4</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -199,7 +199,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.3.9</version>
+                                    <version>3.6.2</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
