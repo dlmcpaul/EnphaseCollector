@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -115,6 +116,29 @@ public class LocalDBService implements LocalExportInterface {
 
 	public List<Event> getTodaysEvents() {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
+	}
+
+	// When a summary record is null the list is not continuous so fill missing values
+	public List<Summary> getLastDurationTotalsContinuous(String duration) {
+		List<Summary> dbValues = this.getLastDurationTotals(duration);
+		List<Summary> result = new ArrayList<>();
+
+		LocalDate dateIndex = calculateFromDateDuration(duration);
+		int dbIndex = 0;
+
+		while (dbIndex < dbValues.size()) {
+			if (dateIndex.isEqual(dbValues.get(dbIndex).getDate())) {
+				result.add(dbValues.get(dbIndex++));
+				dateIndex = dateIndex.plusDays(1);
+			} else if (dateIndex.isBefore(dbValues.get(dbIndex).getDate())) {
+				result.add(new Summary(dateIndex));
+				dateIndex = dateIndex.plusDays(1);
+			} else {
+				result.add(dbValues.get(dbIndex++));
+			}
+		}
+
+		return result;
 	}
 
 	public List<Summary> getLastDurationTotals(String duration) {

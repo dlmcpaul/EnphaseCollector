@@ -149,7 +149,7 @@ public class EnphaseController {
 
 		if (Validators.isValidDuration(duration)) {
 			try {
-				localDBService.getLastDurationTotals(duration)
+				localDBService.getLastDurationTotalsContinuous(duration)
 						.forEach(total -> result.addSummary(new Summary(total.getDate(),
 								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
 								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),

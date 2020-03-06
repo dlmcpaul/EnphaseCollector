@@ -37,4 +37,12 @@ public class Summary {
 		this.gridExport = BigDecimal.valueOf(gridExport.getValue());
 		this.highestOutput = highestOutput.getValue();
 	}
+
+	public Summary(LocalDate date) {
+		this.date = date;
+		this.gridImport = BigDecimal.ZERO;
+		this.gridExport = BigDecimal.ZERO;
+		this.consumption = BigDecimal.ZERO;
+		this.production =  BigDecimal.ZERO;
+	}
 }
