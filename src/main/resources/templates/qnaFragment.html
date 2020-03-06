@@ -44,6 +44,11 @@
             </div>
         </div>
         <div class="columns is-gapless">
+            <div class="column is-5"><hr/></div>
+            <div class="column is-centered is-black">Compare With</div>
+            <div class="column is-5"><hr/></div>
+        </div>
+        <div class="columns is-gapless">
             <div class="column field is-horizontal">
                 <div class="field-label grow-3">
                     <label class="label">Daily Charge</label>
@@ -98,14 +103,7 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Savings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.importSavings)}"></p>
+                        <p class="title">=</p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
@@ -116,8 +114,46 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
+                        <p class="title">-</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Earnings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title"> </p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
                         <p class="heading">Payback</p>
                         <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getTotalPayback())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title">=</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Savings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.importSavings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title">+</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Earnings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
@@ -139,14 +175,7 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Savings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.importSavings)}"></p>
+                        <p class="title">=</p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
@@ -157,8 +186,46 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
+                        <p class="title" >-</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Earnings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title"> </p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
                         <p class="heading">Payback</p>
                         <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getTotalPayback())}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title">=</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Savings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.importSavings)}"></p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="title" >+</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Earnings</p>
+                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
                     </div>
                 </div>
                 <div class="level-item has-text-centered">
