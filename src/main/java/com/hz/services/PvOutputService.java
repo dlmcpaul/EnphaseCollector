@@ -2,8 +2,8 @@ package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.configuration.PvOutputClientConfig;
-import com.hz.interfaces.PvOutputExportInterface;
 import com.hz.metrics.Metric;
+import com.hz.models.Events.MetricCollectionEvent;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Log4j2
 @Profile("pvoutput")
-public class PvOutputService implements PvOutputExportInterface {
+public class PvOutputService {
 
 	private BigDecimal energyGeneratedAccumulator = BigDecimal.ZERO;
 	private BigDecimal energyConsumedAccumulator = BigDecimal.ZERO;
@@ -85,8 +85,13 @@ public class PvOutputService implements PvOutputExportInterface {
 		}
 	}
 
-	@Override
-	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
+	@EventListener
+	public void MetricListener(MetricCollectionEvent metricCollectionEvent) {
+		log.debug("Writing metric stats at {} with {} items to pvOutput", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
+		this.sendMetrics(metricCollectionEvent.getMetrics(), metricCollectionEvent.getCollectionTime());
+	}
+
+	private void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
 		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
 		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);

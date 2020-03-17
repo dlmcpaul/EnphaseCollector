@@ -1,13 +1,21 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.interfaces.*;
+import com.hz.interfaces.ElectricityRateRepository;
+import com.hz.interfaces.EnvoySystemRepository;
+import com.hz.interfaces.EventRepository;
+import com.hz.interfaces.SummaryRepository;
 import com.hz.metrics.Metric;
+import com.hz.models.Events.MetricCollectionEvent;
+import com.hz.models.Events.SystemInfoEvent;
 import com.hz.models.database.*;
 import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class LocalDBService implements LocalExportInterface {
+public class LocalDBService {
 
 	private final EnphaseCollectorProperties properties;
 	private final EnvoySystemRepository envoySystemRepository;
@@ -32,47 +40,76 @@ public class LocalDBService implements LocalExportInterface {
 	private final SummaryRepository summaryRepository;
 	private final ElectricityRateRepository electricityRateRepository;
 
-	@Override
-	public void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
-		log.debug("Writing stats at {} with {} items", readTime, metrics.size());
+	@EventListener(ApplicationReadyEvent.class)
+	@Transactional
+	public void applicationReady() {
+		this.upgradeRates();
+		this.createSummaries();
+	}
+
+	private void upgradeRates() {
+		ElectricityRate rate = this.getRateForDate(LocalDate.now());
+		if (rate == null) {
+			// First creation set effective to first summary event
+			log.info("Upgrading Rate Table (First Run)");
+			this.saveElectricityRate(new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
+		} else if (properties.getEffectiveRateDate() == null && rate.getChargePerKiloWatt().compareTo(properties.getChargePerKiloWatt()) != 0) {
+			// Rate has changes set new rate from today
+			log.info("Upgrading Rate Table (New Rate Set as at Today)");
+			this.saveElectricityRate(LocalDate.now(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
+		} else if (properties.getEffectiveRateDate() != null && properties.getEffectiveRateDate().isAfter(rate.getEffectiveDate())) {
+			// Rate is changing from new date
+			log.info("Upgrading Rate Table (New Rate set effective {})", properties.getEffectiveRateDate());
+			this.saveElectricityRate(properties.getEffectiveRateDate(), new ElectricityRate(properties.getPaymentPerKiloWatt(), properties.getChargePerKiloWatt(), properties.getDailySupplyCharge()));
+		}
+	}
+
+	// Summarise the Event table at 5 minutes past midnight
+	@Scheduled(cron="0 5 0 * * ?")
+	@Transactional
+	public void createSummaries() {
+		log.info("Summarising Event table");
+		try {
+			LocalDateTime midnight = getMidnight();
+			List<DailySummary> dailies = eventRepository.findAllBefore(midnight);
+			List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(midnight);
+			List<Total> gridExports = eventRepository.findAllExcessProductionBefore(midnight);
+			List<Total> maxProduction = eventRepository.findAllMaxProductionBefore(midnight);
+
+			dailies.forEach(daily -> findMatching(maxProduction, daily.getDate()).
+					ifPresent(maxProductionMatch -> findMatching(gridImports, daily.getDate()).
+							ifPresent(gridImportMatch -> findMatching(gridExports, daily.getDate()).
+									ifPresent(gridExportMatch -> saveSummary(daily, gridImportMatch, gridExportMatch, maxProductionMatch)))));
+
+			eventRepository.deleteEventsByTimeBefore(getMidnight());
+		} catch (Exception e) {
+			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
+		}
+	}
+
+	@EventListener
+	public void SystemInfoListener(SystemInfoEvent systemEvent) {
+		envoySystemRepository.save(systemEvent.getEnvoySystem());
+	}
+
+	@EventListener
+	public void MetricListener(MetricCollectionEvent metricCollectionEvent) {
+		log.debug("Writing metric stats at {} with {} items to internal database", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 
 		Event event = new Event();
-		event.setTime(readTime);
+		event.setTime(metricCollectionEvent.getCollectionTime());
 
-		event.setProduction(getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setConsumption(getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setVoltage(getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setProduction(getMetric(metricCollectionEvent.getMetrics(), "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setConsumption(getMetric(metricCollectionEvent.getMetrics(), "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setVoltage(getMetric(metricCollectionEvent.getMetrics(), "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 
-		metrics.forEach(m -> event.addSolarPanel(new Panel(m.getName(), m.getValue())));
+		metricCollectionEvent.getMetrics().forEach(m -> event.addSolarPanel(new Panel(m.getName(), m.getValue())));
 
 		eventRepository.save(event);
 	}
 
-	@Override
-	public void sendSystemInfo(EnvoySystem envoySystem) {
-		envoySystemRepository.save(envoySystem);
-	}
-
-	/*
-	Summarise each day into production, consumption, grid import and grid export
-	 */
-	@Transactional
-	public void summariseEvents() {
-		List<DailySummary> dailies = eventRepository.findAllBefore(getMidnight());
-		List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(getMidnight());
-		List<Total> gridExports = eventRepository.findAllExcessProductionBefore(getMidnight());
-		List<Total> maxProduction = eventRepository.findAllMaxProductionBefore(getMidnight());
-
-		log.info("Storing {} summary records", dailies.size());
-		dailies.forEach(daily -> findMatching(maxProduction, daily.getDate()).
-			ifPresent(maxProductionMatch -> findMatching(gridImports, daily.getDate()).
-			ifPresent(gridImportMatch -> findMatching(gridExports, daily.getDate()).
-			ifPresent(gridExportMatch -> saveSummary(daily, gridImportMatch, gridExportMatch, maxProductionMatch)))));
-
-		eventRepository.deleteEventsByTimeBefore(getMidnight());
-	}
-
 	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput) {
+		log.info("Saving Summary for {} with import {} and export {}", daily.getDate(), gridImport.getValue(), gridExport.getValue());
 		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput));
 	}
 

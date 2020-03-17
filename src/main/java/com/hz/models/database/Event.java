@@ -16,7 +16,6 @@ public class Event {
 	private Long id;
 
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-	@ElementCollection(targetClass=Panel.class)
 	private List<Panel> panels = new ArrayList<>();
 	private LocalDateTime time = LocalDateTime.now();
 	private BigDecimal consumption = new BigDecimal(0);
