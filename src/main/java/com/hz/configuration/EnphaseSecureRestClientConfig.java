@@ -1,5 +1,6 @@
 package com.hz.configuration;
 
+import com.hz.components.EnphaseRequestRetryHandler;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -59,13 +61,14 @@ public class EnphaseSecureRestClientConfig {
 			    .custom()
 			    .setDefaultCredentialsProvider(provider())
 			    .useSystemProperties()
+			    .setRetryHandler(new EnphaseRequestRetryHandler(3, true))
 			    .build();
 
 	    return builder
 			    .rootUri(config.getController().getUrl())
 			    .setConnectTimeout(Duration.ofSeconds(5))
 			    .setReadTimeout(Duration.ofSeconds(30))
-			    .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
+			    .requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 			    .build();
     }
 
