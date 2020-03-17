@@ -68,9 +68,9 @@ public class LocalDBService {
 	@Scheduled(cron="0 5 0 * * ?")
 	@Transactional
 	public void createSummaries() {
-		log.info("Summarising Event table");
+		LocalDateTime midnight = getMidnight();
+		log.info("Summarising Event table prior to {}", midnight);
 		try {
-			LocalDateTime midnight = getMidnight();
 			List<DailySummary> dailies = eventRepository.findAllBefore(midnight);
 			List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(midnight);
 			List<Total> gridExports = eventRepository.findAllExcessProductionBefore(midnight);
@@ -81,7 +81,7 @@ public class LocalDBService {
 							ifPresent(gridImportMatch -> findMatching(gridExports, daily.getDate()).
 									ifPresent(gridExportMatch -> saveSummary(daily, gridImportMatch, gridExportMatch, maxProductionMatch)))));
 
-			eventRepository.deleteEventsByTimeBefore(getMidnight());
+			eventRepository.deleteEventsByTimeBefore(midnight);
 		} catch (Exception e) {
 			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
 		}
@@ -183,7 +183,7 @@ public class LocalDBService {
 	}
 
 	public List<Summary> getSummaries(LocalDate from, LocalDate to) {
-		List<Summary> summaries = summaryRepository.findSummeriesByDateBetween(from, to);
+		List<Summary> summaries = summaryRepository.findSummariesByDateBetweenOrderByDateAsc(from, to);
 		log.debug("Days returned {}", summaries.size());
 		return summaries;
 	}
