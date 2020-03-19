@@ -24,6 +24,7 @@ public class EnphaseRequestRetryHandler extends StandardHttpRequestRetryHandler 
 				try {
 					TimeUnit.SECONDS.sleep(15);
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 				}
 				return true;
 			}
