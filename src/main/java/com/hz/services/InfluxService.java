@@ -1,6 +1,6 @@
 package com.hz.services;
 
-import com.hz.models.Events.MetricCollectionEvent;
+import com.hz.models.events.MetricCollectionEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.influxdb.InfluxDB;

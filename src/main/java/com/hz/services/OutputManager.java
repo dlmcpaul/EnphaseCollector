@@ -1,11 +1,11 @@
 package com.hz.services;
 
 import com.hz.metrics.Metric;
-import com.hz.models.Events.MetricCollectionEvent;
-import com.hz.models.Events.SystemInfoEvent;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
+import com.hz.models.events.MetricCollectionEvent;
+import com.hz.models.events.SystemInfoEvent;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

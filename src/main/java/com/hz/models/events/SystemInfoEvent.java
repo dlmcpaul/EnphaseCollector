@@ -1,4 +1,4 @@
-package com.hz.models.Events;
+package com.hz.models.events;
 
 import com.hz.models.database.EnvoySystem;
 import org.springframework.context.ApplicationEvent;

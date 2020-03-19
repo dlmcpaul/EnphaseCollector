@@ -1,4 +1,4 @@
-package com.hz.models.Events;
+package com.hz.models.events;
 
 import com.hz.metrics.Metric;
 import org.springframework.context.ApplicationEvent;
