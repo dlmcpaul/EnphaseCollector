@@ -88,12 +88,12 @@ public class LocalDBService {
 	}
 
 	@EventListener
-	public void SystemInfoListener(SystemInfoEvent systemEvent) {
+	public void systemInfoListener(SystemInfoEvent systemEvent) {
 		envoySystemRepository.save(systemEvent.getEnvoySystem());
 	}
 
 	@EventListener
-	public void MetricListener(MetricCollectionEvent metricCollectionEvent) {
+	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
 		log.debug("Writing metric stats at {} with {} items to internal database", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 
 		Event event = new Event();
