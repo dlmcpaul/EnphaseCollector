@@ -4,7 +4,7 @@ import com.hz.models.database.EnvoySystem;
 import org.springframework.context.ApplicationEvent;
 
 public class SystemInfoEvent extends ApplicationEvent {
-	private EnvoySystem envoySystem;
+	private final EnvoySystem envoySystem;
 
 	public SystemInfoEvent(Object source, EnvoySystem envoySystem) {
 		super(source);

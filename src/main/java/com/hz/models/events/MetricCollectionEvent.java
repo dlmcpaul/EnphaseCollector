@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class MetricCollectionEvent extends ApplicationEvent {
-	private LocalDateTime collectionTime;
-	private List<Metric> metrics;
+	private final LocalDateTime collectionTime;
+	private final List<Metric> metrics;
 
 	public MetricCollectionEvent(Object source, LocalDateTime collectionTime, List<Metric> metrics) {
 		super(source);
