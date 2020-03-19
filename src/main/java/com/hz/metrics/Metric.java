@@ -2,13 +2,14 @@ package com.hz.metrics;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by David on 23-Oct-17.
  */
 @Data
-public class Metric {
+public class Metric  implements Serializable {
 	private String name;
 	private float value;
 

@@ -5,12 +5,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class EnvoySystem {
+public class EnvoySystem implements Serializable {
 	@Id
 	private Long id = 1L;
 
