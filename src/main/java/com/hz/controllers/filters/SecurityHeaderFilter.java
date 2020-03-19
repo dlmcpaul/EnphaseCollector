@@ -11,6 +11,7 @@ public class SecurityHeaderFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		// No special destroy requirements
 	}
 
 	@Override
@@ -26,6 +27,7 @@ public class SecurityHeaderFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		// No special init requirements
 	}
 
 }
