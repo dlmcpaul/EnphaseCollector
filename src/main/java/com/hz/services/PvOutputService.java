@@ -86,7 +86,7 @@ public class PvOutputService {
 	}
 
 	@EventListener
-	public void MetricListener(MetricCollectionEvent metricCollectionEvent) {
+	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
 		log.debug("Writing metric stats at {} with {} items to pvOutput", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 		this.sendMetrics(metricCollectionEvent.getMetrics(), metricCollectionEvent.getCollectionTime());
 	}

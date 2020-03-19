@@ -20,7 +20,7 @@ public class InfluxService {
 	private final InfluxDB destinationInfluxDB;
 
 	@EventListener
-	public void MetricListener(MetricCollectionEvent metricCollectionEvent) {
+	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
 		log.debug("Writing metric stats at {} with {} items to influxDB", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 		metricCollectionEvent.getMetrics().
 				forEach(m -> destinationInfluxDB.write(Point.measurement(m.getName()).time(metricCollectionEvent.getCollectionTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", m.getValue()).build()));
