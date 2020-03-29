@@ -19,6 +19,10 @@ public class ElectricityRate {
 	private Double chargePerKiloWatt = 0.0;
 	private Double dailySupplyCharge = 0.0;
 
+	public ElectricityRate(LocalDate effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
 	public ElectricityRate(Double paymentPerKiloWatt, Double chargePerKiloWatt, Double dailySupplyCharge) {
 		this.paymentPerKiloWatt = paymentPerKiloWatt;
 		this.chargePerKiloWatt = chargePerKiloWatt;

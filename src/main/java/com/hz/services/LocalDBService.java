@@ -134,7 +134,7 @@ public class LocalDBService {
 	}
 
 	public ElectricityRate getRateForDate(LocalDate date) {
-		return electricityRateRepository.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDesc(date);
+		return electricityRateRepository.findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDesc(date).orElse(new ElectricityRate(date));
 	}
 
 	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
