@@ -19,9 +19,9 @@ public class Question {
 	// it needs to conform to RFC3339 Section 5.6
 	// which sets the standard for the date wire format
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate fromDate = LocalDate.now().minusYears(1);
+	private LocalDate fromDate = LocalDate.now().minusMonths(3);
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate toDate = LocalDate.now();
+	private LocalDate toDate = LocalDate.now().minusDays(1);
 
 	private Double paymentPerKiloWatt = 0.0;
 	private Double chargePerKiloWatt = 0.0;
