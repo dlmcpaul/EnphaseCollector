@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<!--/*@thymesVar id="field" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<!--/*@thymesVar id="label" type="java.lang.String"*/-->
+<div th:fragment="dateField (field, value, label)" class="column field is-horizontal">
+    <div class="field-label grow-3">
+        <label class="label" th:text="${label}"/>
+    </div>
+    <div class="field-body grow-4">
+        <div class="field is-narrow">
+            <p class="control has-icons-left">
+                <input class="input" th:id="${#strings.toLowerCase(field)}" th:name="${#strings.toLowerCase(field)}" th:value="${value}" type="date">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-calendar"></i>
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!--/*@thymesVar id="field" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<!--/*@thymesVar id="label" type="java.lang.String"*/-->
+<div th:fragment="numberField (field, value, label)" class="column field is-horizontal">
+    <div class="field-label grow-3">
+        <label class="label" th:text="${label}"/>
+    </div>
+    <div class="field-body grow-4">
+        <div class="field is-narrow">
+            <p class="control has-icons-left">
+                <input class="input" th:id="${#strings.toLowerCase(field)}" th:name="${#strings.toLowerCase(field)}" th:value="${value}" type="number" step="any">
+                <span class="icon is-small is-left">
+                    <i class="fas fa-dollar-sign"></i>
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!--/*@thymesVar id="heading" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<div th:fragment="moneyLevelItem (heading, value)" class="level-item has-text-centered">
+    <div>
+        <p class="heading" th:text="${heading}"/>
+        <p class="title" th:text="${#numbers.formatCurrency(value)}"/>
+    </div>
+</div>
+
+<!--/*@thymesVar id="heading" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<div th:fragment="levelItem (heading, value)" class="level-item has-text-centered">
+    <div>
+        <p class="heading" th:text="${heading}"/>
+        <p class="title" th:text="${value}"/>
+    </div>
+</div>
+
+</body>
+</html>

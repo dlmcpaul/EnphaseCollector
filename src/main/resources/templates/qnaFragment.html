@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 
 <body>
 <div th:fragment="qna (visible)" th:id="qna-data" th:class="${visible} ? '' : 'is-hidden'" role="main">
@@ -10,81 +10,15 @@
     <form method="post" th:action="@{/answers}" th:object="${question}" id="qna-form"
           onsubmit="return getAnswers('qna')">
         <div class="columns is-gapless">
-            <div class="column field is-horizontal">
-                <div class="field-label grow-3">
-                    <label class="label">From</label>
-                </div>
-                <div class="field-body grow-4">
-                    <div class="field is-narrow">
-                        <p class="control has-icons-left">
-                            <input class="input" th:field="*{fromDate}" type="date">
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-calendar"></i>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="column field is-horizontal">
-                <div class="field-label grow-3">
-                    <label class="label">To</label>
-                </div>
-                <div class="field-body grow-4">
-                    <div class="field is-narrow">
-                        <p class="control has-icons-left">
-                            <input class="input" th:field="*{toDate}" type="date">
-                            <span class="icon is-small is-left">
-                                <i class="fas fa-calendar"></i>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="column">
-            </div>
+            <div data-th-replace="~{qnaFieldFragment :: dateField('fromDate', *{fromDate},'From')}"/>
+            <div data-th-replace="~{qnaFieldFragment :: dateField('toDate', *{toDate},'To')}"/>
+            <div class="column"></div>
         </div>
+        <div class="separator">Compare With</div></br>
         <div class="columns is-gapless">
-            <div class="column is-5"><hr/></div>
-            <div class="column is-centered is-black">Compare With</div>
-            <div class="column is-5"><hr/></div>
-        </div>
-        <div class="columns is-gapless">
-            <div class="column field is-horizontal">
-                <div class="field-label grow-3">
-                    <label class="label">Daily Charge</label>
-                </div>
-                <div class="field-body grow-4">
-                    <div class="field is-narrow">
-                        <p class="control has-icons-left">
-                            <input class="input" th:field="*{dailySupplyCharge}" type="number"step="any">
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="column field is-horizontal">
-                <div class="field-label grow-3">
-                    <label class="label">Charge Per Kilowatt</label>
-                </div>
-                <div class="field-body grow-4">
-                    <div class="field is-narrow">
-                        <p class="control has-icons-left">
-                           <input class="input" th:field="*{chargePerKiloWatt}" type="number" step="any">
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="column field is-horizontal">
-                <div class="field-label grow-3">
-                    <label class="label">Payment Per Kilowatt</label>
-                </div>
-                <div class="field-body grow-4">
-                    <div class="field is-narrow">
-                        <p class="control has-icons-left">
-                            <input class="input" th:field="*{paymentPerKiloWatt}" type="number"step="any">
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <div data-th-replace="~{qnaFieldFragment :: numberField('dailySupplyCharge', *{dailySupplyCharge},'Daily Charge')}"/>
+            <div data-th-replace="~{qnaFieldFragment :: numberField('chargePerKiloWatt', *{chargePerKiloWatt},'Charge Per Kilowatt')}"/>
+            <div data-th-replace="~{qnaFieldFragment :: numberField('paymentPerKiloWatt', *{paymentPerKiloWatt},'Payment Per Kilowatt')}"/>
         </div>
         <div class="columns is-centered is-gapless">
             <div class="column is-one-fifth">
@@ -95,145 +29,75 @@
         <h3 class="subtitle">Current</h3>
         <div class="box">
             <nav class="level">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Estimated Bill</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getEstimatedBill())}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', *{billEstimate.getEstimatedBill()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">=</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Import</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getTotalImportCost())}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', *{billEstimate.getTotalImportCost()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">-</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{billEstimate.exportEarnings})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title"> </p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Payback</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.getTotalPayback())}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', *{billEstimate.getTotalPayback()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">=</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Savings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.importSavings)}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', *{billEstimate.importSavings})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">+</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(billEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Days</p>
-                        <p class="title" th:text="*{showTotalDays()}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{billEstimate.exportEarnings})}"/>
+                <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', *{showTotalDays()})}"/>
             </nav>
         </div>
         <h3 class="subtitle">Comparison</h3>
         <div class="box">
             <nav class="level">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Estimated Bill</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getEstimatedBill())}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', *{comparisonEstimate.getEstimatedBill()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">=</p>
                     </div>
                 </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', *{comparisonEstimate.getTotalImportCost()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Import</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getTotalImportCost())}"></p>
+                        <p class="title">-</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title" >-</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{comparisonEstimate.exportEarnings})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title"> </p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Payback</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.getTotalPayback())}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', *{comparisonEstimate.getTotalPayback()})}"/>
                 <div class="level-item has-text-centered">
                     <div>
                         <p class="title">=</p>
                     </div>
                 </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', *{comparisonEstimate.importSavings})}"/>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Savings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.importSavings)}"></p>
+                        <p class="title">+</p>
                     </div>
                 </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title" >+</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Earnings</p>
-                        <p class="title" th:text="*{#numbers.formatCurrency(comparisonEstimate.exportEarnings)}"></p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Days</p>
-                        <p class="title" th:text="*{showTotalDays()}"></p>
-                    </div>
-                </div>
+                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{comparisonEstimate.exportEarnings})}"/>
+                <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', *{showTotalDays()})}"/>
             </nav>
         </div>
     </form>
