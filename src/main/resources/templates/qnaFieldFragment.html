@@ -11,7 +11,7 @@
     <div class="field-body grow-4">
         <div class="field is-narrow">
             <p class="control has-icons-left">
-                <input class="input" th:id="${#strings.toLowerCase(field)}" th:name="${#strings.toLowerCase(field)}" th:value="${value}" type="date">
+                <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="date">
                 <span class="icon is-small is-left">
                     <i class="fas fa-calendar"></i>
                 </span>
@@ -30,7 +30,7 @@
     <div class="field-body grow-4">
         <div class="field is-narrow">
             <p class="control has-icons-left">
-                <input class="input" th:id="${#strings.toLowerCase(field)}" th:name="${#strings.toLowerCase(field)}" th:value="${value}" type="number" step="any">
+                <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="number" step="any">
                 <span class="icon is-small is-left">
                     <i class="fas fa-dollar-sign"></i>
                 </span>
@@ -55,6 +55,45 @@
         <p class="heading" th:text="${heading}"/>
         <p class="title" th:text="${value}"/>
     </div>
+</div>
+
+<!--/*@thymesVar id="source" type="com.hz.controllers.models.Answer"*/-->
+<!--/*@thymesVar id="days" type="java.lang.String"*/-->
+<div th:fragment="estimateBox (source, days)" class="box">
+    <nav class="level">
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"/>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title">=</p>
+            </div>
+        </div>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', ${source.getTotalImportCost()})}"/>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title">-</p>
+            </div>
+        </div>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"/>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title"> </p>
+            </div>
+        </div>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', ${source.getTotalPayback()})}"/>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title">=</p>
+            </div>
+        </div>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', ${source.importSavings})}"/>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="title">+</p>
+            </div>
+        </div>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', ${days})}"/>
+    </nav>
 </div>
 
 </body>

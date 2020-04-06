@@ -27,79 +27,9 @@
         </div>
         <hr>
         <h3 class="subtitle">Current</h3>
-        <div class="box">
-            <nav class="level">
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', *{billEstimate.getEstimatedBill()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">=</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', *{billEstimate.getTotalImportCost()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">-</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{billEstimate.exportEarnings})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title"> </p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', *{billEstimate.getTotalPayback()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">=</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', *{billEstimate.importSavings})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">+</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{billEstimate.exportEarnings})}"/>
-                <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', *{showTotalDays()})}"/>
-            </nav>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{billEstimate}, *{showTotalDays()})}"/>
         <h3 class="subtitle">Comparison</h3>
-        <div class="box">
-            <nav class="level">
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', *{comparisonEstimate.getEstimatedBill()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">=</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', *{comparisonEstimate.getTotalImportCost()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">-</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{comparisonEstimate.exportEarnings})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title"> </p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', *{comparisonEstimate.getTotalPayback()})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">=</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', *{comparisonEstimate.importSavings})}"/>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="title">+</p>
-                    </div>
-                </div>
-                <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', *{comparisonEstimate.exportEarnings})}"/>
-                <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', *{showTotalDays()})}"/>
-            </nav>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{comparisonEstimate}, *{showTotalDays()})}"/>
     </form>
     <br/>
 </div>
