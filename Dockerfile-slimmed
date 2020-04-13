@@ -7,9 +7,9 @@ ENV JAVA_MINIMAL=/opt/jre
 ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
 
-RUN MODULES=$($JAVA_HOME/bin/jdeps --print-module-deps /app.jar) \
-    && echo modules identified = $MODULES \
-    && $JAVA_HOME/bin/jlink \
+RUN MODULES=$("$JAVA_HOME/bin/jdeps" --print-module-deps /app.jar) \
+    && echo modules identified = "$MODULES" \
+    && "$JAVA_HOME/bin/jlink" \
     --verbose \
     --add-modules \
         "$MODULES",java.sql,java.naming,java.desktop,java.management,java.security.jgss,java.instrument,jdk.unsupported \
@@ -20,7 +20,7 @@ RUN MODULES=$($JAVA_HOME/bin/jdeps --print-module-deps /app.jar) \
     --output "$JAVA_MINIMAL"
 
 # Start with fresh copy of alpine linux
-FROM alpine:latest
+FROM alpine:3
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE

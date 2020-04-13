@@ -5,7 +5,7 @@ ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
 
 # Explode Uber jar into jars and core
-RUN $JAVA_HOME/bin/jar -xf app.jar
+RUN "$JAVA_HOME/bin/jar" -xf app.jar
 
 FROM azul/zulu-openjdk-alpine:11
 LABEL maintainer="dlmcpaul@gmail.com"
