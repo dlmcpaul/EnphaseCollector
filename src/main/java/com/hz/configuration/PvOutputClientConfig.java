@@ -2,17 +2,13 @@ package com.hz.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.devtools.remote.client.HttpHeaderInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.time.Duration;
 
 @Configuration
@@ -46,31 +42,15 @@ public class PvOutputClientConfig {
 	@Bean(name="pvRestTemplate")
 	public RestTemplate pvRestTemplate(RestTemplateBuilder builder) {
 
-		log.info("Writing to Pv Output endpoint {} using key {}", config.getPvOutputResource().getUrl(), config.getPvOutputResource().getKey());
+		log.info("Writing to Pv Output endpoint {} using system id {}", config.getPvOutputResource().getUrl(), config.getPvOutputResource().getSystemId());
 
 		return builder
 				.rootUri(config.getPvOutputResource().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(30))
-				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-Apikey",config.getPvOutputResource().getKey()))
-				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-SystemId",config.getPvOutputResource().getSystemId()))
+				.additionalInterceptors(new HttpHeaderInterceptor("X-Pvoutput-Apikey", config.getPvOutputResource().getKey()))
+				.additionalInterceptors(new HttpHeaderInterceptor("X-Pvoutput-SystemId", config.getPvOutputResource().getSystemId()))
 				.build();
 	}
 
-	public static class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
-
-		private final String headerName;
-		private final String headerValue;
-
-		HeaderRequestInterceptor(String headerName, String headerValue) {
-			this.headerName = headerName;
-			this.headerValue = headerValue;
-		}
-
-		@Override
-		public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-			request.getHeaders().set(headerName, headerValue);
-			return execution.execute(request, body);
-		}
-	}
 }
