@@ -10,10 +10,9 @@ RUN "$JAVA_HOME/bin/jar" -xf app.jar
 FROM azul/zulu-openjdk-alpine:11
 LABEL maintainer="dlmcpaul@gmail.com"
 
-ENV APP_ROOT=/target/dependency
-COPY --from=builder "${DEPENDENCY}/BOOT-INF/lib" /app/lib
-COPY --from=builder "${DEPENDENCY}/META-INF" /app/META-INF
-COPY --from=builder "${DEPENDENCY}/BOOT-INF/classes" /app
+COPY --from=builder "./BOOT-INF/lib" /app/lib
+COPY --from=builder "./META-INF" /app/META-INF
+COPY --from=builder "./BOOT-INF/classes" /app
 
 ENTRYPOINT ["java","-cp","app:app/lib/*","-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "com.hz.EnphaseCollectorApplication"]
 
