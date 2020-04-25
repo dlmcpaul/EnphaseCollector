@@ -5,7 +5,7 @@
 
     <groupId>com.hz</groupId>
     <artifactId>enphasecollector</artifactId>
-    <version>0.0.19</version>
+    <version>0.0.20</version>
     <packaging>jar</packaging>
 
     <name>EnphaseCollector</name>
@@ -34,6 +34,7 @@
         <influxdb.connector.version>2.17</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
         <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
+        <build.number>SNAPSHOT</build.number>
     </properties>
 
     <dependencyManagement>
@@ -179,6 +180,35 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -242,5 +272,12 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <finalName>${project.artifactId}-${project.version}.${build.number}</finalName>
     </build>
 </project>
