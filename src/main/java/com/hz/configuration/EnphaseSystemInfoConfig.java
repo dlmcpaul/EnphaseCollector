@@ -19,7 +19,6 @@ import java.io.IOException;
 @Log4j2
 public class EnphaseSystemInfoConfig {
 
-	private final EnphaseCollectorProperties config;
 	private final RestTemplate enphaseRestTemplate;
 
 	@Bean
