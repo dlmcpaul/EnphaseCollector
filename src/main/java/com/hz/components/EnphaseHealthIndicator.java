@@ -2,19 +2,17 @@ package com.hz.components;
 
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnphaseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class EnphaseHealthIndicator implements HealthIndicator {
 
-	@Autowired
-	private EnphaseService enphaseService;
-
-	@Autowired
-	private EnvoyInfo envoyInfo;
+	private final EnphaseService enphaseService;
+	private final EnvoyInfo envoyInfo;
 
 	public Health health() {
 		if (enphaseService.isOk()) {
