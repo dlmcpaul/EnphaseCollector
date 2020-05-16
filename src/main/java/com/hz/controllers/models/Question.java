@@ -31,10 +31,17 @@ public class Question {
 
 	private Answer billEstimate = new Answer();
 	private Answer comparisonEstimate = new Answer();
+	private Usage usage = new Usage();
 
 	public void addSummary(Summary summary, ElectricityRate electricityRate) {
 
 		totalSummaries++;
+
+		usage.addTotalProduction(summary.getProduction());
+		usage.addGridConsumption(summary.getGridImport());
+		usage.addSolarConsumption(calculateSolarConsumption(summary.getConsumption(), summary.getGridImport()));
+		usage.addTotalConsumption(summary.getConsumption());
+		usage.addTotalExported(summary.getGridExport());
 
 		// Calculate estimated Bill costs
 		billEstimate.addBaseCost(BigDecimal.valueOf(electricityRate.getDailySupplyCharge()));

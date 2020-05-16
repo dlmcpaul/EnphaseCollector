@@ -21,7 +21,7 @@
 </div>
 
 <!--/*@thymesVar id="field" type="java.lang.String"*/-->
-<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
 <!--/*@thymesVar id="label" type="java.lang.String"*/-->
 <div th:fragment="numberField (field, value, label)" class="column field is-horizontal">
     <div class="field-label grow-3">
@@ -40,11 +40,20 @@
 </div>
 
 <!--/*@thymesVar id="heading" type="java.lang.String"*/-->
-<!--/*@thymesVar id="value" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
 <div th:fragment="moneyLevelItem (heading, value)" class="level-item has-text-centered">
     <div>
         <p class="heading" th:text="${heading}"/>
         <p class="title" th:text="${#numbers.formatCurrency(value)}"/>
+    </div>
+</div>
+
+<!--/*@thymesVar id="heading" type="java.lang.String"*/-->
+<!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
+<div th:fragment="energyLevelItem (heading, value)" class="level-item has-text-centered">
+    <div>
+        <p class="heading" th:text="${heading}"/>
+        <p class="title" th:text="${#numbers.formatDecimal(value,1,2)} + ' kWh'"/>
     </div>
 </div>
 
@@ -59,7 +68,7 @@
 
 <!--/*@thymesVar id="source" type="com.hz.controllers.models.Answer"*/-->
 <!--/*@thymesVar id="days" type="java.lang.String"*/-->
-<div th:fragment="estimateBox (source, days)" class="box">
+<div th:fragment="estimateBox (source)" class="box">
     <nav class="level">
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"/>
         <div class="level-item has-text-centered">
@@ -92,6 +101,18 @@
             </div>
         </div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"/>
+    </nav>
+</div>
+
+<!--/*@thymesVar id="source" type="com.hz.controllers.models.Usage"*/-->
+<!--/*@thymesVar id="days" type="java.lang.String"*/-->
+<div th:fragment="usageBox (source, days)" class="box">
+    <nav class="level">
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Consumption', ${source.getTotalConsumption()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Grid Consumption', ${source.getGridConsumption()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Consumption', ${source.getSolarConsumption()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Production', ${source.getTotalProduction()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Exported', ${source.getTotalExported()})}"/>
         <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', ${days})}"/>
     </nav>
 </div>

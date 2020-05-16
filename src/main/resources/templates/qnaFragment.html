@@ -26,10 +26,12 @@
             </div>
         </div>
         <hr>
-        <h3 class="subtitle">Current</h3>
-        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{billEstimate}, *{showTotalDays()})}"/>
-        <h3 class="subtitle">Comparison</h3>
-        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{comparisonEstimate}, *{showTotalDays()})}"/>
+        <h3 class="subtitle">Usage</h3>
+        <div data-th-replace="~{qnaFieldFragment :: usageBox (*{usage}, *{showTotalDays()})}"/>
+        <h3 class="subtitle">Current Energy Provider</h3>
+        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{billEstimate})}"/>
+        <h3 class="subtitle">Comparison Energy Provider</h3>
+        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{comparisonEstimate})}"/>
     </form>
     <br/>
 </div>
