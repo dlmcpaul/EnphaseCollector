@@ -15,6 +15,7 @@ import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,7 @@ public class EnphaseController {
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
 	private final EnvoyInfo envoyInfo;
+	private final Environment env;
 
 	private List<Status> populateStatusList() {
 		ArrayList<Status> statusList = new ArrayList<>();
@@ -91,6 +93,7 @@ public class EnphaseController {
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 			model.addAttribute("question", new Question());
+			model.addAttribute("releaseVersion",env.getProperty("release.version") != null ? env.getProperty("release.version") : "unreleased");
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
