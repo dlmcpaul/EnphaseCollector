@@ -5,7 +5,7 @@
 
     <groupId>com.hz</groupId>
     <artifactId>enphasecollector</artifactId>
-    <version>0.0.20</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>EnphaseCollector</name>
@@ -21,20 +21,22 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.6.RELEASE</version>
+        <version>2.2.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
         <java.version>11</java.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <java.jaxb.version>2.3.1</java.jaxb.version>
+        <java.jaxb.version>2.3.3</java.jaxb.version>
         <highcharts.version>8.0.4</highcharts.version>
         <bulma.version>0.8.0</bulma.version>
-        <influxdb.connector.version>2.17</influxdb.connector.version>
+        <influxdb.connector.version>2.18</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
-        <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
-        <build.number>SNAPSHOT</build.number>
+        <spring-cloud.version>Hoxton.SR4</spring-cloud.version>
+        <build.number>development</build.number>
+        <build.source>SNAPSHOT</build.source>
+        <revision>${build.number}-${build.source}</revision>
     </properties>
 
     <dependencyManagement>
@@ -81,17 +83,6 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- No idea why I need to force this.  influxdb declares a dependency on 3.14.3 but something drops it back to older version (3.8.1) -->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.14.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>logging-interceptor</artifactId>
-            <version>3.14.4</version>
-        </dependency>
         <dependency>
             <groupId>org.influxdb</groupId>
             <artifactId>influxdb-java</artifactId>
@@ -127,7 +118,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator</artifactId>
-            <version>0.39</version>
+            <version>0.40</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -204,10 +195,9 @@
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                     <includeOnlyProperties>
-                        <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
-                        <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id$</includeOnlyProperty>
                     </includeOnlyProperties>
-                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                    <commitIdGenerationMode>flat</commitIdGenerationMode>
                 </configuration>
             </plugin>
             <plugin>
@@ -236,6 +226,7 @@
                                 <requireMavenVersion>
                                     <version>3.6.2</version>
                                 </requireMavenVersion>
+                                <banDuplicatePomDependencyVersions/>
                             </rules>
                         </configuration>
                     </execution>
@@ -272,12 +263,5 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <finalName>${project.artifactId}-${project.version}.${build.number}</finalName>
     </build>
 </project>
