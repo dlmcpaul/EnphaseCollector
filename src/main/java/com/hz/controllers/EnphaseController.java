@@ -93,7 +93,7 @@ public class EnphaseController {
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 			model.addAttribute("question", new Question());
-			model.addAttribute("releaseVersion",env.getProperty("release.version") != null ? env.getProperty("release.version") : "unreleased");
+			model.addAttribute("releaseVersion",env.getProperty("release.version") != null ? env.getProperty("release.version").trim() : "unreleased");
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
