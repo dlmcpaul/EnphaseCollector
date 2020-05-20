@@ -1,8 +1,8 @@
 package com.hz.configuration;
 
+import com.hz.components.HeaderRequestInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.devtools.remote.client.HttpHeaderInterceptor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,8 +48,8 @@ public class PvOutputClientConfig {
 				.rootUri(config.getPvOutputResource().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.setReadTimeout(Duration.ofSeconds(30))
-				.additionalInterceptors(new HttpHeaderInterceptor("X-Pvoutput-Apikey", config.getPvOutputResource().getKey()))
-				.additionalInterceptors(new HttpHeaderInterceptor("X-Pvoutput-SystemId", config.getPvOutputResource().getSystemId()))
+				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-Apikey", config.getPvOutputResource().getKey()))
+				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-SystemId", config.getPvOutputResource().getSystemId()))
 				.build();
 	}
 
