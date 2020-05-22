@@ -12,6 +12,7 @@ services:
       - ./compose.env
     environment:
       SPRING_PROFILES_ACTIVE: influxdb
+      TZ: Australia/Sydney
       ENVOY_INFLUXDBRESOURCE_HOST: db
       ENVOY_INFLUXDBRESOURCE_PORT: 8086
       ENVOY_CONTROLLER_PASSWORD:
