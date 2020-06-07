@@ -28,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -74,12 +75,12 @@ public class LocalDBService {
 			List<DailySummary> dailies = eventRepository.findAllBefore(midnight);
 			List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(midnight);
 			List<Total> gridExports = eventRepository.findAllExcessProductionBefore(midnight);
-			List<Total> maxProduction = eventRepository.findAllMaxProductionBefore(midnight);
+			List<Total> maxProductions = eventRepository.findAllMaxProductionBefore(midnight);
 
-			dailies.forEach(daily -> findMatching(maxProduction, daily.getDate()).
-					ifPresent(maxProductionMatch -> findMatching(gridImports, daily.getDate()).
-							ifPresent(gridImportMatch -> findMatching(gridExports, daily.getDate()).
-									ifPresent(gridExportMatch -> saveSummary(daily, gridImportMatch, gridExportMatch, maxProductionMatch)))));
+			dailies.forEach(daily -> saveSummary(daily,
+					findMatching(gridImports, daily.getDate()),
+					findMatching(gridExports, daily.getDate()),
+					findMatching(maxProductions, daily.getDate())));
 
 			eventRepository.deleteEventsByTimeBefore(midnight);
 		} catch (Exception e) {
@@ -129,8 +130,11 @@ public class LocalDBService {
 		}
 	}
 
-	private Optional<Total> findMatching(List<Total> values, LocalDate matchDate) {
-		return values.stream().filter(value -> matchDate.isEqual(value.getDate())).findFirst();
+	private Total findMatching(List<Total> values, LocalDate matchDate) {
+		return values.stream().
+				filter(value -> matchDate.isEqual(value.getDate())).
+				findFirst().
+				orElseGet(() -> new EmptyTotal());
 	}
 
 	public ElectricityRate getRateForDate(LocalDate date) {
