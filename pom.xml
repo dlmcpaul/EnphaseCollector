@@ -30,10 +30,10 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <java.jaxb.version>2.3.3</java.jaxb.version>
         <highcharts.version>8.0.4</highcharts.version>
-        <bulma.version>0.8.0</bulma.version>
+        <bulma.version>0.8.2</bulma.version>
         <influxdb.connector.version>2.18</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
-        <spring-cloud.version>Hoxton.SR4</spring-cloud.version>
+        <spring-cloud.version>Hoxton.SR5</spring-cloud.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
         <revision>${build.number}-${build.source}</revision>
@@ -210,27 +210,6 @@
                         <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.6.2</version>
-                                </requireMavenVersion>
-                                <banDuplicatePomDependencyVersions/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
