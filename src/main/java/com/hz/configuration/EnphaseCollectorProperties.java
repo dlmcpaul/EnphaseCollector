@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -27,9 +28,9 @@ public class EnphaseCollectorProperties {
     private HTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
 
-    // Assumes refreshSeconds is a multiple of 60000
-    public int getRefreshAsMinutes() {
-        return refreshSeconds / 60000;
+    // Assumes refreshSeconds is in milliseconds
+    public BigDecimal getRefreshAsMinutes() {
+        return BigDecimal.valueOf(refreshSeconds).divide(BigDecimal.valueOf(60000));
     }
 
     @Data

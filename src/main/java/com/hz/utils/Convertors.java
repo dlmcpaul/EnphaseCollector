@@ -12,14 +12,14 @@ public class Convertors {
 	private Convertors() {
 	}
 
-	public static BigDecimal convertToWattHours(BigDecimal watts, int minutesOfOperation) {
+	public static BigDecimal convertToWattHours(BigDecimal watts, BigDecimal minutesOfOperation) {
 		// Wh = W * hours of operation
 		// So scale minutes of operation to hours of operation
 
-		return watts.multiply(BigDecimal.valueOf(minutesOfOperation)).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
+		return watts.multiply(minutesOfOperation).divide(BigDecimal.valueOf(60), 4, RoundingMode.HALF_UP);
 	}
 
-	public static BigDecimal convertToKiloWattHours(BigDecimal watts, int minutesOfOperation) {
+	public static BigDecimal convertToKiloWattHours(BigDecimal watts, BigDecimal minutesOfOperation) {
 		if (watts == null) {
 			return BigDecimal.ZERO;
 		}
@@ -27,7 +27,7 @@ public class Convertors {
 		return wattHours.divide(BigDecimal.valueOf(1000), 4, RoundingMode.HALF_UP);
 	}
 
-	public static BigDecimal convertToKiloWattHours(Long watts, int minutesOfOperation) {
+	public static BigDecimal convertToKiloWattHours(Long watts, BigDecimal minutesOfOperation) {
 		return convertToKiloWattHours(BigDecimal.valueOf(watts), minutesOfOperation);
 	}
 

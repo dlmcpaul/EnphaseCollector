@@ -60,11 +60,11 @@ public class EnphaseServiceTest {
 
 	@Test
 	public void ConvertorsTest() {
-		assertThat(BigDecimal.ZERO, comparesEqualTo(Convertors.convertToWattHours(BigDecimal.ZERO, 0)));
-		assertThat(BigDecimal.valueOf(16.6667), comparesEqualTo(Convertors.convertToWattHours(BigDecimal.valueOf(1000), 1)));
+		assertThat(BigDecimal.ZERO, comparesEqualTo(Convertors.convertToWattHours(BigDecimal.ZERO, BigDecimal.ZERO)));
+		assertThat(BigDecimal.valueOf(16.6667), comparesEqualTo(Convertors.convertToWattHours(BigDecimal.valueOf(1000), BigDecimal.ONE)));
 
-		assertThat(BigDecimal.valueOf(0.1667), comparesEqualTo(Convertors.convertToKiloWattHours(10000L, 1)));
-		assertThat(BigDecimal.valueOf(1), comparesEqualTo(Convertors.convertToKiloWattHours(60000L, 1)));
+		assertThat(BigDecimal.valueOf(0.1667), comparesEqualTo(Convertors.convertToKiloWattHours(10000L, BigDecimal.ONE)));
+		assertThat(BigDecimal.valueOf(1), comparesEqualTo(Convertors.convertToKiloWattHours(60000L, BigDecimal.ONE)));
 	}
 
 	@Test
@@ -80,7 +80,8 @@ public class EnphaseServiceTest {
 
 	@Test
 	public void CalculatorsTest() {
-		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(6000L, 0.07, "test", 1)));
-		assertThat(BigDecimal.valueOf(0), comparesEqualTo(Calculators.calculateFinancial(0L, 0.07, "test", 1)));
+		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(6000L, 0.07, "test", BigDecimal.ONE)));
+		assertThat(BigDecimal.valueOf(0), comparesEqualTo(Calculators.calculateFinancial(0L, 0.07, "test", BigDecimal.ONE)));
+		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(12000L, 0.07, "test", BigDecimal.valueOf(0.5))));
 	}
 }

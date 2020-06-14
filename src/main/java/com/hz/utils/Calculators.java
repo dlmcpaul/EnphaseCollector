@@ -10,7 +10,7 @@ public class Calculators {
 
 	private Calculators() {}
 
-	public static BigDecimal calculateFinancial(Long recordedWatts, double price, String type, int minutesOfOperation) {
+	public static BigDecimal calculateFinancial(Long recordedWatts, double price, String type, BigDecimal minutesOfOperation) {
 
 		BigDecimal watts = BigDecimal.ZERO;
 		final NumberFormat numberInstance = NumberFormat.getNumberInstance();
