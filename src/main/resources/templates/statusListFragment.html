@@ -4,7 +4,7 @@
 <body>
 <!--/*@thymesVar id="statusList" type="java.util.ArrayList"*/-->
 <div th:fragment="statusList" id="statusList" class="column is-4 centre">
-    <table class="table is-fullwidth">
+    <table class="table is-fullwidth" summary="Solar Status Table">
         <tbody>
             <th:block th:each="status : ${statusList}">
                 <div data-th-replace="~{statusFragment :: status(${status.image},${status.text},${status.value})}"></div>

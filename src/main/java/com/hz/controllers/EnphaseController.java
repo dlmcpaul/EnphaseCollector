@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,6 +94,7 @@ public class EnphaseController {
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
 			model.addAttribute("question", new Question());
+			model.addAttribute("TZ", Calendar.getInstance().getTimeZone().toZoneId().getId());
 			model.addAttribute("releaseVersion",env.getProperty("release.version") != null ? env.getProperty("release.version").trim() : "unreleased");
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);

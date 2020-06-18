@@ -13,7 +13,7 @@
             <p class="control has-icons-left">
                 <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="date">
                 <span class="icon is-small is-left">
-                    <i class="fas fa-calendar"></i>
+                    <i class="fas fa-calendar" aria-hidden="true"></i>
                 </span>
             </p>
         </div>
@@ -32,7 +32,7 @@
             <p class="control has-icons-left">
                 <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="number" step="any">
                 <span class="icon is-small is-left">
-                    <i class="fas fa-dollar-sign"></i>
+                    <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                 </span>
             </p>
         </div>
@@ -67,7 +67,6 @@
 </div>
 
 <!--/*@thymesVar id="source" type="com.hz.controllers.models.Answer"*/-->
-<!--/*@thymesVar id="days" type="java.lang.String"*/-->
 <div th:fragment="estimateBox (source)" class="box">
     <nav class="level">
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"/>

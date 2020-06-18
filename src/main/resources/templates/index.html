@@ -17,7 +17,7 @@
             <h1 class="title is-inline">Enphase Solar System Visualiser</h1>
             <h2 class="subtitle is-inline" data-th-text="' (' + ${releaseVersion} + ')'"></h2>
             <h2 class="subtitle">
-                <i class="fas fa-copyright"></i> David McPaul 2018
+                <i class="fas fa-copyright" aria-hidden="true"></i> David McPaul 2018
             </h2>
         </div>
     </div>
@@ -78,7 +78,7 @@
 <script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
-    initHighCharts();
+    initHighCharts([[${TZ}]]);
     initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
     initHistoryCharts();
 </script>

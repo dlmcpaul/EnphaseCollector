@@ -1,10 +1,13 @@
 /*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList */
 
-function initHighCharts() {
+function initHighCharts(timezone) {
     "use strict";
 
     //Disable use of UTC
     Highcharts.setOptions({
+        time: {
+          timezone: timezone
+        },
         global: {
             useUTC: false
         }
