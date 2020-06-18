@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("testing")
-public class EnphaseCollectorApplicationTests {
+class EnphaseCollectorApplicationTests {
 
 	@Mock
 	private EnvoyInfo envoyInfo;

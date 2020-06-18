@@ -27,7 +27,7 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D4.5.79")
 @ActiveProfiles("testing")
-public class EnphaseServiceRest_4_5_79_Test {
+class EnphaseServiceRest_4_5_79_Test {
 
 	@TestConfiguration
 	static class EmployeeServiceImplTestContextConfiguration {
@@ -81,7 +81,7 @@ public class EnphaseServiceRest_4_5_79_Test {
 		Assertions.assertEquals("121703XXXXXX", this.envoyInfo.getSerialNumber());
 		Assertions.assertEquals(16, system.get().getProduction().getMicroInvertorsList().size());
 		Assertions.assertEquals(BigDecimal.valueOf(13337263.955), system.get().getProduction().getProductionEim().get().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(1.326), system.get().getProduction().getProductionEim().get().getWattsNow());
+		Assertions.assertEquals(BigDecimal.valueOf(1.326), system.get().getProduction().getProductionWatts());
 		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
 		Assertions.assertTrue(this.enphaseService.isOk());
 		Assertions.assertTrue(system.get().getWireless().isSupported());

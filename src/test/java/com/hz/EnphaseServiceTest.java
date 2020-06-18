@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-public class EnphaseServiceTest {
+class EnphaseServiceTest {
 
 	@Mock
 	private EnphaseService mockEnphaseService;

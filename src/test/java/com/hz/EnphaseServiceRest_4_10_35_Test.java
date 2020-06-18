@@ -27,7 +27,7 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/R4.10.35")
 @ActiveProfiles("testing")
-public class EnphaseServiceRest_4_10_35_Test {
+class EnphaseServiceRest_4_10_35_Test {
 
 	@TestConfiguration
 	static class EmployeeServiceImplTestContextConfiguration {

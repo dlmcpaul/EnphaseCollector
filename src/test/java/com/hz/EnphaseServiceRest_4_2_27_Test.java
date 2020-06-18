@@ -27,7 +27,7 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D4.2.27")
 @ActiveProfiles("testing")
-public class EnphaseServiceRest_4_2_27_Test {
+class EnphaseServiceRest_4_2_27_Test {
 
 	@TestConfiguration
 	static class EmployeeServiceImplTestContextConfiguration {
@@ -81,7 +81,7 @@ public class EnphaseServiceRest_4_2_27_Test {
 		Assertions.assertEquals("D4.2.27", this.envoyInfo.getSoftwareVersion() );
 		Assertions.assertEquals(20, system.get().getProduction().getInverter().get().getActiveCount());
 		Assertions.assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionEim().get().getWattsNow());
+		Assertions.assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionWatts());
 		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
 		Assertions.assertTrue(this.enphaseService.isOk());
 
