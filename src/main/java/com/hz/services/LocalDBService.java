@@ -133,7 +133,7 @@ public class LocalDBService {
 		return values.stream().
 				filter(value -> matchDate.isEqual(value.getDate())).
 				findFirst().
-				orElseGet(() -> new EmptyTotal());
+				orElseGet(EmptyTotal::new);
 	}
 
 	public ElectricityRate getRateForDate(LocalDate date) {
