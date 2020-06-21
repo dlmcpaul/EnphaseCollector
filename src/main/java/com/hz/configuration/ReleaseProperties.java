@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @PropertySource(value = "classpath:/release.properties", ignoreResourceNotFound = true)
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @ConfigurationProperties("release")
 public class ReleaseProperties {
 	private String version;
