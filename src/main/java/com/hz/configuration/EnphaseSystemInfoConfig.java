@@ -14,7 +14,7 @@ import org.springframework.xml.transform.StringSource;
 
 import java.io.IOException;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 @Log4j2
 public class EnphaseSystemInfoConfig {

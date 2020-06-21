@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 @Log4j2
 public class InfluxDBConfig {

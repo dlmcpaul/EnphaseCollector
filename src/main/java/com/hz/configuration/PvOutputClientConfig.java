@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 @Log4j2
 @Profile("pvoutput")
