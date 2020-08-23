@@ -33,7 +33,7 @@
         <bulma.version>0.9.0</bulma.version>
         <influxdb.connector.version>2.18</influxdb.connector.version>
         <font-awsome.version>5.8.1</font-awsome.version>
-        <spring-cloud.version>Hoxton.SR6</spring-cloud.version>
+        <spring-cloud.version>Hoxton.SR7</spring-cloud.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
         <revision>${build.number}-${build.source}</revision>
