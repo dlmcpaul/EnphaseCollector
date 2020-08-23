@@ -25,4 +25,12 @@ public class EimType extends TypeBase {
 	private BigDecimal vahToday;
 	private BigDecimal varhLeadToday;
 	private BigDecimal varhLagToday;
+
+	public EimType() {
+		this.setWattsNow(BigDecimal.ZERO);
+	}
+
+	public EimType(BigDecimal wattsNow) {
+		this.setWattsNow(wattsNow);
+	}
 }

@@ -1,5 +1,6 @@
 package com.hz.models.database;
 
+import com.hz.models.interfaces.RateInterface;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ElectricityRate {
+public class ElectricityRate implements RateInterface {
 	@Id
 	private LocalDate effectiveDate;
 	private Double paymentPerKiloWatt = 0.0;

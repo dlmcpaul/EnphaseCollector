@@ -26,6 +26,17 @@ public class PowerMeter {
 	private BigDecimal current;
 	private BigDecimal freq;
 
+	public PowerMeter() {
+		// Set some defaults
+		this.activePower = BigDecimal.ZERO;
+		this.voltage = BigDecimal.ZERO;
+	}
+
+	public PowerMeter(BigDecimal activePower, BigDecimal voltage) {
+		this.activePower = activePower;
+		this.voltage = voltage;
+	}
+
 	@JsonProperty(value="channels")
 	private List<Channel> channelList;
 }

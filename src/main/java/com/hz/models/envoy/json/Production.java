@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,30 +32,17 @@ public class Production {
 
 	@JsonIgnore
 	public List<Inverter> getMicroInvertorsList() {
-		Optional<InvertersType> inverter = this.getInverter();
-		if (inverter.isPresent()) {
-			return inverter.get().getMicroInvertors();
-		}
-
-		return new ArrayList<>();
+		return this.getInverter().orElseGet(InvertersType::new).getMicroInvertors();
 	}
 
 	@JsonIgnore
 	public List<Inverter> getBatteryList() {
-		Optional<InvertersType> inverter = this.getInverter();
-		if (inverter.isPresent()) {
-			return inverter.get().getBatteries();
-		}
-
-		return new ArrayList<>();
+		return this.getInverter().orElseGet(InvertersType::new).getBatteries();
 	}
 
 	@JsonIgnore
 	public void setInverterList(List<Inverter> inverterList) {
-		Optional<InvertersType> inverter = this.getInverter();
-		if (inverter.isPresent()) {
-			inverter.get().setInverterList(inverterList);
-		}
+		this.getInverter().ifPresent(invertersType -> invertersType.setInverterList(inverterList));
 	}
 
 	@JsonIgnore
@@ -104,40 +90,37 @@ public class Production {
 
 	@JsonIgnore
 	public BigDecimal getProductionVoltage() {
-
-		if (getProductionMeter().isPresent()) {
-			return getProductionMeter().get().getVoltage();
-		}
-
-		if (getProductionEim().isPresent()) {
-			return getProductionEim().get().getRmsVoltage();
-		}
-
-		return BigDecimal.ZERO;
+		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, getProductionEimVoltage())).getVoltage();
 	}
 
+	@JsonIgnore
+	public BigDecimal getProductionEimVoltage() {
+		return getProductionEim().orElseGet(EimType::new).getRmsVoltage();
+	}
 
 	@JsonIgnore
 	public BigDecimal getProductionWatts() {
+		return getProductionMeter().orElse(new PowerMeter(getProductionEimWatts(), BigDecimal.ZERO)).getActivePower();
+	}
 
-		if (getProductionMeter().isPresent()) {
-			return getProductionMeter().get().getActivePower();
-		}
+	@JsonIgnore
+	public BigDecimal getProductionEimWatts() {
+		return getProductionEim().orElse(new EimType(getInverterWatts())).getWattsNow();
+	}
 
-		if (getProductionEim().isPresent()) {
-			return getProductionEim().get().getWattsNow();
-		}
-
-		return getInverter().get().getWattsNow();
+	@JsonIgnore
+	public BigDecimal getInverterWatts() {
+		return getInverter().orElseGet(InvertersType::new).getWattsNow();
 	}
 
 	@JsonIgnore
 	public BigDecimal getConsumptionWatts() {
-		if (getTotalConsumptionMeter().isPresent()) {
-			return getTotalConsumptionMeter().get().getActivePower();
-		}
+		return getTotalConsumptionMeter().orElse(new PowerMeter(getConsumptionEimWatts(), BigDecimal.ZERO)).getActivePower();
+	}
 
-		return getTotalConsumptionEim().get().getWattsNow();
+	@JsonIgnore
+	public BigDecimal getConsumptionEimWatts() {
+		return getTotalConsumptionEim().orElseGet(EimType::new).getWattsNow();
 	}
 
 	private Optional<EimType> findBymeasurementType(List<TypeBase> list, String measurementType) {

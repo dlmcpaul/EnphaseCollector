@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,7 @@ public class InvertersType extends TypeBase {
 	private static final int MICRO_INVERTER = 1;
 	private static final int BATTERY = 11;
 
-	private List<Inverter> inverterList;    // populated from api/v1/production/inverters
+	private List<Inverter> inverterList = new ArrayList<>();    // populated from api/v1/production/inverters
 
 	public List<Inverter> getMicroInvertors() {
 		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).collect(Collectors.toList());

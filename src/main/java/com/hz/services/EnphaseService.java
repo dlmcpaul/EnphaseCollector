@@ -162,23 +162,23 @@ public class EnphaseService {
 	public List<Metric> getMetrics(System system) {
 	    ArrayList<Metric> metricList = new ArrayList<>();
 
-	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
+	    BigDecimal production = system.getProduction().getProductionWatts();
+		BigDecimal consumption = system.getProduction().getConsumptionWatts();
+
+		metricList.add(new Metric("solar.production.current", production, 5));
+		metricList.add(new Metric("solar.consumption.current", consumption));
+		metricList.add(new Metric("solar.production.voltage", system.getProduction().getProductionVoltage().floatValue()));
+
+		Optional<EimType> productionEim = system.getProduction().getProductionEim();
 		Optional<InvertersType> inverter = system.getProduction().getInverter();
-	    BigDecimal production = BigDecimal.ZERO;
-		BigDecimal consumption = BigDecimal.ZERO;
-	    if (productionEim.isPresent() && inverter.isPresent()) {
-		    production = system.getProduction().getProductionWatts();
+		if (productionEim.isPresent() && inverter.isPresent()) {
 	    	log.debug("production: eim time {} eim {} inverter time {} inverter {} calculated {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), inverter.get().getWattsNow(), production);
-		    metricList.add(new Metric("solar.production.current", production, 5));
 		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
-		    metricList.add(new Metric("solar.production.voltage", system.getProduction().getProductionVoltage().floatValue()));
 	    }
 
 	    Optional<EimType> consumptionEim = system.getProduction().getTotalConsumptionEim();
 	    if (consumptionEim.isPresent()) {
-		    consumption = system.getProduction().getConsumptionWatts();
 		    log.debug("consumption: eim time {} eim {} calculated {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumptionEim.get().getWattsNow(), consumption);
-		    metricList.add(new Metric("solar.consumption.current", consumption));
 		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
 	    }
 

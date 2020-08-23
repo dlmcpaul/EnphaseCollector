@@ -24,7 +24,7 @@ public abstract class TypeBase {
     private int activeCount;
     private long readingTime;
     @JsonProperty(value="wNow")
-    private BigDecimal wattsNow;
+    private BigDecimal wattsNow = BigDecimal.ZERO;
     @JsonProperty(value="whLifetime")
     private BigDecimal wattsLifetime;
 
