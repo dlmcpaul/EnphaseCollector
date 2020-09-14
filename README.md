@@ -55,9 +55,20 @@ dlmcpaul/enphasecollector
 ```
 and a web page available at http://localhost:8080/solar and looks like [this](https://dlmcpaul.github.io/EnphaseCollector "this")
 
-You can also link the internal database to an external file system so the database is not cleared on upgrade of the image using the mount point /internal_db
+You can also link the internal database to an external file system, so the database kept on upgrade of the image using the mount point /internal_db
 
-Example #3 sending data to pvoutput
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-p 8080:8080 \
+--mount source=/internal_db,target=host_path
+dlmcpaul/enphasecollector
+```
+and replace host_path with the path on your host machine where you want to store the data.
+
+Example #3 sending data to pvoutput.
 ```
 docker run \
 -e TZ=your-timezone \
