@@ -33,11 +33,11 @@ COPY --from=builder "$JAVA_MINIMAL" "$JAVA_MINIMAL"
 # copy our application
 COPY ${JAR_FILE} /app.jar
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
+# Override these for your timezone and language
+ENV TZ="Australia/Sydney" \
+    LANG="en_AU.UTF-8"
 
-# expose the internal actuator endpoints
+# expose the internal endpoint
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "/app.jar"]
