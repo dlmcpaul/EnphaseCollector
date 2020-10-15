@@ -1,5 +1,6 @@
 package com.hz.configuration;
 
+import com.hz.utils.Calculators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class EnphaseCollectorProperties {
 
     // Assumes refreshSeconds is in milliseconds
     public BigDecimal getRefreshAsMinutes() {
-        return BigDecimal.valueOf(refreshSeconds).divide(BigDecimal.valueOf(60000));
+        return Calculators.calculateMinutesOfOperation(refreshSeconds);
     }
 
     @Data

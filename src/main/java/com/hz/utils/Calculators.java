@@ -3,12 +3,17 @@ package com.hz.utils;
 import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 @Log4j2
 public class Calculators {
 
 	private Calculators() {}
+
+	public static BigDecimal calculateMinutesOfOperation(int microseconds) {
+		return BigDecimal.valueOf(microseconds).divide(BigDecimal.valueOf(60000), 3, RoundingMode.HALF_UP);
+	}
 
 	public static BigDecimal calculateFinancial(Long recordedWatts, double price, String type, BigDecimal minutesOfOperation) {
 
