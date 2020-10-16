@@ -83,5 +83,8 @@ class EnphaseServiceTest {
 		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(6000L, 0.07, "test", BigDecimal.ONE)));
 		assertThat(BigDecimal.valueOf(0), comparesEqualTo(Calculators.calculateFinancial(0L, 0.07, "test", BigDecimal.ONE)));
 		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(12000L, 0.07, "test", BigDecimal.valueOf(0.5))));
+		assertThat(BigDecimal.valueOf(0.007), comparesEqualTo(Calculators.calculateFinancial(24000L, 0.07, "test", BigDecimal.valueOf(0.25))));
+		assertThat(BigDecimal.valueOf(0.25), comparesEqualTo(Calculators.calculateMinutesOfOperation(15000)));
+		assertThat(BigDecimal.valueOf(0.083), comparesEqualTo(Calculators.calculateMinutesOfOperation(5000)));
 	}
 }
