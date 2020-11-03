@@ -385,7 +385,7 @@ function initHistoryCharts() {
             {
                 min: 0,
                 title: {
-                    text: "Solar Usage"
+                    text: "Solar Generation"
                 },
                 labels: {
                     format: "{value} kWh"
@@ -459,7 +459,7 @@ function initHistoryCharts() {
             {
                 min: 0,
                 title: {
-                    text: "Solar Usage"
+                    text: "Solar Generation"
                 },
                 labels: {
                     format: "{value} kWh"
