@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.xml.transform.StringSource;
 
@@ -17,6 +19,7 @@ import java.io.IOException;
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 @Log4j2
+@Profile({"!testing"})
 public class EnphaseSystemInfoConfig {
 
 	private final RestTemplate enphaseRestTemplate;
@@ -31,13 +34,12 @@ public class EnphaseSystemInfoConfig {
 
 	@Bean
 	public EnvoyInfo envoyInfo(Unmarshaller enphaseMarshaller) {
-		String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
-
 		try {
+			String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
 			if (infoXml != null) {
 				return (EnvoyInfo) enphaseMarshaller.unmarshal(new StringSource(infoXml));
 			}
-		} catch (IOException e) {
+		} catch (IOException | ResourceAccessException e) {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 

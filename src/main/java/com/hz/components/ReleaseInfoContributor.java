@@ -28,7 +28,7 @@ public class ReleaseInfoContributor implements InfoContributor, InitializingBean
 				Collections.singletonMap("version", getVersion()));
 	}
 
-	private String getVersion() {
-		return env.getProperty("release.version") != null ? env.getProperty("release.version").trim() : "unreleased";
+	public String getVersion() {
+		return env != null && env.getProperty("release.version") != null ? env.getProperty("release.version").trim() : "unreleased";
 	}
 }

@@ -1,5 +1,6 @@
 package com.hz;
 
+import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,11 +28,12 @@ import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/R4.10.35")
+@Import(TestEnphaseSystemInfoConfig.class)
 @ActiveProfiles("testing")
 class EnphaseServiceRest_4_10_35_Test {
 
 	@TestConfiguration
-	static class EmployeeServiceImplTestContextConfiguration {
+	static class EnphaseServiceTestContextConfiguration {
 
 		@Autowired
 		private Environment environment;
