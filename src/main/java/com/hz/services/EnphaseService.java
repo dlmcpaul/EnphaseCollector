@@ -16,9 +16,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,11 +64,7 @@ public class EnphaseService {
 	}
 
 	public LocalDateTime getLastReadTime() {
-    	if (lastReadTime > 0L) {
-    		return LocalDateTime.ofInstant(Instant.ofEpochMilli(lastReadTime * 1000L), ZoneId.systemDefault());
-	    }
-
-    	return LocalDateTime.now();
+    	return (lastReadTime > 0L) ? Convertors.convertToLocalDateTime(lastReadTime) : LocalDateTime.now();
 	}
 
 	public Optional<System> collectEnphaseData() {
@@ -115,7 +109,7 @@ public class EnphaseService {
 	public LocalDateTime getCollectionTime(System system) {
 	    Optional<EimType> productionEim = system.getProduction().getProductionEim();
 	    // Envoy only produces time in seconds
-	    return productionEim.map(typeBase -> LocalDateTime.ofInstant(Instant.ofEpochMilli(typeBase.getReadingTime() * 1000L), ZoneId.systemDefault()))
+	    return productionEim.map(typeBase -> Convertors.convertToLocalDateTime(typeBase.getReadingTime()))
 			    .orElseGet(() -> LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
@@ -150,13 +144,13 @@ public class EnphaseService {
 
     private void calculateSavings(ArrayList<Metric> metricList, BigDecimal production, BigDecimal consumption) {
 	    if (production.compareTo(consumption) > 0) {
-		    metricList.add(new Metric("solar.excess", production, consumption));
-		    metricList.add(new Metric("solar.savings", consumption));
+		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, production, consumption));
+		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, consumption));
 	    } else {
-		    metricList.add(new Metric("solar.excess", 0));
-		    metricList.add(new Metric("solar.savings", production));
+		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
+		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production));
 	    }
-	    metricList.add(new Metric( "solar.difference",production, consumption));
+	    metricList.add(new Metric( Metric.METRIC_SOLAR_DIFFERENCE,production, consumption));
     }
 
 	public List<Metric> getMetrics(System system) {
@@ -165,26 +159,26 @@ public class EnphaseService {
 	    BigDecimal production = system.getProduction().getProductionWatts();
 		BigDecimal consumption = system.getProduction().getConsumptionWatts();
 
-		metricList.add(new Metric("solar.production.current", production, 5));
-		metricList.add(new Metric("solar.consumption.current", consumption));
-		metricList.add(new Metric("solar.production.voltage", system.getProduction().getProductionVoltage().floatValue()));
+		metricList.add(new Metric(Metric.METRIC_PRODUCTION_CURRENT, production, 5));
+		metricList.add(new Metric(Metric.METRIC_CONSUMPTION_CURRENT, consumption));
+		metricList.add(new Metric(Metric.METRIC_PRODUCTION_VOLTAGE, system.getProduction().getProductionVoltage().floatValue()));
 
 		Optional<EimType> productionEim = system.getProduction().getProductionEim();
 		Optional<InvertersType> inverter = system.getProduction().getInverter();
 		if (productionEim.isPresent() && inverter.isPresent()) {
 	    	log.debug("production: eim time {} eim {} inverter time {} inverter {} calculated {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), inverter.get().getWattsNow(), production);
-		    metricList.add(new Metric("solar.production.total", inverter.get().getWattsLifetime()));
+		    metricList.add(new Metric(Metric.METRIC_PRODUCTION_TOTAL, inverter.get().getWattsLifetime()));
 	    }
 
 	    Optional<EimType> consumptionEim = system.getProduction().getTotalConsumptionEim();
 	    if (consumptionEim.isPresent()) {
 		    log.debug("consumption: eim time {} eim {} calculated {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumptionEim.get().getWattsNow(), consumption);
-		    metricList.add(new Metric("solar.consumption.total", consumptionEim.get().getWattsLifetime()));
+		    metricList.add(new Metric(Metric.METRIC_CONSUMPTION_TOTAL, consumptionEim.get().getWattsLifetime()));
 	    }
 
 	    calculateSavings(metricList, production, consumption);
 
-	    system.getProduction().getMicroInvertorsList().forEach(micro -> metricList.add(new Metric("solar.panel-" + map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
+	    system.getProduction().getMicroInvertorsList().forEach(micro -> metricList.add(new Metric(Metric.METRIC_PANEL_NAME_PREFIX + map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
 
 	    return metricList;
     }
