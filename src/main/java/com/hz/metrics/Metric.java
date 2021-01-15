@@ -10,15 +10,15 @@ import java.math.BigDecimal;
  */
 @Data
 public class Metric  implements Serializable {
-	public static String METRIC_PANEL_NAME_PREFIX = "solar.panel-";
-	public static String METRIC_PRODUCTION_CURRENT = "solar.production.current";
-	public static String METRIC_CONSUMPTION_CURRENT = "solar.consumption.current";
-	public static String METRIC_PRODUCTION_TOTAL = "solar.production.total";
-	public static String METRIC_CONSUMPTION_TOTAL = "solar.consumption.total";
-	public static String METRIC_PRODUCTION_VOLTAGE = "solar.production.voltage";
-	public static String METRIC_SOLAR_EXCESS = "solar.excess";
-	public static String METRIC_SOLAR_SAVINGS = "solar.savings";
-	public static String METRIC_SOLAR_DIFFERENCE = "solar.difference";
+	public static final String METRIC_PANEL_NAME_PREFIX = "solar.panel-";
+	public static final String METRIC_PRODUCTION_CURRENT = "solar.production.current";
+	public static final String METRIC_CONSUMPTION_CURRENT = "solar.consumption.current";
+	public static final String METRIC_PRODUCTION_TOTAL = "solar.production.total";
+	public static final String METRIC_CONSUMPTION_TOTAL = "solar.consumption.total";
+	public static final String METRIC_PRODUCTION_VOLTAGE = "solar.production.voltage";
+	public static final String METRIC_SOLAR_EXCESS = "solar.excess";
+	public static final String METRIC_SOLAR_SAVINGS = "solar.savings";
+	public static final String METRIC_SOLAR_DIFFERENCE = "solar.difference";
 
 	private String name;
 	private float value;

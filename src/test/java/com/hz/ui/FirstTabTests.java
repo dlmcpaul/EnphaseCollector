@@ -17,7 +17,7 @@ import static com.codeborne.selenide.Selenide.open;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
-public class FirstTabTests {
+class FirstTabTests {
 
 	@LocalServerPort //to inject port value
 	int port;
