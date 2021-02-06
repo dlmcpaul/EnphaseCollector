@@ -78,7 +78,7 @@ class EnphaseServiceRest_4_5_79_Test {
 	private EnvoyInfo envoyInfo;
 
 	@Test
-	public void enphase_4_5_79_ServiceTest() {
+	void enphase_4_5_79_ServiceTest() {
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assertions.assertTrue(system.isPresent());

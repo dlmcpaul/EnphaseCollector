@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 class EnphaseCollectorApplicationTests {
 
 	@Test
-	public void contextLoads(@Autowired EnvoyInfo envoyInfo) {
+	void contextLoads(@Autowired EnvoyInfo envoyInfo) {
 		Assertions.assertTrue(envoyInfo.getSerialNumber().equalsIgnoreCase("unknown"));
 	}
 }

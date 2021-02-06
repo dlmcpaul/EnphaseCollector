@@ -76,7 +76,7 @@ class EnphaseServiceRest_4_10_35_Test {
 	private EnvoyInfo envoyInfo;
 
 	@Test
-	public void enphase_4_10_35_ServiceTest() {
+	void enphase_4_10_35_ServiceTest() {
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assertions.assertTrue(system.isPresent());
@@ -85,6 +85,8 @@ class EnphaseServiceRest_4_10_35_Test {
 		Assertions.assertEquals(41, system.get().getProduction().getMicroInvertorsList().size());
 		Assertions.assertEquals(BigDecimal.valueOf(13827622.064), system.get().getProduction().getProductionEim().get().getWattsLifetime());
 		Assertions.assertEquals(BigDecimal.valueOf(1207430, 3), system.get().getProduction().getProductionWatts());
+		Assertions.assertEquals(BigDecimal.ONE, system.get().getProduction().getPhaseCount());
+		Assertions.assertEquals(BigDecimal.valueOf(246.152), system.get().getProduction().getProductionVoltage());
 		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
 		Assertions.assertTrue(this.enphaseService.isOk());
 		Assertions.assertTrue(system.get().getWireless().isSupported());
