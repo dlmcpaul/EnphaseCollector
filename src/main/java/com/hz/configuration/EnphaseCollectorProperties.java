@@ -29,9 +29,16 @@ public class EnphaseCollectorProperties {
     private HTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
 
-    // Assumes refreshSeconds is in milliseconds
+    public int getRefreshSeconds() {
+        // Try to handle passing refreshSeconds as named instead of as microseconds
+        if (refreshSeconds <= 120) {
+            return refreshSeconds * 1000;
+        }
+        return refreshSeconds;
+    }
+
     public BigDecimal getRefreshAsMinutes() {
-        return Calculators.calculateMinutesOfOperation(refreshSeconds);
+        return Calculators.calculateMinutesOfOperation(this.getRefreshSeconds());
     }
 
     @Data
