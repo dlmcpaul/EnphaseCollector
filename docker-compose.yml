@@ -13,6 +13,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: influxdb
       TZ: Australia/Sydney
+      LANG: en_AU.UTF-8
       ENVOY_INFLUXDBRESOURCE_HOST: db
       ENVOY_INFLUXDBRESOURCE_PORT: 8086
       ENVOY_CONTROLLER_PASSWORD:
