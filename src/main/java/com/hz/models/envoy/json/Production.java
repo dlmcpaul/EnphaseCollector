@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class Production {
 
 	@JsonIgnore
 	public Optional<InvertersType> getInverter() {
-		return productionList.stream().filter(module -> module.getType().equalsIgnoreCase("inverters")).findFirst().map(obj -> (InvertersType) obj);
+		return productionList.stream().filter(module -> module.getType().equalsIgnoreCase("inverters")).findFirst().map(InvertersType.class::cast);
 	}
 
 	@JsonIgnore
@@ -84,13 +85,20 @@ public class Production {
 		return powerMeterList.stream().filter(power -> power.getEid().compareToIgnoreCase(eid) == 0).findFirst();
 	}
 
-	private Optional<DeviceMeter> getDevice(String measurementType) {
+	@JsonIgnore
+	public Optional<DeviceMeter> getDevice(String measurementType) {
 		return deviceMeterList.stream().filter(device -> device.getMeasurementType().compareToIgnoreCase(measurementType) == 0).findFirst();
 	}
 
 	@JsonIgnore
+	public BigDecimal getPhaseCount() {
+		return BigDecimal.valueOf(getDevice("production").orElse(new DeviceMeter()).getPhaseCount());
+
+	}
+
+	@JsonIgnore
 	public BigDecimal getProductionVoltage() {
-		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, getProductionEimVoltage())).getVoltage();
+		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, getProductionEimVoltage())).getVoltage().divide(getPhaseCount(), 3, RoundingMode.HALF_UP);
 	}
 
 	@JsonIgnore
@@ -132,7 +140,7 @@ public class Production {
 	private List<EimType> filterToEimType(List<TypeBase> list) {
 		return list.stream()
 				.filter(module -> module.getType().equalsIgnoreCase("eim"))
-				.map(obj -> (EimType) obj)
+				.map(EimType.class::cast)
 				.collect(Collectors.toList());
 	}
 

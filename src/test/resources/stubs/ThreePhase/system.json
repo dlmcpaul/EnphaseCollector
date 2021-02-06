@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/home.json",
+    "headers": {
+      "Accept": {
+        "contains": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"software_build_epoch\":1490713682,\"is_nonvoy\":false,\"db_size\":\"15 MB\",\"db_percent_full\":\"4\",\"timezone\":\"Australia/Sydney\",\"current_date\":\"04/13/2019\",\"current_time\":\"23:13\",\"network\":{\"web_comm\":true,\"ever_reported_to_enlighten\":true,\"last_enlighten_report_time\":1555158976,\"primary_interface\":\"wlan0\",\"interfaces\":[{\"type\":\"ethernet\",\"interface\":\"eth0\",\"mac\":\"00:1D:C0:68:12:36\",\"dhcp\":true,\"ip\":\"169.254.120.1\",\"signal_strength\":0,\"signal_strength_max\":1,\"carrier\":false},{\"signal_strength\":3,\"signal_strength_max\":5,\"type\":\"wifi\",\"interface\":\"wlan0\",\"mac\":\"D4:F5:13:FE:08:25\",\"dhcp\":true,\"ip\":\"192.168.0.63\",\"carrier\":true,\"supported\":true,\"present\":true,\"configured\":true,\"status\":\"connected\"}]},\"tariff_set\":false,\"comm\":{\"num\":0,\"level\":0,\"pcu\":{\"num\":0,\"level\":0},\"acb\":{\"num\":0,\"level\":0}},\"alerts\":[],\"update_status\":\"not-satisfied\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
