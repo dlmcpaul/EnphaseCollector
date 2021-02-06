@@ -16,7 +16,7 @@ import org.springframework.xml.transform.StringSource;
 
 import java.io.IOException;
 
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @RequiredArgsConstructor
 @Log4j2
 @Profile({"!testing"})

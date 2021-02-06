@@ -21,7 +21,7 @@ import java.util.Collections;
 /**
  * Created by David on 22-Oct-17.
  */
-@Configuration(proxyBeanMethods = false)
+@Configuration
 @RequiredArgsConstructor
 @Log4j2
 public class EnphaseRestClientConfig {
