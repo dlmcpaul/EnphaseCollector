@@ -31,17 +31,15 @@ public class Event {
 	}
 
 	public long countMaxPanelsProducing(BigDecimal value) {
-		if (panels != null && panels.size() > 0) {
-			return panels.stream().filter(p -> {
-				return BigDecimal.valueOf(p.getValue()).compareTo(value) == 0;
-			}).count();
+		if (panels != null && panels.isEmpty() == false) {
+			return panels.stream().filter(p -> BigDecimal.valueOf(p.getValue()).compareTo(value) == 0).count();
 		}
 
 		return 0;
 	}
 
 	public BigDecimal getMaxPanelProduction() {
-		if (panels != null && panels.size() > 0) {
+		if (panels != null && panels.isEmpty() == false) {
 			Comparator<Panel> comparator = Comparator.comparing(Panel::getValue);
 			return BigDecimal.valueOf(panels.stream().max(comparator).get().getValue());
 		}
