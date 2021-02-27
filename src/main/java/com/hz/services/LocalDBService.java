@@ -103,7 +103,7 @@ public class LocalDBService {
 		event.setConsumption(getMetric(metricCollectionEvent.getMetrics(), "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 		event.setVoltage(getMetric(metricCollectionEvent.getMetrics(), "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 
-		metricCollectionEvent.getMetrics().forEach(m -> event.addSolarPanel(new Panel(m.getName(), m.getValue())));
+		metricCollectionEvent.getMetrics().stream().filter(Metric::isSolarPanel).forEach(event::addSolarPanel);
 
 		eventRepository.save(event);
 	}

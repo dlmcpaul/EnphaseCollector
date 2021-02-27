@@ -47,7 +47,7 @@ public class OutputManager {
 				collectionTime,
 				system.getProduction().getMicroInvertorsList().size(),
 				system.getNetwork().isWifi(),
-				system.getNetwork().isWifi() ? system.getWireless().getCurrentNetwork().getSsid() : "");
+				system.getNetwork().isWifi() ? system.getWireless().getCurrentNetwork().getSsid() : "LAN");
 	}
 
 }

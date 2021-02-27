@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * Created by David on 23-Oct-17.
  */
 @Data
-public class Metric  implements Serializable {
+public class Metric implements Serializable {
 	public static final String METRIC_PANEL_NAME_PREFIX = "solar.panel-";
 	public static final String METRIC_PRODUCTION_CURRENT = "solar.production.current";
 	public static final String METRIC_CONSUMPTION_CURRENT = "solar.consumption.current";
@@ -19,6 +19,10 @@ public class Metric  implements Serializable {
 	public static final String METRIC_SOLAR_EXCESS = "solar.excess";
 	public static final String METRIC_SOLAR_SAVINGS = "solar.savings";
 	public static final String METRIC_SOLAR_DIFFERENCE = "solar.difference";
+
+	public static Metric createPanelMetric(String panelId, float value, int limit) {
+		return new Metric(METRIC_PANEL_NAME_PREFIX + panelId, value, limit);
+	}
 
 	private String name;
 	private float value;
@@ -51,5 +55,9 @@ public class Metric  implements Serializable {
 	public Metric(String name, BigDecimal value, int limit) {
 		this.name = name;
 		this.value = value.floatValue() < limit ? 0 : value.floatValue();
+	}
+
+	public boolean isSolarPanel() {
+		return name.startsWith(Metric.METRIC_PANEL_NAME_PREFIX);
 	}
 }

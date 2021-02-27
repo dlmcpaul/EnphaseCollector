@@ -2,37 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 
 <body>
-<div th:fragment="qna (visible)" th:id="qna-data" th:class="${visible} ? '' : 'is-hidden'" role="main">
+<div th:fragment="qna" th:id="qna-data" class="is-hidden" role="main">
     <div class="columns">
         <h2 class="column title has-text-centered">Questions and Answers</h2>
     </div>
-    <!--/*@thymesVar id="question" type="com.hz.controllers.models.Question"*/-->
-    <form method="post" th:action="@{/answers}" th:object="${question}" id="qna-form"
-          onsubmit="return getAnswers('qna')">
-        <div class="columns is-gapless">
-            <div data-th-replace="~{qnaFieldFragment :: dateField('fromDate', *{fromDate},'From')}"/>
-            <div data-th-replace="~{qnaFieldFragment :: dateField('toDate', *{toDate},'To')}"/>
-            <div class="column"></div>
-        </div>
-        <div class="separator">Compare With</div></br>
-        <div class="columns is-gapless">
-            <div data-th-replace="~{qnaFieldFragment :: numberField('dailySupplyCharge', *{dailySupplyCharge},'Daily Charge')}"/>
-            <div data-th-replace="~{qnaFieldFragment :: numberField('chargePerKiloWatt', *{chargePerKiloWatt},'Charge Per Kilowatt')}"/>
-            <div data-th-replace="~{qnaFieldFragment :: numberField('paymentPerKiloWatt', *{paymentPerKiloWatt},'Payment Per Kilowatt')}"/>
-        </div>
-        <div class="columns is-centered is-gapless">
-            <div class="column is-one-fifth">
-                <button type="submit" class="button is-primary is-fullwidth">Answer</button>
-            </div>
-        </div>
-        <hr>
-        <h3 class="subtitle">Usage</h3>
-        <div data-th-replace="~{qnaFieldFragment :: usageBox (*{usage}, *{showTotalDays()})}"/>
-        <h3 class="subtitle">Current Energy Provider</h3>
-        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{billEstimate})}"/>
-        <h3 class="subtitle">Comparison Energy Provider</h3>
-        <div data-th-replace="~{qnaFieldFragment :: estimateBox (*{comparisonEstimate})}"/>
-    </form>
+    <div data-th-replace="~{billQnAFragment :: billQnA}"/>
     <br/>
 </div>
 </body>

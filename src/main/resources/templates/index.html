@@ -24,13 +24,13 @@
 </section>
 <section class="section is-paddingless has-background-white">
     <div class="container">
-        <nav class="tabs is-centered" id="tabs" role="navigation">
+        <nav class="tabs is-centered" id="main-tab" role="navigation">
             <ul>
-                <li id="live" class="is-active"><a data-th-onClick="switchToTab('live', null)">Live</a></li>
-                <li id="weekly"><a data-th-onClick="switchToHistoryTab('weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Week</a></li>
-                <li id="monthly"><a data-th-onClick="switchToHistoryTab('monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
-                <li id="quarterly"><a data-th-onClick="switchToHistoryTab('quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
-                <li id="qna"><a data-th-onClick="switchToTab('qna')">Q & A</a></li>
+                <li id="live" class="is-active"><a data-th-onClick="switchToTab('main-tab', 'live')">Live</a></li>
+                <li id="weekly"><a data-th-onClick="switchToHistoryTab('main-tab', 'weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Week</a></li>
+                <li id="monthly"><a data-th-onClick="switchToHistoryTab('main-tab', 'monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
+                <li id="quarterly"><a data-th-onClick="switchToHistoryTab('main-tab', 'quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
+                <li id="qna"><a data-th-onClick="switchToTab('main-tab', 'qna')">Q & A</a></li>
             </ul>
         </nav>
         <div id="live-data" role="main">
@@ -48,7 +48,7 @@
         <div data-th-replace="~{historyChartFragment :: historyChart('weekly')}"></div>
         <div data-th-replace="~{historyChartFragment :: historyChart('monthly')}"></div>
         <div data-th-replace="~{historyChartFragment :: historyChart('quarterly')}"></div>
-        <div data-th-replace="~{qnaFragment :: qna(false)}"></div>
+        <div data-th-replace="~{qnaFragment :: qna}"></div>
     </div>
 </section>
 <footer class="footer is-paddingless has-background-white" role="contentinfo">
@@ -61,8 +61,9 @@
         <div class="columns">
             <div class="column centre">
                 <ul>
-                    <li class="is-size-6">Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd-MMM-yyyy HH:mm')}"></span></li>
+                    <li class="is-size-6">Rendered by <strong>Thymeleaf</strong> at <span data-th-text="${#calendars.format(#execInfo.now, 'dd MMM yyyy HH:mm')}"></span></li>
                     <li class="is-size-6">Envoy Software Version: <span data-th-text="${software_version}">version</span></li>
+                    <li class="is-size-6">Envoy Software Release: <span data-th-text="${software_release}">release</span></li>
                     <li class="is-size-6">Envoy Serial Number: <span data-th-text="${serial_number}">serial</span></li>
                     <li><br></li>
                     <li class="is-size-6"><a href="https://bulma.io" title="Link to Bulma"><img data-th-src="@{made-with-bulma.png}" alt="Made with Bulma" title="Made with Bulma" src="made-with-bulma.png" width="128" height="24"></a></li>

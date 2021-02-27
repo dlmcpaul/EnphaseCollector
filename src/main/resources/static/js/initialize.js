@@ -203,8 +203,7 @@ function initLiveCharts(contextPath, refreshInterval) {
 
     const pvcProperties = {
         chart: {
-            renderTo: "pvc",
-            height: "30%"
+            renderTo: "pvc"
         },
         credits: {
             enabled: false
@@ -223,17 +222,18 @@ function initLiveCharts(contextPath, refreshInterval) {
             minPadding: 0.05,
             maxPadding: 0.05
         },
-        yAxis: {
-            labels: {
-                format: "{value}W",
-                style: {
-                    color: Highcharts.getOptions().colors[1]
+        yAxis: [
+            {
+                title: {
+                    text: "Watts"
+                },
+                labels: {
+                    format: "{value}W",
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
                 }
-            },
-            title: {
-                text: "Watts"
-            }
-        },
+            }],
         legend: {
             layout: "vertical",
             align: "left",
@@ -279,7 +279,6 @@ function initHistoryCharts() {
 
     const weeklyProperties = {
         chart: {
-            height: "30%"
         },
         credits: {
             enabled: false
@@ -353,7 +352,6 @@ function initHistoryCharts() {
     };
     const monthlyProperties = {
         chart: {
-            height: "30%"
         },
         credits: {
             enabled: false
@@ -427,7 +425,6 @@ function initHistoryCharts() {
     };
     const quarterlyProperties = {
         chart: {
-            height: "30%"
         },
         credits: {
             enabled: false

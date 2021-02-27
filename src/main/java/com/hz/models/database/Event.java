@@ -1,11 +1,13 @@
 package com.hz.models.database;
 
+import com.hz.metrics.Metric;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -15,17 +17,36 @@ public class Event {
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Panel> panels = new ArrayList<>();
 	private LocalDateTime time = LocalDateTime.now();
 	private BigDecimal consumption = new BigDecimal(0);
 	private BigDecimal production = new BigDecimal(0);
 	private BigDecimal voltage = new BigDecimal(0);
 
-	public void addSolarPanel(Panel panel) {
-		if (panel.isSolarPanel()) {
-			panels.add(panel);
+	public void addSolarPanel(Metric metric) {
+		if (metric.isSolarPanel()) {
+			panels.add(new Panel(metric.getName(), metric.getValue()));
 		}
+	}
+
+	public long countMaxPanelsProducing(BigDecimal value) {
+		if (panels != null && panels.size() > 0) {
+			return panels.stream().filter(p -> {
+				return BigDecimal.valueOf(p.getValue()).compareTo(value) == 0;
+			}).count();
+		}
+
+		return 0;
+	}
+
+	public BigDecimal getMaxPanelProduction() {
+		if (panels != null && panels.size() > 0) {
+			Comparator<Panel> comparator = Comparator.comparing(Panel::getValue);
+			return BigDecimal.valueOf(panels.stream().max(comparator).get().getValue());
+		}
+
+		return BigDecimal.ZERO;
 	}
 
 }

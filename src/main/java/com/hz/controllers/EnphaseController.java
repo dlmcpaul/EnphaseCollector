@@ -1,10 +1,8 @@
 package com.hz.controllers;
 
+import com.hz.components.ReleaseInfoContributor;
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.controllers.models.History;
-import com.hz.controllers.models.PvC;
-import com.hz.controllers.models.Question;
-import com.hz.controllers.models.Status;
+import com.hz.controllers.models.*;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.models.database.Summary;
@@ -15,11 +13,11 @@ import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,12 +32,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class EnphaseController {
+	private static final String DOLLAR_SIGN = "fas fa-dollar-sign";
 
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
 	private final EnvoyInfo envoyInfo;
-	private final Environment env;
+	private final ReleaseInfoContributor release;
 
 	private List<Status> populateStatusList() {
 		ArrayList<Status> statusList = new ArrayList<>();
@@ -47,21 +46,20 @@ public class EnphaseController {
 			EnvoySystem envoySystem = localDBService.getSystemInfo();
 			NumberFormat currency = NumberFormat.getCurrencyInstance();
 			NumberFormat number = NumberFormat.getNumberInstance();
+			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+			BigDecimal payment = localDBService.calculateTodaysPayment();
+			BigDecimal cost = localDBService.calculateTodaysCost().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
 
 			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
-			if (envoySystem.isWifi()) {
-				statusList.add(new Status("fas fa-wifi", "Home network", envoySystem.getNetwork()));
-			} else {
-				statusList.add(new Status("fas fa-network-wired", "Home network", "LAN"));
-			}
-			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
+
 			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
 
 			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
-			statusList.add(new Status("fas fa-dollar-sign", "Paid today from exporting to grid", currency.format(localDBService.calculateTodaysPayment())));
-			statusList.add(new Status("fas fa-dollar-sign", "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
-			statusList.add(new Status("fas fa-dollar-sign", "Cost today from grid usage", currency.format(localDBService.calculateTodaysCost())));
-			statusList.add(new Status("fas fa-dollar-sign", "Daily grid access charge", currency.format(properties.getDailySupplyCharge())));
+			statusList.add(new Status(DOLLAR_SIGN, "Paid today from exporting to grid", currency.format(payment)));
+			statusList.add(new Status(DOLLAR_SIGN, "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+			statusList.add(new Status(DOLLAR_SIGN, "Cost today from grid usage", currency.format(cost)));
+			statusList.add(new Status(DOLLAR_SIGN, "Cost Estimate for Today", currency.format(cost.subtract(payment))));
 
 			statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
 			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
@@ -72,6 +70,10 @@ public class EnphaseController {
 			} else {
 				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", enphaseService.getLastReadTime().format(timeFormatter)));
 			}
+
+			Event event = localDBService.getLastEvent();
+			BigDecimal max = event.getMaxPanelProduction();
+			statusList.add(new Status("fas fa-sun", event.countMaxPanelsProducing(max) + " solar panels producing max ", max + " W"));
 
 			Collections.shuffle(statusList);
 
@@ -91,29 +93,33 @@ public class EnphaseController {
 			model.addAttribute("production", localDBService.getLastEvent().getProduction().intValue());
 			model.addAttribute("software_version", envoyInfo.getSoftwareVersion());
 			model.addAttribute("serial_number", envoyInfo.getSerialNumber());
+			model.addAttribute("software_release", envoyInfo.getReleaseDate());
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
 			model.addAttribute("statusList", this.populateStatusList());
-			model.addAttribute("question", new Question());
+			model.addAttribute("bill_question", new BillQuestion());
+			model.addAttribute("bill_answer", new BillAnswer(0));
 			model.addAttribute("TZ", Calendar.getInstance().getTimeZone().toZoneId().getId());
-			model.addAttribute("releaseVersion",env.getProperty("release.version") != null ? env.getProperty("release.version").trim() : "unreleased");
+			model.addAttribute("releaseVersion", release.getVersion());
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
 		return "index";
 	}
 
-	@PostMapping("/answers")
-	public String getAnswers(@ModelAttribute("question") Question question, Model model) {
-		localDBService.getSummaries(question.getFromDate(), question.getToDate())
-				.forEach(total -> question.addSummary(new Summary(total.getDate(),
+	@PostMapping("/bill")
+	public String getBillAnswers(@ModelAttribute("bill_question") BillQuestion billQuestion, Model model) {
+		BillAnswer billAnswer = new BillAnswer(billQuestion.getDateRange().daysInPeriod());
+
+		// Calculate Power Costs over period
+		localDBService.getSummaries(billQuestion.getDateRange().getFromDate(), billQuestion.getDateRange().getToDate())
+				.forEach(total -> billAnswer.addSummary(new Summary(total.getDate(),
 						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
 						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
 						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate())));
+						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate()), billQuestion));
 
-
-		model.addAttribute("question", question);
-		return "qnaFragment :: qna(visible=true)";
+		model.addAttribute("bill_answer", billAnswer);
+		return "billAnswerFragment :: billAnswer(visible=true)";
 	}
 
 	@GetMapping("/refreshStats")

@@ -1,6 +1,5 @@
 package com.hz.models.database;
 
-import com.hz.metrics.Metric;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,10 +22,6 @@ public class Panel {
 	public Panel(String identifier, float value) {
 		this.identifier = identifier;
 		this.value = value;
-	}
-
-	public boolean isSolarPanel() {
-		return identifier.startsWith(Metric.METRIC_PANEL_NAME_PREFIX);
 	}
 
 }

@@ -178,7 +178,7 @@ public class EnphaseService {
 
 	    calculateSavings(metricList, production, consumption);
 
-	    system.getProduction().getMicroInvertorsList().forEach(micro -> metricList.add(new Metric(Metric.METRIC_PANEL_NAME_PREFIX + map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
+	    system.getProduction().getMicroInvertorsList().forEach(micro -> metricList.add(Metric.createPanelMetric(map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
 
 	    return metricList;
     }

@@ -28,11 +28,11 @@ function updateHistory(target, response) {
 }
 
 // Function works if content element is named the same as the tab id with -data appended
-function switchToTab(target) {
+function switchToTab(source, target) {
     "use strict";
 
     // Find current tab and remove active
-    const currentTab = document.querySelector("#tabs li.is-active");
+    const currentTab = document.querySelector("#" + source + " li.is-active");
     currentTab.classList.remove("is-active");
     // Find associated content element and make hidden
     const currentContentId = currentTab.id + "-data";
@@ -49,11 +49,11 @@ function switchToTab(target) {
 }
 
 // Function works if content element is named the same as the tab id with -data appended
-// and if the graph to refresh is names as the tab id with -graph appended
-function switchToHistoryTab(target, refreshUrl) {
+// and if the graph to refresh is named the same as the tab id with -graph appended
+function switchToHistoryTab(source, target, refreshUrl) {
     "use strict";
 
-    switchToTab(target);
+    switchToTab(source, target);
 
     if (refreshUrl !== null) {
         refreshTarget(target + "-graph", refreshUrl, "json", updateHistory);
