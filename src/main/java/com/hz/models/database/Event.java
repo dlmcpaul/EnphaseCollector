@@ -41,7 +41,7 @@ public class Event {
 	public BigDecimal getMaxPanelProduction() {
 		if (panels != null && panels.isEmpty() == false) {
 			Comparator<Panel> comparator = Comparator.comparing(Panel::getValue);
-			return BigDecimal.valueOf(panels.stream().max(comparator).get().getValue());
+			return BigDecimal.valueOf(panels.stream().max(comparator).orElseThrow().getValue());
 		}
 
 		return BigDecimal.ZERO;
