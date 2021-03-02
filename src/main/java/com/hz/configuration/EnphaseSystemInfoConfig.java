@@ -1,5 +1,6 @@
 package com.hz.configuration;
 
+import com.hz.models.envoy.xml.BuildInfo;
 import com.hz.models.envoy.xml.EnvoyDevice;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.models.envoy.xml.EnvoyPackage;
@@ -27,7 +28,7 @@ public class EnphaseSystemInfoConfig {
 	@Bean
 	public Unmarshaller enphaseMarshaller() {
 		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-		marshaller.setClassesToBeBound(EnvoyInfo.class, EnvoyPackage.class, EnvoyDevice.class);
+		marshaller.setClassesToBeBound(EnvoyInfo.class, EnvoyPackage.class, EnvoyDevice.class, BuildInfo.class);
 
 		return marshaller;
 	}
