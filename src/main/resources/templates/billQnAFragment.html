@@ -7,8 +7,8 @@
         <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-answer-form"
               onsubmit="return getAnswers('bill-answer')">
             <div class="columns is-gapless">
-                <div data-th-replace="~{qnaFieldFragment :: dateField('fromDate', *{dateRange.getFromDate()},'From')}"/>
-                <div data-th-replace="~{qnaFieldFragment :: dateField('toDate', *{dateRange.getToDate()},'To')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.fromDate', *{dateRange.getFromDate()},'From')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.toDate', *{dateRange.getToDate()},'To')}"/>
                 <div class="column"></div>
             </div>
             <div class="separator">Compare With</div></br>
