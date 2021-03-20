@@ -1,4 +1,4 @@
-FROM arm32v7/adoptopenjdk:latest
+FROM adoptopenjdk:11
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
