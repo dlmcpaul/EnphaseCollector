@@ -63,7 +63,7 @@ docker run \
 -e ENVOY_CONTROLLER_PASSWORD=envoy-password \
 -e ENVOY_CONTROLLER_HOST=envoy-ip \
 -p 8080:8080 \
---mount source=/internal_db,target=host_path
+--mount target=/internal_db,source=host_path
 dlmcpaul/enphasecollector
 ```
 and replace host_path with the path on your host machine where you want to store the data.
