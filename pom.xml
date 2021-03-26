@@ -32,7 +32,7 @@
         <highcharts.version>8.2.2</highcharts.version>
         <bulma.version>0.9.1</bulma.version>
         <influxdb.connector.version>2.21</influxdb.connector.version>
-        <font-awsome.version>5.8.1</font-awsome.version>
+        <font-awsome.version>5.15.2</font-awsome.version>
         <webjars.locator.version>0.40</webjars.locator.version>
         <selenide.version>5.17.2</selenide.version>
         <spring-cloud.version>2020.0.1</spring-cloud.version>
