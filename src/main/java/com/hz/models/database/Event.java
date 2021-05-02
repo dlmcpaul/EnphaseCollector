@@ -17,7 +17,7 @@ public class Event {
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Panel> panels = new ArrayList<>();
 	private LocalDateTime time = LocalDateTime.now();
 	private BigDecimal consumption = new BigDecimal(0);

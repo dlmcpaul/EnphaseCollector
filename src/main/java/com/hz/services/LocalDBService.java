@@ -7,6 +7,7 @@ import com.hz.interfaces.EventRepository;
 import com.hz.interfaces.SummaryRepository;
 import com.hz.metrics.Metric;
 import com.hz.models.database.*;
+import com.hz.models.dto.PanelProduction;
 import com.hz.models.events.MetricCollectionEvent;
 import com.hz.models.events.SystemInfoEvent;
 import com.hz.utils.Calculators;
@@ -156,6 +157,13 @@ public class LocalDBService {
 
 	public List<Event> getTodaysEvents() {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
+	}
+
+	@Transactional
+	public PanelProduction getMaxPanelProduction() {
+		Event event = this.getLastEvent();
+		BigDecimal max = event.getMaxPanelProduction();
+		return new PanelProduction(event.getMaxPanelProduction(), BigDecimal.ZERO, event.countMaxPanelsProducing(max));
 	}
 
 	// When a summary record is null the list is not continuous so fill missing values

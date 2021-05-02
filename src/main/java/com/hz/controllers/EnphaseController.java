@@ -6,6 +6,7 @@ import com.hz.controllers.models.*;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
 import com.hz.models.database.Summary;
+import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnphaseService;
 import com.hz.services.LocalDBService;
@@ -71,9 +72,8 @@ public class EnphaseController {
 				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", enphaseService.getLastReadTime().format(timeFormatter)));
 			}
 
-			Event event = localDBService.getLastEvent();
-			BigDecimal max = event.getMaxPanelProduction();
-			statusList.add(new Status("fas fa-sun", event.countMaxPanelsProducing(max) + " solar panels producing max ", max + " W"));
+			PanelProduction panelProduction = localDBService.getMaxPanelProduction();
+			statusList.add(new Status("fas fa-sun", panelProduction.getTotalPanelsProducingMax() + " solar panels producing max ", panelProduction.getMaxProduction() + " W"));
 
 			Collections.shuffle(statusList);
 
