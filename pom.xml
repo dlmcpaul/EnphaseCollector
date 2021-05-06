@@ -28,7 +28,7 @@
     <properties>
         <java.version>11</java.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <java.jaxb.version>2.3.3</java.jaxb.version>
+        <java.jaxb.version>2.3.4</java.jaxb.version>
         <highcharts.version>8.2.2</highcharts.version>
         <bulma.version>0.9.2</bulma.version>
         <influxdb.connector.version>2.21</influxdb.connector.version>
