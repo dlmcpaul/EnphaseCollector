@@ -59,8 +59,8 @@ public class EnphaseRestClientConfig {
 
 	/**
 	 * Needed for /ivp/meters and /ivp/meters/readings
-	 * @return customer converter to handle json as application octect stream
-	 */
+	 * @return customer converter to handle json as application octet stream
+	*/
 	@Bean
 	public HttpMessageConverters customConverters() {
 		MappingJackson2HttpMessageConverter octetStreamConverter = new MappingJackson2HttpMessageConverter();
