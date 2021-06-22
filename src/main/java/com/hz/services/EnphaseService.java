@@ -9,8 +9,7 @@ import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -208,8 +207,13 @@ public class EnphaseService {
 
 	private void getDeviceMeters(System system) {
     	try {
+
+		    HttpHeaders headers = new HttpHeaders();
+		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+		    HttpEntity<String> entity = new HttpEntity<String>(headers);
+
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
-				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<DeviceMeter>>() {
+				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
 				    });
 		    this.lastStatus = deviceMeterResponse.getStatusCodeValue();
 
@@ -227,8 +231,12 @@ public class EnphaseService {
 
 	private void getPowerMeters(System system) {
     	try {
+		    HttpHeaders headers = new HttpHeaders();
+		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+		    HttpEntity<String> entity = new HttpEntity<String>(headers);
+
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
-					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<PowerMeter>>() { });
+					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 			this.lastStatus = powerMeterResponse.getStatusCodeValue();
 
 			if (powerMeterResponse.getStatusCodeValue() == 200) {
