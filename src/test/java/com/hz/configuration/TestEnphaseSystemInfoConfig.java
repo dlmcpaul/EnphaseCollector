@@ -1,27 +1,27 @@
 package com.hz.configuration;
 
-import com.hz.models.envoy.xml.EnvoyDevice;
 import com.hz.models.envoy.xml.EnvoyInfo;
-import com.hz.models.envoy.xml.EnvoyPackage;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.oxm.Unmarshaller;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import java.util.Arrays;
 
 @TestConfiguration
 @Profile("testing")
 public class TestEnphaseSystemInfoConfig {
 	@Bean
-	public Unmarshaller enphaseMarshaller() {
-		Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-		marshaller.setClassesToBeBound(EnvoyInfo.class, EnvoyPackage.class, EnvoyDevice.class);
-
-		return marshaller;
-	}
-
-	@Bean
 	public EnvoyInfo envoyInfo() {
 		return new EnvoyInfo("unknown","unknown");
 	}
+
+	@Bean
+	@Primary
+	public HttpMessageConverters messageConverters() {
+		return new HttpMessageConverters(false, Arrays.asList(new MappingJackson2HttpMessageConverter()));
+	}
+
 }

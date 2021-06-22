@@ -3,7 +3,6 @@ package com.hz;
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
-import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnphaseService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,12 +14,13 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.oxm.Unmarshaller;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,26 +40,25 @@ class EnphaseServiceRest_ThreePhase_Test {
 		private RestTemplateBuilder restTemplateBuilder;
 
 		@Bean
-		public EnvoyInfo envoyInfo(Unmarshaller enphaseMarshaller) {
-			return new EnvoyInfo("","");
-		}
-
-		@Bean
 		public RestTemplate enphaseRestTemplate() {
-			return restTemplateBuilder
+			RestTemplate result = restTemplateBuilder
 					.rootUri("http://localhost:" + this.environment.getProperty("wiremock.server.port"))
 					.setConnectTimeout(Duration.ofSeconds(5))
 					.setReadTimeout(Duration.ofSeconds(30))
 					.build();
+			result.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+			return result;
 		}
 
 		@Bean
 		public RestTemplate enphaseSecureRestTemplate() {
-			return restTemplateBuilder
+			RestTemplate result = restTemplateBuilder
 					.rootUri("http://localhost:" + this.environment.getProperty("wiremock.server.port"))
 					.setConnectTimeout(Duration.ofSeconds(5))
 					.setReadTimeout(Duration.ofSeconds(30))
 					.build();
+			result.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+			return result;
 		}
 	}
 
