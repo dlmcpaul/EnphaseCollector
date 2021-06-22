@@ -210,7 +210,7 @@ public class EnphaseService {
 
 		    HttpHeaders headers = new HttpHeaders();
 		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
-		    HttpEntity<String> entity = new HttpEntity<String>(headers);
+		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
 				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
@@ -233,7 +233,7 @@ public class EnphaseService {
     	try {
 		    HttpHeaders headers = new HttpHeaders();
 		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
-		    HttpEntity<String> entity = new HttpEntity<String>(headers);
+		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
 					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });

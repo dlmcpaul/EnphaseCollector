@@ -29,7 +29,7 @@ public class EnphaseSystemInfoConfig {
 			xmlMapper.registerModule(new JaxbAnnotationModule());
 			String infoXml = enphaseRestTemplate.getForObject(EnphaseRestClientConfig.CONTROLLER, String.class);
 			if (infoXml != null) {
-				return (EnvoyInfo) xmlMapper.readValue(infoXml, EnvoyInfo.class);
+				return xmlMapper.readValue(infoXml, EnvoyInfo.class);
 			}
 		} catch (IOException | ResourceAccessException e) {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
