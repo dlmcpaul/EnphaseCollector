@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @Log4j2
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Production {
+	private static final String PRODUCTION = "production";
+
 	@JsonProperty(value="production")
 	private List<TypeBase> productionList;
 	@JsonProperty(value="consumption")
@@ -53,7 +55,7 @@ public class Production {
 
 	@JsonIgnore
 	public Optional<EimType> getProductionEim() {
-		return findBymeasurementType(productionList, "production");
+		return findBymeasurementType(productionList, PRODUCTION);
 	}
 
 	@JsonIgnore
@@ -67,7 +69,7 @@ public class Production {
 	}
 
 	private Optional<PowerMeter> getProductionMeter() {
-		return getDevice("production").
+		return getDevice(PRODUCTION).
 				flatMap(device -> getPowerMeter(device.getEid()));
 	}
 
@@ -92,7 +94,7 @@ public class Production {
 
 	@JsonIgnore
 	public BigDecimal getPhaseCount() {
-		return BigDecimal.valueOf(getDevice("production").orElse(new DeviceMeter()).getPhaseCount());
+		return BigDecimal.valueOf(getDevice(PRODUCTION).orElse(new DeviceMeter()).getPhaseCount());
 
 	}
 
