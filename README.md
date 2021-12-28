@@ -4,7 +4,17 @@
 <a href="https://bulma.io"><img src="https://img.shields.io/badge/Made_with-Bulma-brightgreen"></a>
 <a href="https://www.thymeleaf.org/"><img alt="Thymeleaf" src="https://img.shields.io/badge/Rendered_using-Thymeleaf-brightgreen"></a>
 
-Uses the undocumented API in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
+> ## Support for envoy firmware > D5.0.34
+> From around V7 of the envoy firmware the security model for API access was changed.  This is obviously problematic for software such as mine that relies on local access to the API's
+> 
+> While it is entirely up to Enphase as to how they develop their software I see a number of issues with their new security model
+>
+>- It links your enphase community account to the token needed to access the API (**If you don't want an account or enphase suspends your account you will lose access**)
+>- It does not look to be based on a standard authentication mechanism such as OAuth (**You should never write your own authentication protocol**)
+>- It is currently broken in a number of ways and will reduce the security of your envoy device (**I will not list the issues here**)
+>  
+
+Uses the **undocumented API** in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
 
 Can be run as a java application or using the docker image
 
@@ -90,11 +100,21 @@ Available environment variables descriptions:
 - ENVOY_PVOUTPUTRESOURCE_SYSTEMID Set to your pvoutput systemid
 - ENBOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
 - SPRING_PROFILES_ACTIVE          Determines destination for stats.  if not set only an internal database gets the stats.  Values can be influxdb and pvoutput
-- ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60000 (60s)
+- ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60
 - ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
 - ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
 - ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93 is 93c/day
 - SERVER_SERVLET_CONTEXT-PATH     Context path for local view
+
+### New configuration
+
+- ENVOY_EXPORT-LIMIT              If you have a limit on your export this will display a upper boundary on the main graph and display a new excess production line
+- ENVOY_BANDS[].FROM              The bands array configuration will add a shaded band to the main graph that you can use to highlight changes to import costs and the like
+- ENVOY_BANDS[].TO                From and To are start and end times in 24hr format (including leading 0 eg 0700)
+- ENVOY_BANDS[].COLOUR            The Colour field can be formatted like #55BF3B or rgba(200, 60, 60, .2)
+
+## Exposing this application to the web
+While I make every effort to make this application secure I cannot make any guarantees.  The application should be hosted behind a firewall and only exposed through a reverse proxy which includes an authentication mechanism and utilises https.
 
 ## Dependencies
 - Docker (or Java 11)
