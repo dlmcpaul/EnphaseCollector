@@ -1,10 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.interfaces.ElectricityRateRepository;
-import com.hz.interfaces.EnvoySystemRepository;
-import com.hz.interfaces.EventRepository;
-import com.hz.interfaces.SummaryRepository;
+import com.hz.interfaces.*;
 import com.hz.metrics.Metric;
 import com.hz.models.database.*;
 import com.hz.models.dto.PanelProduction;
@@ -38,6 +35,7 @@ public class LocalDBService {
 	private final EnphaseCollectorProperties properties;
 	private final EnvoySystemRepository envoySystemRepository;
 	private final EventRepository eventRepository;
+	private final PanelRepository panelRepository;
 	private final SummaryRepository summaryRepository;
 	private final ElectricityRateRepository electricityRateRepository;
 
@@ -80,7 +78,7 @@ public class LocalDBService {
 			dailies.forEach(daily -> saveSummary(daily,
 					findMatching(gridImports, daily.getDate()),
 					findMatching(gridExports, daily.getDate()),
-					findMatching(maxProductions, daily.getDate())));
+					findMatching(maxProductions, daily.getDate()), properties.getRefreshAsMinutes()));
 
 			eventRepository.deleteEventsByTimeBefore(midnight);
 		} catch (Exception e) {
@@ -109,9 +107,9 @@ public class LocalDBService {
 		eventRepository.save(event);
 	}
 
-	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput) {
+	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput, BigDecimal conversionRate) {
 		log.info("Saving Summary for {} with import {} and export {}", daily.getDate(), gridImport.getValue(), gridExport.getValue());
-		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput));
+		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput, conversionRate));
 	}
 
 	public void saveElectricityRate(LocalDate effectiveDate, ElectricityRate electricityRate) {
@@ -164,6 +162,10 @@ public class LocalDBService {
 		Event event = this.getLastEvent();
 		BigDecimal max = event.getMaxPanelProduction();
 		return new PanelProduction(event.getMaxPanelProduction(), BigDecimal.ZERO, event.countMaxPanelsProducing(max));
+	}
+
+	public List<PanelSummary> getPanelProduction() {
+		return panelRepository.getPanelSummaries();
 	}
 
 	// When a summary record is null the list is not continuous so fill missing values

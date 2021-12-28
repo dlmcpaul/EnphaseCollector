@@ -1,7 +1,11 @@
 package com.hz.models.database;
 
 import com.hz.metrics.Metric;
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -9,15 +13,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class Event {
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
 
 	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+	@ToString.Exclude
 	private List<Panel> panels = new ArrayList<>();
 	private LocalDateTime time = LocalDateTime.now();
 	private BigDecimal consumption = new BigDecimal(0);
@@ -47,4 +56,16 @@ public class Event {
 		return BigDecimal.ZERO;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		Event event = (Event) o;
+		return Objects.equals(id, event.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
+	}
 }

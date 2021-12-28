@@ -1,16 +1,22 @@
 package com.hz.models.database;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class Summary {
 
 	@Id
@@ -20,6 +26,7 @@ public class Summary {
 	private BigDecimal consumption = BigDecimal.ZERO;
 	private BigDecimal production = BigDecimal.ZERO;
 	private Long highestOutput = 0L;
+	private BigDecimal conversionRate = BigDecimal.ZERO;
 
 	public Summary(LocalDate date, BigDecimal gridImport, BigDecimal gridExport, BigDecimal consumption, BigDecimal production) {
 		this.date = date;
@@ -29,20 +36,31 @@ public class Summary {
 		this.production = production == null ? BigDecimal.ZERO : production;
 	}
 
-	public Summary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput) {
+	public Summary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput, BigDecimal conversionRate) {
 		this.date = daily.getDate();
 		this.consumption = daily.getConsumption();
 		this.production = daily.getProduction();
 		this.gridImport = BigDecimal.valueOf(gridImport.getValue());
 		this.gridExport = BigDecimal.valueOf(gridExport.getValue());
 		this.highestOutput = highestOutput.getValue();
+		this.conversionRate = conversionRate;
 	}
 
 	public Summary(LocalDate date) {
 		this.date = date;
-		this.gridImport = BigDecimal.ZERO;
-		this.gridExport = BigDecimal.ZERO;
-		this.consumption = BigDecimal.ZERO;
-		this.production =  BigDecimal.ZERO;
+		this.conversionRate = BigDecimal.ZERO;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		Summary summary = (Summary) o;
+		return Objects.equals(date, summary.date);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
 	}
 }
