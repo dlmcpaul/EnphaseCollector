@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -16,8 +17,10 @@ public class DateRange {
 	// it needs to conform to RFC3339 Section 5.6
 	// which sets the standard for the date wire format
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@NotNull
 	private LocalDate fromDate = LocalDate.now().minusMonths(3);    // Default to 3 months ago
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@NotNull
 	private LocalDate toDate = LocalDate.now().minusDays(1);        // Default to Yesterday
 
 	public long daysInPeriod() {
