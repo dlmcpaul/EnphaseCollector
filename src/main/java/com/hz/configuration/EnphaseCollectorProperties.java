@@ -10,6 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by David on 22-Oct-17.
@@ -23,6 +25,8 @@ public class EnphaseCollectorProperties {
     private double paymentPerKiloWatt;
     private double chargePerKiloWatt;
     private double dailySupplyCharge;
+    private int exportLimit = 0;
+    private final List<Bands> bands = new ArrayList<>();
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveRateDate;
@@ -39,6 +43,10 @@ public class EnphaseCollectorProperties {
 
     public BigDecimal getRefreshAsMinutes() {
         return Calculators.calculateMinutesOfOperation(this.getRefreshSeconds());
+    }
+
+    public BigDecimal getRefreshAsMinutes(BigDecimal preferred) {
+        return (preferred.intValueExact() == 0) ? this.getRefreshAsMinutes() : preferred;
     }
 
     @Data
@@ -73,5 +81,17 @@ public class EnphaseCollectorProperties {
     public static class PvOutputResource extends HTTPResource {
         private String key;
         private String systemId;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class Bands {
+        String from;
+        String to;
+        String colour;
+
+        public String getConfigurationJson() {
+            return "";
+        }
     }
 }
