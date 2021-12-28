@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" data-th-href="@{sun.jpeg}">
 </head>
 <body class="has-background-light">
+<noscript>You need to enable JavaScript to run this app.</noscript>
 <section class="hero is-info is-bold" role="banner">
     <div class="hero-body">
         <div class="container">
@@ -35,8 +36,8 @@
         </nav>
         <div id="live-data" role="main">
             <div class="columns is-multiline is-centered">
-                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{power.png},'Consumption',${consumption})}"></div>
-                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{sun.jpeg},'Production',${production})}"></div>
+                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{/power.png},'Consumption',${consumption})}"></div>
+                <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{/sun.jpeg},'Production',${production})}"></div>
                 <div data-th-replace="~{statusListFragment :: statusList}"></div>
             </div>
             <div class="columns">
@@ -66,7 +67,7 @@
                     <li class="is-size-6">Envoy Software Release: <span data-th-text="${software_release}">release</span></li>
                     <li class="is-size-6">Envoy Serial Number: <span data-th-text="${serial_number}">serial</span></li>
                     <li><br></li>
-                    <li class="is-size-6"><a href="https://bulma.io" title="Link to Bulma"><img data-th-src="@{made-with-bulma.png}" alt="Made with Bulma" title="Made with Bulma" src="made-with-bulma.png" width="128" height="24"></a></li>
+                    <li class="is-size-6"><a href="https://bulma.io" title="Link to Bulma"><img data-th-src="@{/made-with-bulma.png}" alt="Made with Bulma" title="Made with Bulma" src="made-with-bulma.png" width="128" height="24"></a></li>
                 </ul>
             </div>
         </div>
@@ -80,7 +81,7 @@
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initHighCharts([[${TZ}]]);
-    initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]]);
+    initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]], [[${exportLimit}]]);
     initHistoryCharts();
 </script>
 </body>

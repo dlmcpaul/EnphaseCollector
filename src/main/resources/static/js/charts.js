@@ -15,7 +15,7 @@ function makeChart(target, properties) {
 
     // Create Chart
     properties.chart.renderTo = target;
-    Highcharts.chart(properties);
+    return Highcharts.chart(properties);
 }
 
 function switchStacking(event) {
@@ -174,6 +174,13 @@ function updatePvc(target, response) {
     chart.series[0].setData(response.production);
     chart.series[1].setData(response.consumption);
     chart.series[2].setData(response.gridImport);
+    chart.series[3].setData(response.excess);
+
+    chart.update({
+        xAxis: {
+            plotBands: response.plotBands
+        }
+    });
 }
 
 function updateStatusList(target, response) {
@@ -185,7 +192,7 @@ function updateStatusList(target, response) {
 function makeRefreshChart(target, properties, refreshUrl, interval, updateFunction) {
     "use strict";
 
-    makeChart(target, properties);
+    const chart = makeChart(target, properties);
 
     // Set initial values
     refreshTarget(target, refreshUrl, "json", updateFunction);
@@ -194,6 +201,8 @@ function makeRefreshChart(target, properties, refreshUrl, interval, updateFuncti
     setInterval(function () {
         refreshTarget(target, refreshUrl, "json", updateFunction);
     }, interval);
+
+    return chart;
 }
 
 function makeStatusList(target, refreshUrl, interval) {

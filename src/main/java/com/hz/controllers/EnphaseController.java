@@ -5,6 +5,7 @@ import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.controllers.models.*;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
+import com.hz.models.database.PanelSummary;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by David on 23-Oct-17.
@@ -100,6 +104,7 @@ public class EnphaseController {
 			model.addAttribute("bill_answer", new BillAnswer(0));
 			model.addAttribute("TZ", Calendar.getInstance().getTimeZone().toZoneId().getId());
 			model.addAttribute("releaseVersion", release.getVersion());
+			model.addAttribute("exportLimit", properties.getExportLimit());
 		} catch (Exception e) {
 			log.error("index Page Exception {} {}", e.getMessage(), e);
 		}
@@ -107,16 +112,16 @@ public class EnphaseController {
 	}
 
 	@PostMapping("/bill")
-	public String getBillAnswers(@ModelAttribute("bill_question") BillQuestion billQuestion, Model model) {
+	public String getBillAnswers(@ModelAttribute("bill_question") @Valid BillQuestion billQuestion, Model model) {
 		BillAnswer billAnswer = new BillAnswer(billQuestion.getDateRange().daysInPeriod());
 
 		// Calculate Power Costs over period
 		localDBService.getSummaries(billQuestion.getDateRange().getFromDate(), billQuestion.getDateRange().getToDate())
 				.forEach(total -> billAnswer.addSummary(new Summary(total.getDate(),
-						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
-						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
-						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate()), billQuestion));
+						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
+						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
+						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
+						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), billQuestion));
 
 		model.addAttribute("bill_answer", billAnswer);
 		return "billAnswerFragment :: billAnswer(visible=true)";
@@ -147,6 +152,9 @@ public class EnphaseController {
 
 		try {
 			localDBService.getTodaysEvents().forEach(pvc::addEvent);
+			List<PanelSummary> panelProduction = localDBService.getPanelProduction();
+			pvc.generateExcess(panelProduction, properties.getExportLimit());
+			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).collect(Collectors.toList())) ;
 		} catch (Exception e) {
 			log.error("getPvc Exception: {} {}", e.getMessage(), e);
 		}
@@ -155,17 +163,17 @@ public class EnphaseController {
 
 	@GetMapping(value = "/history", produces = "application/json; charset=UTF-8")
 	@ResponseBody
-	public History getHistory(@RequestParam String duration) {
+	public History getHistory(@Valid @RequestParam @NotNull String duration) {
 		History result = new History();
 
 		if (Validators.isValidDuration(duration)) {
 			try {
 				localDBService.getLastDurationTotalsContinuous(duration)
 						.forEach(total -> result.addSummary(new Summary(total.getDate(),
-								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes()),
-								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes()),
-								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes()),
-								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes())), localDBService.getRateForDate(total.getDate()), duration));
+								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
+								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
+								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
+								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), duration));
 			} catch (Exception e) {
 				log.error("getHistory Exception: {} {}", e.getMessage(), e);
 			}

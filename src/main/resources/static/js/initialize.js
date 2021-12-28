@@ -14,7 +14,7 @@ function initHighCharts(timezone) {
     });
 }
 
-function initLiveCharts(contextPath, refreshInterval) {
+function initLiveCharts(contextPath, refreshInterval, exportLimit) {
     "use strict";
 
     const consumptionProperties = {
@@ -262,13 +262,32 @@ function initLiveCharts(contextPath, refreshInterval) {
                 color: "#DF5353",
                 fillOpacity: 0.2,
                 data: [ [now.getTime(), 0] ]
+            },
+            {
+                name: "excess",
+                type: "area",
+                color: "#5353FF",
+                fillOpacity: 0.2,
+                data: [ [now.getTime(), 0] ]
             }
         ]
     };
 
     makeRefreshChart("production", productionProperties, contextPath + "/production", refreshInterval, updateGauge);
     makeRefreshChart("consumption", consumptionProperties, contextPath + "/consumption", refreshInterval, updateGauge);
-    makeRefreshChart("pvc", pvcProperties, contextPath + "/pvc", refreshInterval, updatePvc);
+    const pvcChart = makeRefreshChart("pvc", pvcProperties, contextPath + "/pvc", refreshInterval, updatePvc);
+    if (exportLimit > 0) {
+        pvcChart.update({
+            yAxis: {
+                plotLines: [{
+                    color: 'red', // Color value
+                    dashStyle: 'longdashdot', // Style of the plot line. Default to solid
+                    value: exportLimit, // Value of where the line will appear
+                    width: 2 // Width of the line
+                }]
+            }
+        });
+    }
     makeStatusList("statusList", contextPath + "/refreshStats", refreshInterval);
 }
 
