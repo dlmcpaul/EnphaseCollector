@@ -40,7 +40,7 @@ public class EnphaseService {
     private final RestTemplate enphaseSecureRestTemplate;
 
     // Table of my serial numbers to map to simpler values
-	private List<String> mySerialNumbers = Arrays.asList(
+	private final List<String> mySerialNumbers = Arrays.asList(
 		    "121707050571",
 		    "121707050096",
 		    "121707049853",
@@ -209,7 +209,7 @@ public class EnphaseService {
     	try {
 
 		    HttpHeaders headers = new HttpHeaders();
-		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+		    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
@@ -232,7 +232,7 @@ public class EnphaseService {
 	private void getPowerMeters(System system) {
     	try {
 		    HttpHeaders headers = new HttpHeaders();
-		    headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
+		    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =

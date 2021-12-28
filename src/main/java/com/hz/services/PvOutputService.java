@@ -43,8 +43,8 @@ public class PvOutputService {
 	private final EnphaseCollectorProperties properties;
 	private final RestTemplate pvRestTemplate;
 
-	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+	private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	private static final int INTERVAL = 5;
 
 	private static final int UPDATE_DATE = 0;
