@@ -14,7 +14,7 @@
 >- It is currently broken in a number of ways and will reduce the security of your envoy device (**I will not list the issues here**)
 >  
 
-Uses the **undocumented API** in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
+EnphaseCollector uses the **undocumented API** in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
 
 Can be run as a java application or using the docker image
 
