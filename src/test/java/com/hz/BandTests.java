@@ -17,12 +17,12 @@ import java.time.format.DateTimeFormatter;
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
 @Log4j2
-public class BandTests {
+class BandTests {
 	@Autowired
 	private EnphaseCollectorProperties properties;
 
 	@Test
-	public void tests() {
+	void tests() {
 		Assertions.assertNotNull(properties.getBands());
 		Assertions.assertEquals(2, properties.getBands().size());
 		Assertions.assertTrue(properties.getBands().get(0).getFrom().equalsIgnoreCase("0730"));
@@ -31,10 +31,6 @@ public class BandTests {
 		Assertions.assertTrue(properties.getBands().get(1).getFrom().equalsIgnoreCase("1700"));
 		Assertions.assertTrue(properties.getBands().get(1).getTo().equalsIgnoreCase("2100"));
 		Assertions.assertTrue(properties.getBands().get(1).getColour().equalsIgnoreCase("rgb(200, 60, 60, .2)"));
-
-	//	color: "rgba(200, 60, 60, .2)"
-	//	from: 1640577600000
-//		to: 1640579400000
 
 		LocalDate localDate = LocalDate.now();
 		LocalDateTime localFrom = LocalTime.parse("1500", DateTimeFormatter.ofPattern("HHmm")).atDate(localDate);

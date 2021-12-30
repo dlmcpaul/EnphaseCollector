@@ -37,9 +37,9 @@ public class PvC {
 		if (production.compareTo(exportLimit) > 0) {
 			// Are we importing from the grid
 			if (calculateGridUsage(production, consumption).compareTo(BigDecimal.ZERO) <= 0) {
-				// No so we have excess power
-				BigDecimal excess = production.subtract(consumption).subtract(exportLimit);
-				return excess.compareTo(BigDecimal.ZERO) > 0 ? excess: BigDecimal.ZERO;
+				// No so we have some excess power
+				BigDecimal totalExess = production.subtract(consumption).subtract(exportLimit);
+				return totalExess.compareTo(BigDecimal.ZERO) > 0 ? totalExess : BigDecimal.ZERO;
 			}
 		}
 		return BigDecimal.ZERO;

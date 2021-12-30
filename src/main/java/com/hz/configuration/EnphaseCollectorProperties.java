@@ -89,9 +89,5 @@ public class EnphaseCollectorProperties {
         String from;
         String to;
         String colour;
-
-        public String getConfigurationJson() {
-            return "";
-        }
     }
 }
