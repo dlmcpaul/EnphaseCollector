@@ -80,6 +80,8 @@ public class LocalDBService {
 					findMatching(gridExports, daily.getDate()),
 					findMatching(maxProductions, daily.getDate()), properties.getRefreshAsMinutes()));
 
+			panelRepository.deleteEventsPanelByTimeBefore(midnight);
+			panelRepository.deletePanelsByTimeBefore(midnight);
 			eventRepository.deleteEventsByTimeBefore(midnight);
 		} catch (Exception e) {
 			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
@@ -165,7 +167,7 @@ public class LocalDBService {
 	}
 
 	public List<PanelSummary> getPanelProduction() {
-		return panelRepository.getPanelSummaries();
+		return panelRepository.getPanelSummaries(getMidnight());
 	}
 
 	// When a summary record is null the list is not continuous so fill missing values

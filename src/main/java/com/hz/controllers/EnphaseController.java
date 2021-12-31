@@ -5,7 +5,6 @@ import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.controllers.models.*;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Event;
-import com.hz.models.database.PanelSummary;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -152,8 +151,7 @@ public class EnphaseController {
 
 		try {
 			localDBService.getTodaysEvents().forEach(pvc::addEvent);
-			List<PanelSummary> panelProduction = localDBService.getPanelProduction();
-			pvc.generateExcess(panelProduction, properties.getExportLimit());
+			pvc.generateExcess(localDBService.getPanelProduction(), properties.getExportLimit());
 			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).collect(Collectors.toList())) ;
 		} catch (Exception e) {
 			log.error("getPvc Exception: {} {}", e.getMessage(), e);
