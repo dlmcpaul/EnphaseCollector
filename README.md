@@ -110,9 +110,28 @@ Available environment variables descriptions:
 
 - ENVOY_EXPORT-LIMIT              If you have a limit on your export this will display a upper boundary on the main graph and display a new excess production line
 - ENVOY_BANDS[].FROM              The bands array configuration will add a shaded band to the main graph that you can use to highlight changes to import costs and the like
-- ENVOY_BANDS[].TO                From and To are start and end times in 24hr format (including leading 0 eg 0700)
+- ENVOY_BANDS[].TO                From and To are start and end times in 24hr format (must include a leading 0 eg 0700)
 - ENVOY_BANDS[].COLOUR            The Colour field can be formatted like #55BF3B or rgba(200, 60, 60, .2)
 
+### External Configuration file
+The easiest way to configure the bands is with an external configuration file
+
+- Create a file called application.properties containing values like the following (defining 2 bands 8am-12pm & 4pm-6pm)
+```
+envoy.bands[0].from = 0800
+envoy.bands[0].to = 1200
+envoy.bands[0].colour = #55BF3B
+envoy.bands[1].from = 1600
+envoy.bands[1].to = 1800
+envoy.bands[1].colour = rgba(200, 60, 60, .2)
+```
+- Pass the file to the jar using the spring.config.additional-location parameter
+
+```
+java -jar enphasecollector.jar --spring.config.additional-location=file:application.properties
+```
+
+All properties can be configured this way and will override any defaults set in the jar.  Check the application.properties file for more properties that can be set
 ## Exposing this application to the web
 While I make every effort to make this application secure I cannot make any guarantees.  The application should be hosted behind a firewall and only exposed through a reverse proxy which includes an authentication mechanism and utilises https.
 
