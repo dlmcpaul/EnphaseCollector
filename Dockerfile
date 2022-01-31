@@ -17,9 +17,12 @@ COPY --from=builder "./BOOT-INF/lib" /app/lib
 COPY --from=builder "./META-INF" /app/META-INF
 COPY --from=builder "./BOOT-INF/classes" /app
 COPY --from=builder "${JAVA_HOME}/lib/server/classes.jsa" "${JAVA_HOME}/lib/server"
+RUN mkdir "/properties"
+RUN touch "/properties/application.properties"
 
-ENTRYPOINT ["java", "-cp", "app:app/lib/*", "-Xshare:auto", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "com.hz.EnphaseCollectorApplication"]
+ENTRYPOINT ["java", "-cp", "app:app/lib/*", "-Xshare:auto", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "com.hz.EnphaseCollectorApplication", "--spring.config.additional-location=file:/properties/application.properties"]
 
 EXPOSE 8080
 
 VOLUME /internal_db
+VOLUME /properties

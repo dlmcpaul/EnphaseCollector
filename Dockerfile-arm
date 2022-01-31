@@ -3,9 +3,12 @@ LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
+RUN mkdir "/properties"
+RUN touch "/properties/application.properties"
 
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "app.jar", "--spring.config.additional-location=file:/properties/application.properties"]
 
 EXPOSE 8080
 
 VOLUME /internal_db
+VOLUME /properties

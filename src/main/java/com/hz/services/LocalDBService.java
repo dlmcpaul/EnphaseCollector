@@ -43,7 +43,12 @@ public class LocalDBService {
 	@Transactional
 	public void applicationReady() {
 		this.upgradeRates();
+		this.upgradeConversion();
 		this.createSummaries();
+	}
+
+	private void upgradeConversion() {
+		summaryRepository.updateAllSummariesWithConversion(properties.getRefreshAsMinutes());
 	}
 
 	private void upgradeRates() {

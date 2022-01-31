@@ -18,9 +18,9 @@ EnphaseCollector uses the **undocumented API** in the Envoy device to collect in
 
 Can be run as a java application or using the docker image
 
-Main Page             |  Weekly History Tab
-----------------------|-------------------------
-<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png">|<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">
+|  Main Page                                                                      |  Weekly History Tab|
+|---------------------------------------------------------------------------------|-------------------------|
+| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> |<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">|
 
 If using the jar file you will need a Java 11 that you can get from https://adoptopenjdk.net/
 
@@ -132,6 +132,20 @@ java -jar enphasecollector.jar --spring.config.additional-location=file:applicat
 ```
 
 All properties can be configured this way and will override any defaults set in the jar.  Check the application.properties file for more properties that can be set
+
+For Docker you will need a local directory to hold the file
+
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-p 8080:8080 \
+--mount target=/internal_db,source=host_path
+--mount target=/properties,source=host_path
+dlmcpaul/enphasecollector
+```
+
 ## Exposing this application to the web
 While I make every effort to make this application secure I cannot make any guarantees.  The application should be hosted behind a firewall and only exposed through a reverse proxy which includes an authentication mechanism and utilises https.
 
