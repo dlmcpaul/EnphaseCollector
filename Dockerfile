@@ -17,6 +17,8 @@ COPY --from=builder "./BOOT-INF/lib" /app/lib
 COPY --from=builder "./META-INF" /app/META-INF
 COPY --from=builder "./BOOT-INF/classes" /app
 COPY --from=builder "${JAVA_HOME}/lib/server/classes.jsa" "${JAVA_HOME}/lib/server"
+
+ENV SPRING_DATASOURCE_URL=jdbc:h2:/internal_db/solar_stats_db
 RUN mkdir "/properties"
 RUN touch "/properties/application.properties"
 
@@ -24,5 +26,4 @@ ENTRYPOINT ["java", "-cp", "app:app/lib/*", "-Xshare:auto", "-Djava.security.egd
 
 EXPOSE 8080
 
-VOLUME /internal_db
-VOLUME /properties
+VOLUME /internal_db /properties
