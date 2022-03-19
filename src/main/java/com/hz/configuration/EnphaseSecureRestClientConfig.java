@@ -30,7 +30,7 @@ import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 public class EnphaseSecureRestClientConfig {
 
     // Needs Digest authentication
-    public static final String INVERTERS = "/api/v1/production/inverters";
+	public static final String INVERTERS = "/api/v1/production/inverters";
 	private static final String REALM = "enphaseenergy.com";
 
     private final EnphaseCollectorProperties config;
@@ -45,6 +45,12 @@ public class EnphaseSecureRestClientConfig {
 	}
 
 	private CredentialsProvider provider() {
+		if (envoyInfo.isV7orAbove()) {
+			log.info("No Security Provider available for Envoy with this software version {}", envoyInfo.getSoftwareVersion());
+		} else {
+			log.info("Preparing Realm Authentication Provider with user {}", config.getController().getUser());
+		}
+
 		CredentialsProvider provider = new BasicCredentialsProvider();
 		UsernamePasswordCredentials credentials =
 				new UsernamePasswordCredentials(config.getController().getUser(), getControllerPassword());
@@ -55,7 +61,7 @@ public class EnphaseSecureRestClientConfig {
     @Bean
     public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
 
-	    log.info("Reading from protected Envoy controller endpoint {}", config.getController().getUrl());
+	    log.info("Reading from protected Envoy controller endpoint {}{}", config.getController().getUrl(), INVERTERS);
 
 	    HttpClient httpClient = HttpClients
 			    .custom()

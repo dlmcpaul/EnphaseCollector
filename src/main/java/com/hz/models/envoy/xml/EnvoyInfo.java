@@ -17,7 +17,7 @@ public class EnvoyInfo {
 	public EnvoyDevice envoyDevice;
 	@XmlElement(name = "package")
 	public List<EnvoyPackage> packages;
-	@XmlElement(name="build_info", required = false, nillable = true)
+	@XmlElement(name="build_info", nillable = true)
 	public BuildInfo buildInfo;
 
 	// Only needed for test bean
@@ -25,6 +25,18 @@ public class EnvoyInfo {
 		this.envoyDevice = new EnvoyDevice();
 		this.envoyDevice.software = softwareVersion;
 		this.envoyDevice.sn = serialNumber;
+	}
+
+	public boolean isV7orAbove() {
+		if (envoyDevice.software.isEmpty()) {
+			return false;
+		}
+		String major_version = envoyDevice.software.substring(1,1);
+		if (major_version.matches("0-9")) {
+			return Integer.parseInt(major_version) > 6;
+		}
+
+		return false;
 	}
 
 	public String getSoftwareVersion() {

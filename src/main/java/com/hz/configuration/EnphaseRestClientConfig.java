@@ -41,7 +41,7 @@ public class EnphaseRestClientConfig {
 	@Bean
 	public RestTemplate enphaseRestTemplate(RestTemplateBuilder builder) {
 
-		log.info("Reading from insecure Envoy controller endpoint {}", config.getController().getUrl());
+		log.info("Reading from insecure Envoy controller endpoint {}{}", config.getController().getUrl(), SYSTEM);
 
 		HttpClient httpClient = HttpClients
 				.custom()
