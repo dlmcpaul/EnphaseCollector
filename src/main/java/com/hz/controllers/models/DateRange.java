@@ -1,33 +1,38 @@
 package com.hz.controllers.models;
 
+import com.hz.annotations.ToLessThanFrom;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-@NoArgsConstructor
-@Data
-public class DateRange {
-	// Because this object is passed to and from the browser
-	// it needs to conform to RFC3339 Section 5.6
-	// which sets the standard for the date wire format
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@NotNull
-	private LocalDate fromDate = LocalDate.now().minusMonths(3);    // Default to 3 months ago
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@NotNull
-	private LocalDate toDate = LocalDate.now().minusDays(1);        // Default to Yesterday
+// Because this object is passed to and from the browser
+// it needs to conform to RFC3339 Section 5.6
+// which sets the standard for the date wire format
 
-	public long daysInPeriod() {
-		return DAYS.between(fromDate, toDate) + 1;
+@Data
+@ToLessThanFrom
+public class DateRange {
+	@Past(message = "Date must be in the past")
+	@NotNull
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+	LocalDate from;
+	@PastOrPresent(message="Date must be in the past or in the present")
+	@NotNull
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+	LocalDate to;
+
+	public DateRange() {
+		this.from = LocalDate.now().minusMonths(3);
+		this.to = LocalDate.now().minusDays(1);
 	}
 
-	public String toString() {
-		return fromDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " -> " + toDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+	public long getDuration() {
+		return DAYS.between(from, to) + 1;
 	}
 }

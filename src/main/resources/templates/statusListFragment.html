@@ -2,16 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
-<!--/*@thymesVar id="statusList" type="java.util.ArrayList"*/-->
-<div th:fragment="statusList" id="statusList" class="column is-4 centre">
-    <table class="table is-fullwidth" summary="Solar Status Table">
+<!--/*@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"*/-->
+<div th:fragment="statusList (statusList)" id="statusComponent" class="column is-4 centre">
+    <table th:unless="${statusList.isEmpty()}" class="table is-fullwidth" aria-label="Solar Status Table">
         <tbody>
+            <!--/*@thymesVar id="status" type="com.hz.controllers.models.Status"*/-->
             <th:block th:each="status : ${statusList}">
                 <div data-th-replace="~{statusFragment :: status(${status.image},${status.text},${status.value})}"></div>
             </th:block>
         </tbody>
     </table>
 </div>
+
 </body>
 
 </html>

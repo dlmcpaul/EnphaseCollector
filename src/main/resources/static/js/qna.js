@@ -19,6 +19,9 @@ function getAnswers(target) {
         if (request.status === 200) {
             document.getElementById(target + "-data").outerHTML = request.response;
             button.innerText = "Answer";
+        } else {
+            console.log("Refresh Error for " + target);
+            button.innerText = "Error";
         }
     };
     request.send(new FormData(form));

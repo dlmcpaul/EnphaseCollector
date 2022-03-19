@@ -5,17 +5,21 @@
 <!--/*@thymesVar id="value" type="java.lang.String"*/-->
 <!--/*@thymesVar id="label" type="java.lang.String"*/-->
 <div th:fragment="dateField (field, value, label)" class="column field is-horizontal">
-    <div class="field-label grow-3">
-        <label class="label" th:text="${label}"/>
+    <div class="field-label is-flex-grow-3 is-normal">
+        <label class="label" th:id="${field} + '-label'" th:text="${label}"></label>
     </div>
-    <div class="field-body grow-4">
-        <div class="field is-narrow">
-            <p class="control has-icons-left">
-                <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="date">
+    <div class="field-body is-flex-grow-4">
+        <div class="field is-narrow" th:title="${#fields.errors(field)}">
+            <p class="control has-icons-left has-icons-right">
+                <input class="input" th:for="${field} + '-label'" th:id="${field}" th:name="${field}" th:value="${value}" type="date" th:errorclass="is-danger">
                 <span class="icon is-small is-left">
                     <i class="fas fa-calendar" aria-hidden="true"></i>
                 </span>
+                <span th:if="${#fields.hasErrors(field)}" class="icon is-small is-right has-text-danger">
+                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                </span>
             </p>
+            <p th:each="err : ${#fields.errors(field)}" th:text="${err}" class="help is-danger has-text-centered"></p>
         </div>
     </div>
 </div>
@@ -24,17 +28,18 @@
 <!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
 <!--/*@thymesVar id="label" type="java.lang.String"*/-->
 <div th:fragment="numberField (field, value, label)" class="column field is-horizontal">
-    <div class="field-label grow-3">
-        <label class="label" th:text="${label}"/>
+    <div class="field-label is-flex-grow-3 is-normal">
+        <label class="label" th:id="${field} + '-label'" th:text="${label}"></label>
     </div>
-    <div class="field-body grow-4">
+    <div class="field-body is-flex-grow-4">
         <div class="field is-narrow">
             <p class="control has-icons-left">
-                <input class="input" th:id="${field}" th:name="${field}" th:value="${value}" type="number" step="any">
+                <input class="input" th:for="${field} + '-label'" th:id="${field}" th:name="${field}" th:value="${value}" type="number" step="any">
                 <span class="icon is-small is-left">
                     <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                 </span>
             </p>
+            <p th:each="err : ${#fields.errors(field)}" th:text="${err}" class="help is-danger has-text-centered"></p>
         </div>
     </div>
 </div>
@@ -43,8 +48,8 @@
 <!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
 <div th:fragment="moneyLevelItem (heading, value)" class="level-item has-text-centered">
     <div>
-        <p class="heading" th:text="${heading}"/>
-        <p class="title" th:text="${#numbers.formatCurrency(value)}"/>
+        <p class="heading" th:text="${heading}"></p>
+        <p class="title" th:text="${#numbers.formatCurrency(value)}"></p>
     </div>
 </div>
 
@@ -52,8 +57,8 @@
 <!--/*@thymesVar id="value" type="java.math.BigDecimal"*/-->
 <div th:fragment="energyLevelItem (heading, value)" class="level-item has-text-centered">
     <div>
-        <p class="heading" th:text="${heading}"/>
-        <p class="title" th:text="${#numbers.formatDecimal(value,1,2)} + ' kWh'"/>
+        <p class="heading" th:text="${heading}"></p>
+        <p class="title" th:text="${#numbers.formatDecimal(value,1,2)} + ' kWh'"></p>
     </div>
 </div>
 
@@ -61,45 +66,46 @@
 <!--/*@thymesVar id="value" type="java.lang.String"*/-->
 <div th:fragment="levelItem (heading, value)" class="level-item has-text-centered">
     <div>
-        <p class="heading" th:text="${heading}"/>
-        <p class="title" th:text="${value}"/>
+        <p class="heading" th:text="${heading}"></p>
+        <p class="title" th:text="${value}"></p>
     </div>
 </div>
 
 <!--/*@thymesVar id="source" type="com.hz.controllers.models.BillResult"*/-->
 <div th:fragment="estimateBox (source)" class="box">
     <nav class="level">
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"/>
+        <!--/*@thymesVar id="source" type="com.hz.controllers.models.BillResult"*/-->
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"></div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="title">=</p>
             </div>
         </div>
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', ${source.getTotalImportCost()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', ${source.getTotalImportCost()})}"></div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="title">-</p>
             </div>
         </div>
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"></div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="title"> </p>
             </div>
         </div>
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', ${source.getTotalPayback()})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', ${source.getTotalPayback()})}"></div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="title">=</p>
             </div>
         </div>
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', ${source.importSavings})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', ${source.importSavings})}"></div>
         <div class="level-item has-text-centered">
             <div>
                 <p class="title">+</p>
             </div>
         </div>
-        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"></div>
     </nav>
 </div>
 
@@ -107,12 +113,12 @@
 <!--/*@thymesVar id="days" type="java.lang.String"*/-->
 <div th:fragment="usageBox (source, days)" class="box">
     <nav class="level">
-        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Consumption', ${source.getTotalConsumption()})}"/>
-        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Grid Consumption', ${source.getGridConsumption()})}"/>
-        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Consumption', ${source.getSolarConsumption()})}"/>
-        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Production', ${source.getTotalProduction()})}"/>
-        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Exported', ${source.getTotalExported()})}"/>
-        <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', ${days})}"/>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Consumption', ${source.getTotalConsumption()})}"></div>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Grid Consumption', ${source.getGridConsumption()})}"></div>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Consumption', ${source.getSolarConsumption()})}"></div>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Production', ${source.getTotalProduction()})}"></div>
+        <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Exported', ${source.getTotalExported()})}"></div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('Days', ${days})}"></div>
     </nav>
 </div>
 

@@ -2,29 +2,35 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 
 <body>
-    <div th:fragment="billQnA" id="bill-data">
+    <div th:fragment="billQnA (visible)" id="bill-data">
         <!--/*@thymesVar id="bill_question" type="com.hz.controllers.models.BillQuestion"*/-->
-        <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-answer-form"
-              onsubmit="return getAnswers('bill-answer')">
+        <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-form"
+              onsubmit="return getAnswers('bill')">
             <div class="columns is-gapless">
-                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.fromDate', *{dateRange.getFromDate()},'From')}"/>
-                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.toDate', *{dateRange.getToDate()},'To')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.from', *{dateRange.getFrom()}, 'From')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.to', *{dateRange.getTo()}, 'To')}"/>
                 <div class="column"></div>
+            </div>
+            <div th:if="${#fields.hasErrors('dateRange') or #fields.hasErrors('global')}" class="notification is-warning">
+                <p th:each="err : ${#fields.errors('dateRange')}" th:text="${err}" class="help block has-text-centered"></p>
+                <div th:if="${#fields.hasErrors('global')}">
+                    <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="help block has-text-centered" />
+                </div>
             </div>
             <div class="separator">Compare With</div></br>
             <div class="columns is-gapless">
                 <div data-th-replace="~{qnaFieldFragment :: numberField('dailySupplyCharge', *{dailySupplyCharge},'Daily Charge')}"/>
-                <div data-th-replace="~{qnaFieldFragment :: numberField('chargePerKiloWatt', *{chargePerKiloWatt},'Charge Per Kilowatt')}"/>
-                <div data-th-replace="~{qnaFieldFragment :: numberField('paymentPerKiloWatt', *{paymentPerKiloWatt},'Payment Per Kilowatt')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: numberField('chargePerKiloWatt', *{chargePerKiloWatt},'Charge Per kWh')}"/>
+                <div data-th-replace="~{qnaFieldFragment :: numberField('paymentPerKiloWatt', *{paymentPerKiloWatt},'Payment Per kWh')}"/>
             </div>
             <div class="columns is-centered is-gapless">
                 <div class="column is-one-fifth">
-                    <button id="bill-answer-button" type="submit" class="button is-primary is-fullwidth">Answer</button>
+                    <button id="bill-button" type="submit" class="button is-primary is-fullwidth">Answer</button>
                 </div>
             </div>
         </form>
         <hr>
-        <div data-th-replace="~{billAnswerFragment :: billAnswer (false)}"/>
+        <div data-th-replace="~{billAnswerFragment :: billAnswer (${visible})}"/>
     </div>
 </body>
 

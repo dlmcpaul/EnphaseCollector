@@ -3,12 +3,16 @@ package com.hz.controllers.models;
 import com.hz.models.interfaces.RateInterface;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-@NoArgsConstructor
 @Data
+@Validated
+@NoArgsConstructor
+@Log4j2
 public class BillQuestion implements RateInterface {
 	@Valid
 	private DateRange dateRange = new DateRange();

@@ -288,7 +288,7 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
             }
         });
     }
-    makeStatusList("statusList", contextPath + "/refreshStats", refreshInterval);
+    makeStatusList("statusComponent", contextPath + "/refreshStats", refreshInterval);
 }
 
 function initHistoryCharts() {

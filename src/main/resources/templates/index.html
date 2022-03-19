@@ -38,7 +38,7 @@
             <div class="columns is-multiline is-centered">
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{/power.png},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{/sun.jpeg},'Production',${production})}"></div>
-                <div data-th-replace="~{statusListFragment :: statusList}"></div>
+                <div data-th-replace="~{statusListFragment :: statusList( ${statusList} )}"></div>
             </div>
             <div class="columns">
                 <div class="column is-12 is-narrow">

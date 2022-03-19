@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -111,25 +112,31 @@ public class EnphaseController {
 	}
 
 	@PostMapping("/bill")
-	public String getBillAnswers(@ModelAttribute("bill_question") @Valid BillQuestion billQuestion, Model model) {
-		BillAnswer billAnswer = new BillAnswer(billQuestion.getDateRange().daysInPeriod());
+	public String getBillAnswers(@ModelAttribute("bill_question") @Valid BillQuestion billQuestion, BindingResult bindingResult, Model model) {
 
+		BillAnswer billAnswer = new BillAnswer(0);
+		model.addAttribute("bill_answer", billAnswer);
+
+		if (bindingResult.hasErrors()) {
+			return "billQnAFragment :: billQnA(visible=false)";
+		}
+
+		billAnswer.setDaysInPeriod(billQuestion.getDateRange().getDuration());
 		// Calculate Power Costs over period
-		localDBService.getSummaries(billQuestion.getDateRange().getFromDate(), billQuestion.getDateRange().getToDate())
+		localDBService.getSummaries(billQuestion.getDateRange().getFrom(), billQuestion.getDateRange().getTo())
 				.forEach(total -> billAnswer.addSummary(new Summary(total.getDate(),
 						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
 						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), billQuestion));
 
-		model.addAttribute("bill_answer", billAnswer);
-		return "billAnswerFragment :: billAnswer(visible=true)";
+		return "billQnAFragment :: billQnA(visible=true)";
 	}
 
 	@GetMapping("/refreshStats")
 	public String status(Model model) {
 		model.addAttribute("statusList", this.populateStatusList());
-		return "statusListFragment :: statusList";
+		return "statusListFragment :: statusList (statusList=${statusList})";
 	}
 
 	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")
