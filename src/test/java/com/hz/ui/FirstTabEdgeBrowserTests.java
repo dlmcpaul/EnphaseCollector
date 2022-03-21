@@ -17,14 +17,14 @@ import static com.codeborne.selenide.Selenide.open;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
-class FirstTabTestsFireFoxBrowser {
+class FirstTabEdgeBrowserTests {
 
 	@LocalServerPort //to inject port value
 	int port;
 
 	@BeforeAll
 	public static void initBrowser() {
-		Configuration.browser = "firefox";
+		Configuration.browser = "edge";
 		Configuration.headless = true;
 	}
 
