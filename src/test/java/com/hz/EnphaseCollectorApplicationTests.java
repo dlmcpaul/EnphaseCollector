@@ -17,5 +17,6 @@ class EnphaseCollectorApplicationTests {
 	@Test
 	void contextLoads(@Autowired EnvoyInfo envoyInfo) {
 		Assertions.assertTrue(envoyInfo.getSerialNumber().equalsIgnoreCase("unknown"));
+		Assertions.assertFalse(envoyInfo.isV7orAbove());
 	}
 }
