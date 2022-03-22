@@ -31,8 +31,8 @@ public class EnvoyInfo {
 		if (envoyDevice.software.isEmpty()) {
 			return false;
 		}
-		String majorVersion = envoyDevice.software.substring(1,1);
-		if (majorVersion.matches("0-9")) {
+		String majorVersion = envoyDevice.software.substring(1,2);
+		if (majorVersion.matches("[0-9]")) {
 			return Integer.parseInt(majorVersion) > 6;
 		}
 

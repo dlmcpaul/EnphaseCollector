@@ -31,22 +31,22 @@ public class DateRangeTest {
 
 		log.info("Test default DateRange constructor");
 		violations = validator.validate(dateRange);
-		assertEquals(violations.size(),0);
+		assertEquals(0, violations.size());
 
 		log.info("Test DateRange constructor getDuration calculation");
 		dateRange.setFrom(LocalDate.parse("2021-12-22", DateTimeFormatter.ISO_DATE));
 		dateRange.setTo(LocalDate.parse("2022-03-21", DateTimeFormatter.ISO_DATE));
-		assertEquals(dateRange.getDuration(),90);
+		assertEquals(90, dateRange.getDuration());
 
 		log.info("Test DateRange NotNull Validation");
 		dateRange.setFrom(null);
 		violations = validator.validate(dateRange);
-		assertEquals(violations.size(),1);
+		assertEquals(1, violations.size());
 
 		log.info("Test DateRange ToLessThanFrom Validation");
 		dateRange.setFrom(LocalDate.parse("2022-03-21", DateTimeFormatter.ISO_DATE));
 		dateRange.setTo(LocalDate.parse("2021-12-22", DateTimeFormatter.ISO_DATE));
 		violations = validator.validate(dateRange);
-		assertEquals(violations.size(),1);
+		assertEquals(1, violations.size());
 	}
 }

@@ -19,4 +19,16 @@ class EnphaseCollectorApplicationTests {
 		Assertions.assertTrue(envoyInfo.getSerialNumber().equalsIgnoreCase("unknown"));
 		Assertions.assertFalse(envoyInfo.isV7orAbove());
 	}
+
+	@Test
+	void EnvoyInfoTest() {
+		EnvoyInfo envoyInfo = new EnvoyInfo("","unknown");
+		Assertions.assertFalse(envoyInfo.isV7orAbove());
+
+		envoyInfo = new EnvoyInfo("D5.0.34","unknown");
+		Assertions.assertFalse(envoyInfo.isV7orAbove());
+
+		envoyInfo = new EnvoyInfo("D7.0.00","unknown");
+		Assertions.assertTrue(envoyInfo.isV7orAbove());
+	}
 }
