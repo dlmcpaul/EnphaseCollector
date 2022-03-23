@@ -73,6 +73,10 @@ public class EnphaseCollectorProperties {
     public static class ProtectedHTTPResource extends HTTPResource {
         private String user;
         private String password;
+
+        public boolean isPasswordEmpty() {
+            return (password == null || password.isEmpty());
+        }
     }
 
     @Data

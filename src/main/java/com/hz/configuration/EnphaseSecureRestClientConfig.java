@@ -37,11 +37,7 @@ public class EnphaseSecureRestClientConfig {
     private final EnvoyInfo envoyInfo;
 
 	private String getControllerPassword() {
-		if (config.getController().getPassword() == null || config.getController().getPassword().isEmpty()) {
-			return envoyInfo.getSerialNumber().substring(envoyInfo.getSerialNumber().length()-6);
-		}
-
-		return config.getController().getPassword();
+		return config.getController().isPasswordEmpty() ? envoyInfo.getDefaultPassword() : config.getController().getPassword();
 	}
 
 	private CredentialsProvider provider() {

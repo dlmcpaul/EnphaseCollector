@@ -39,6 +39,10 @@ public class EnvoyInfo {
 		return false;
 	}
 
+	public String getDefaultPassword() {
+		return this.getSerialNumber().substring(this.getSerialNumber().length()-6);
+	}
+
 	public String getSoftwareVersion() {
 		return envoyDevice.software.isEmpty() ? "Unknown" : envoyDevice.software;
 	}
