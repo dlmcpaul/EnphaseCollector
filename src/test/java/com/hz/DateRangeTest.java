@@ -15,7 +15,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Log4j2
-public class DateRangeTest {
+class DateRangeTest {
 
 	private static Validator validator;
 

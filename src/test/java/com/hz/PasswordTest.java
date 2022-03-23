@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
 @Log4j2
-public class PasswordTest {
+class PasswordTest {
 	@Autowired
 	private EnphaseCollectorProperties properties;
 
