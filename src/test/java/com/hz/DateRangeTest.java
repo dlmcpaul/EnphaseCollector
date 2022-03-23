@@ -40,8 +40,9 @@ public class DateRangeTest {
 
 		log.info("Test DateRange NotNull Validation");
 		dateRange.setFrom(null);
+		dateRange.setTo(null);
 		violations = validator.validate(dateRange);
-		assertEquals(1, violations.size());
+		assertEquals(2, violations.size());
 
 		log.info("Test DateRange ToLessThanFrom Validation");
 		dateRange.setFrom(LocalDate.parse("2022-03-21", DateTimeFormatter.ISO_DATE));
