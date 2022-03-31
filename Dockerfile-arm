@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11-jre-hotspot-bionic
+FROM adoptopenjdk:17-jre-hotspot-bionic
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
