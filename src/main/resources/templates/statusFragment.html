@@ -7,13 +7,13 @@
 <tr th:fragment="status (image, text, value)" class="status-row" data-th-name="${text}">
     <td>
         <nav class="level is-mobile">
-        <div class="level-left">
-            <p class="level-item icon flex-text"><i th:class="${image}" aria-hidden="true"></i></p>
-            <p class="level-item flex-text" th:text="${text}"/>
-        </div>
-        <div class="level-right">
-            <p class="level-item has-text-right has-text-black has-text-weight-bold flex-text" th:text="${value}" style="white-space: nowrap">0</p>
-        </div>
+            <div class="level-left">
+                <p class="level-item icon flex-text"><i th:class="${image}" aria-hidden="true"></i></p>
+                <p class="level-item flex-text" th:text="${text}"/>
+            </div>
+            <div class="level-right">
+                <p class="level-item has-text-right has-text-black has-text-weight-bold flex-text" th:text="${value}" style="white-space: nowrap">0</p>
+            </div>
         </nav>
     </td>
 </tr>
