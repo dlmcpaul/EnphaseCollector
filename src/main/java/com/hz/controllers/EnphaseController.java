@@ -4,7 +4,6 @@ import com.hz.components.ReleaseInfoContributor;
 import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.controllers.models.*;
 import com.hz.models.database.EnvoySystem;
-import com.hz.models.database.Event;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class EnphaseController {
 	private static final String DOLLAR_SIGN = "fas fa-dollar-sign";
+	private static final String SOLAR_SIGN = "fas fa-sun";
 
 	private final EnphaseService enphaseService;
 	private final LocalDBService localDBService;
@@ -45,8 +46,8 @@ public class EnphaseController {
 	private final EnvoyInfo envoyInfo;
 	private final ReleaseInfoContributor release;
 
-	private List<Status> populateStatusList() {
-		ArrayList<Status> statusList = new ArrayList<>();
+	private List<Status> populateMultiStatsStatusList() {
+		List<Status> statusList = new ArrayList<>();
 		try {
 			EnvoySystem envoySystem = localDBService.getSystemInfo();
 			NumberFormat currency = NumberFormat.getCurrencyInstance();
@@ -77,16 +78,25 @@ public class EnphaseController {
 			}
 
 			PanelProduction panelProduction = localDBService.getMaxPanelProduction();
-			statusList.add(new Status("fas fa-sun", panelProduction.getTotalPanelsProducingMax() + " solar panels producing max ", panelProduction.getMaxProduction() + " W"));
+			statusList.add(new Status(SOLAR_SIGN, panelProduction.getTotalPanelsProducingMax() + " solar panels producing max ", panelProduction.getMaxProduction() + " W"));
 
 			Collections.shuffle(statusList);
 
 			return statusList.subList(0, 9);
 		} catch (Exception e) {
-			log.error("populateStatusList Exception: {} {}", e.getMessage(), e);
+			log.error("populateMultiStatsStatusList Exception: {} {}", e.getMessage(), e);
 		}
-
 		return statusList;
+	}
+
+	private List<Status> populatePanelStatsStatusList() {
+		final List<Status> statusList = new ArrayList<>();
+		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing ", Float.valueOf(aFloat).intValue() + " W")));
+		return statusList.size() > 9 ? statusList.subList(0,9) : statusList;
+	}
+
+	private List<Status> populateStatusList() {
+		return ThreadLocalRandom.current().nextInt(0,1) != 0 ? populateMultiStatsStatusList() : populatePanelStatsStatusList();
 	}
 
 	// Generate main page from template
@@ -137,18 +147,6 @@ public class EnphaseController {
 	public String status(Model model) {
 		model.addAttribute("statusList", this.populateStatusList());
 		return "statusListFragment :: statusList (statusList=${statusList})";
-	}
-
-	@GetMapping(value = "/event", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public Event getEvent() {
-		try {
-			return localDBService.getLastEvent();
-		} catch (Exception e) {
-			log.error("getEvent Exception: {} {}", e.getMessage(), e);
-		}
-
-		return new Event();
 	}
 
 	@GetMapping(value = "/pvc", produces = "application/json; charset=UTF-8")

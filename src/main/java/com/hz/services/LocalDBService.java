@@ -23,9 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -166,9 +165,21 @@ public class LocalDBService {
 
 	@Transactional
 	public PanelProduction getMaxPanelProduction() {
-		Event event = this.getLastEvent();
-		BigDecimal max = event.getMaxPanelProduction();
-		return new PanelProduction(event.getMaxPanelProduction(), BigDecimal.ZERO, event.countMaxPanelsProducing(max));
+		NavigableMap<Float,List<Panel>> map = new TreeMap<>(this.getPanelSummaries());
+
+		return new PanelProduction(BigDecimal.valueOf(map.lastEntry().getKey()), BigDecimal.ZERO, map.lastEntry().getValue().size());
+	}
+
+	@Transactional
+	public Map<Float, List<Panel>> getPanelSummaries() {
+		try {
+			List<Panel> panels = this.getLastEvent().getPanels();
+			panels.sort((o1, o2) -> Float.valueOf(o1.getValue()).compareTo(o2.getValue()) * -1);
+			return panels.stream().collect(Collectors.groupingBy(Panel::getValue, LinkedHashMap::new, Collectors.toList()));
+		} catch (Exception e) {
+			log.error("getPanelSummaries error : {}", e);
+		}
+		return new LinkedHashMap<>();
 	}
 
 	public List<PanelSummary> getPanelProduction() {
