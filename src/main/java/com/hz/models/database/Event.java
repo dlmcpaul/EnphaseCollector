@@ -11,7 +11,6 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,23 +36,6 @@ public class Event {
 		if (metric.isSolarPanel()) {
 			panels.add(new Panel(metric.getName(), metric.getValue()));
 		}
-	}
-
-	public long countMaxPanelsProducing(BigDecimal value) {
-		if (panels != null && panels.isEmpty() == false) {
-			return panels.stream().filter(p -> BigDecimal.valueOf(p.getValue()).compareTo(value) == 0).count();
-		}
-
-		return 0;
-	}
-
-	public BigDecimal getMaxPanelProduction() {
-		if (panels != null && panels.isEmpty() == false) {
-			Comparator<Panel> comparator = Comparator.comparing(Panel::getValue);
-			return BigDecimal.valueOf(panels.stream().max(comparator).orElseThrow().getValue());
-		}
-
-		return BigDecimal.ZERO;
 	}
 
 	@Override
