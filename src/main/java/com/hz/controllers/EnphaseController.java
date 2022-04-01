@@ -67,7 +67,7 @@ public class EnphaseController {
 			statusList.add(new Status(DOLLAR_SIGN, "Cost today from grid usage", currency.format(cost)));
 			statusList.add(new Status(DOLLAR_SIGN, "Cost Estimate for Today", currency.format(cost.subtract(payment))));
 
-			statusList.add(new Status("fas fa-sun", "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
+			statusList.add(new Status(SOLAR_SIGN, "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
 			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
 			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kWh"));
 			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
@@ -91,12 +91,12 @@ public class EnphaseController {
 
 	private List<Status> populatePanelStatsStatusList() {
 		final List<Status> statusList = new ArrayList<>();
-		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing ", Float.valueOf(aFloat).intValue() + " W")));
+		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing ", aFloat.intValue() + " W")));
 		return statusList.size() > 9 ? statusList.subList(0,9) : statusList;
 	}
 
 	private List<Status> populateStatusList() {
-		return ThreadLocalRandom.current().nextInt(0,1) != 0 ? populateMultiStatsStatusList() : populatePanelStatsStatusList();
+		return ThreadLocalRandom.current().nextInt(0,2) != 0 ? populateMultiStatsStatusList() : populatePanelStatsStatusList();
 	}
 
 	// Generate main page from template
