@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17.0.2-17.32.13 as builder
+FROM azul/zulu-openjdk-alpine:17.0.2-jre-headless as builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
@@ -10,7 +10,7 @@ RUN "$JAVA_HOME/bin/java" -Xshare:dump
 # Explode Uber jar into lib jars and classes
 RUN "$JAVA_HOME/bin/jar" -xf app.jar
 
-FROM azul/zulu-openjdk-alpine:17.0.2-17.32.13
+FROM azul/zulu-openjdk-alpine:17.0.2-jre-headless
 LABEL maintainer="dlmcpaul@gmail.com"
 
 COPY --from=builder "./BOOT-INF/lib" /app/lib
