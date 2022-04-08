@@ -90,7 +90,7 @@ class EnphaseServiceRest_4_5_79_Test {
 		Assertions.assertTrue(system.isPresent());
 		Assertions.assertEquals("D4.5.79", this.envoyInfo.getSoftwareVersion());
 		Assertions.assertEquals("121703XXXXXX", this.envoyInfo.getSerialNumber());
-		Assertions.assertEquals(16, system.get().getProduction().getMicroInvertorsList().size());
+		Assertions.assertEquals(16, system.get().getProduction().getMicroInvertersList().size());
 		Assertions.assertEquals(BigDecimal.valueOf(13337263.955), system.get().getProduction().getProductionEim().get().getWattsLifetime());
 		Assertions.assertEquals(BigDecimal.valueOf(1.326), system.get().getProduction().getProductionWatts());
 		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());

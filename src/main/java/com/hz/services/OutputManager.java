@@ -45,7 +45,7 @@ public class OutputManager {
 				envoyInfo.getSoftwareVersion(),
 				Convertors.convertToLocalDateTime(system.getNetwork().getLastReportTime()),
 				collectionTime,
-				system.getProduction().getMicroInvertorsList().size(),
+				system.getProduction().getMicroInvertersList().size(),
 				system.getNetwork().isWifi(),
 				system.getNetwork().isWifi() ? system.getWireless().getCurrentNetwork().getSsid() : "LAN");
 	}

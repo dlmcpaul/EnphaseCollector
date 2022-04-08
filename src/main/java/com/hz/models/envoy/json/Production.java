@@ -34,8 +34,8 @@ public class Production {
 	private List<DeviceMeter> deviceMeterList;
 
 	@JsonIgnore
-	public List<Inverter> getMicroInvertorsList() {
-		return this.getInverter().orElseGet(InvertersType::new).getMicroInvertors();
+	public List<Inverter> getMicroInvertersList() {
+		return this.getInverter().orElseGet(InvertersType::new).getMicroInverters();
 	}
 
 	@JsonIgnore

@@ -21,7 +21,7 @@ public class InvertersType extends TypeBase {
 
 	private List<Inverter> inverterList = new ArrayList<>();    // populated from api/v1/production/inverters
 
-	public List<Inverter> getMicroInvertors() {
+	public List<Inverter> getMicroInverters() {
 		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).collect(Collectors.toList());
 	}
 
