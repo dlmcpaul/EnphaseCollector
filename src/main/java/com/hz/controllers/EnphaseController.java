@@ -81,8 +81,6 @@ public class EnphaseController {
 			statusList.add(new Status(SOLAR_SIGN, panelProduction.getTotalPanelsProducingMax() + " solar panels producing max ", panelProduction.getMaxProduction() + " W"));
 
 			Collections.shuffle(statusList);
-
-			return statusList.subList(0, 9);
 		} catch (Exception e) {
 			log.error("populateMultiStatsStatusList Exception: {} {}", e.getMessage(), e);
 		}
@@ -92,11 +90,14 @@ public class EnphaseController {
 	private List<Status> populatePanelStatsStatusList() {
 		final List<Status> statusList = new ArrayList<>();
 		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing ", aFloat.intValue() + " W")));
-		return statusList.size() > 9 ? statusList.subList(0,9) : statusList;
+		if (statusList.size() < 9) {
+			statusList.addAll(populateMultiStatsStatusList());
+		}
+		return statusList;
 	}
 
 	private List<Status> populateStatusList() {
-		return ThreadLocalRandom.current().nextInt(0,2) != 0 ? populateMultiStatsStatusList() : populatePanelStatsStatusList();
+		return (ThreadLocalRandom.current().nextInt(0,2) != 0 ? populateMultiStatsStatusList() : populatePanelStatsStatusList()).subList(0,9);
 	}
 
 	// Generate main page from template
