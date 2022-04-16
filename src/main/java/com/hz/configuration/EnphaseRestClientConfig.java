@@ -32,7 +32,6 @@ public class EnphaseRestClientConfig {
     public static final String CONTROLLER = "/info.xml";
     public static final String WIFI_INFO = "/admin/lib/wireless_display.json?site_info=0";
 	public static final String WAN_INFO = "/admin/lib/network_display.json";
-	public static final String METER_STREAM = "/stream/meter";  // needs installer user and password
 	public static final String DEVICE_METERS = "/ivp/meters";
 	public static final String POWER_METERS = "/ivp/meters/readings";
 
