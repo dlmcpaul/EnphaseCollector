@@ -47,13 +47,15 @@ public class InstallerPasswordCalculator {
 		int result;
 
 		switch (countZero) {
-			case -1     : countZero++;
-			case 3,6,9  : countZero--;
+			case -1     : countZero++; break;
+			case 3,6,9  : countZero--; break;
+			default     : break;
 		}
 
 		switch (countOne) {
-			case -1     : countOne++;
-			case 9,15   : countOne--;
+			case -1     : countOne++; break;
+			case 9,15   : countOne--; break;
+			default     : break;
 		}
 
 		result = switch (value) {
