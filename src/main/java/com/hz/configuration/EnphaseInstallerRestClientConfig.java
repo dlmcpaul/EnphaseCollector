@@ -55,7 +55,7 @@ public class EnphaseInstallerRestClientConfig {
 	}
 
     @Bean
-    public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
+    public RestTemplate enphaseInstallerRestTemplate(RestTemplateBuilder builder) {
 
 	    log.info("Reading from installer Envoy controller endpoint {}{}", config.getController().getUrl(), METER_STREAM);
 
