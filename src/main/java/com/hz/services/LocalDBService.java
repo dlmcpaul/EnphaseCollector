@@ -153,6 +153,7 @@ public class LocalDBService {
 		return envoySystemRepository.findById(1L).orElseGet(EnvoySystem::new);
 	}
 
+	@Transactional
 	public Event getLastEvent() {
 		Optional<EnvoySystem> envoySystem = envoySystemRepository.findById(1L);
 
