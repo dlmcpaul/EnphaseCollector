@@ -39,9 +39,7 @@ public class InstallerPasswordCalculator {
 		return (int) input.chars().filter(ch -> ch == value).count();
 	}
 
-	private static String getLast8Chars(String input) {
-		return new StringBuffer(input.substring(input.length()-8)).reverse().toString();
-	}
+	private static String getLast8Chars(String input) {	return new StringBuffer(input.substring(input.length()-8)).reverse().toString(); }
 
 	private static Character decode(int value) {
 		int result;
@@ -59,8 +57,8 @@ public class InstallerPasswordCalculator {
 		}
 
 		result = switch (value) {
-			case '0' -> ("f".codePointAt(0) + countZero--);
-			case '1' -> ("@".codePointAt(0) + countOne--);
+			case '0' -> "f".codePointAt(0) + countZero--;
+			case '1' -> "@".codePointAt(0) + countOne--;
 			default -> value;
 		};
 
