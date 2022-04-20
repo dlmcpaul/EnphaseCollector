@@ -16,9 +16,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Log4j2
 public class PrometheusService {
+	private static final String WATTS = "watts";
 
-	private MetricCollectionEvent metricCollectionEvent = new MetricCollectionEvent(this, LocalDateTime.now(), new ArrayList<Metric>());
-	private MeterRegistry registry;
+	private MetricCollectionEvent metricCollectionEvent = new MetricCollectionEvent(this, LocalDateTime.now(), new ArrayList<>());
+	private final MeterRegistry registry;
 
 	private double getMetric(String name) {
 		return this.metricCollectionEvent.getMetrics()
@@ -38,19 +39,29 @@ public class PrometheusService {
 				.description("Collection time")
 				.register(registry);
 
-		Gauge.builder("solar.meter.production", this, value -> getMetric("solar.production.current"))
-				.baseUnit("Watts")
+		Gauge.builder("solar.meter.production", this, value -> getMetric(Metric.METRIC_PRODUCTION_CURRENT))
+				.baseUnit(WATTS)
 				.description("Solar production as at the collection time")
 				.register(registry);
 
-		Gauge.builder("solar.meter.consumption", this, value -> getMetric("solar.consumption.current"))
-				.baseUnit("Watts")
+		Gauge.builder("solar.meter.consumption", this, value -> getMetric(Metric.METRIC_CONSUMPTION_CURRENT))
+				.baseUnit(WATTS)
 				.description("Household consumption as at the collection time")
 				.register(registry);
 
-		Gauge.builder("solar.meter.voltage", this, value -> getMetric("solar.production.voltage"))
-				.baseUnit("Volts")
+		Gauge.builder("solar.meter.voltage", this, value -> getMetric(Metric.METRIC_PRODUCTION_VOLTAGE))
+				.baseUnit("volts")
 				.description("Production Voltage as at the collection time")
+				.register(registry);
+
+		Gauge.builder("solar.meter.import", this, value -> getMetric(Metric.METRIC_SOLAR_DIFFERENCE))
+				.baseUnit(WATTS)
+				.description("Energy imported from the grid as at the collection time")
+				.register(registry);
+
+		Gauge.builder("solar.meter.export", this, value -> getMetric(Metric.METRIC_SOLAR_EXCESS))
+				.baseUnit(WATTS)
+				.description("Energy exported to the grid as at the collection time")
 				.register(registry);
 	}
 
@@ -65,7 +76,7 @@ public class PrometheusService {
 					.filter(Metric::isSolarPanel)
 					.forEach(panel -> Gauge.builder("solar.panel.production", this, value -> getMetric(panel.getName()))
 							.tag("panel.id", panel.getName())
-							.baseUnit("Watts")
+							.baseUnit(WATTS)
 							.description("Panel Production")
 							.register(registry));
 		}
