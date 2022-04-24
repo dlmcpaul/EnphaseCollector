@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class PrometheusService {
 	private static final String WATTS = "watts";
+	private static final String VOLTS = "volts";
+	private static final String AS_AT_COLLECTION_TIME = " as at the collection time";
 
 	private MetricCollectionEvent metricCollectionEvent = new MetricCollectionEvent(this, LocalDateTime.now(), new ArrayList<>());
 	private final MeterRegistry registry;
@@ -41,33 +43,33 @@ public class PrometheusService {
 
 		Gauge.builder("solar.meter.production", this, value -> getMetric(Metric.METRIC_PRODUCTION_CURRENT))
 				.baseUnit(WATTS)
-				.description("Solar production as at the collection time")
+				.description("Solar production" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 
 		Gauge.builder("solar.meter.consumption", this, value -> getMetric(Metric.METRIC_CONSUMPTION_CURRENT))
 				.baseUnit(WATTS)
-				.description("Household consumption as at the collection time")
+				.description("Household consumption" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 
 		Gauge.builder("solar.meter.voltage", this, value -> getMetric(Metric.METRIC_PRODUCTION_VOLTAGE))
-				.baseUnit("volts")
-				.description("Production Voltage as at the collection time")
+				.baseUnit(VOLTS)
+				.description("Production Voltage" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 
 		Gauge.builder("solar.meter.import", this, value -> getMetric(Metric.METRIC_SOLAR_DIFFERENCE))
 				.baseUnit(WATTS)
-				.description("Energy imported from the grid as at the collection time")
+				.description("Energy imported from the grid" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 
 		Gauge.builder("solar.meter.export", this, value -> getMetric(Metric.METRIC_SOLAR_EXCESS))
 				.baseUnit(WATTS)
-				.description("Energy exported to the grid as at the collection time")
+				.description("Energy exported to the grid" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 	}
 
 	@EventListener
 	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
-		log.info("Caching metric stats at {} with {} items for Prometheus consumption", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
+		log.debug("Caching metric stats at {} with {} items for Prometheus consumption", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 		this.metricCollectionEvent = metricCollectionEvent;
 
 		if (registry.find("solar.panel.production").gauge() == null) {
@@ -77,7 +79,7 @@ public class PrometheusService {
 					.forEach(panel -> Gauge.builder("solar.panel.production", this, value -> getMetric(panel.getName()))
 							.tag("panel.id", panel.getName())
 							.baseUnit(WATTS)
-							.description("Panel Production")
+							.description("Solar Panel Production")
 							.register(registry));
 		}
 	}
