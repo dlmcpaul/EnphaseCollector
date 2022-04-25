@@ -73,7 +73,7 @@
 
 <!--/*@thymesVar id="source" type="com.hz.controllers.models.BillResult"*/-->
 <div th:fragment="estimateBox (source)" class="box">
-    <nav class="level">
+    <nav class="level" aria-label="financial estimates">
         <!--/*@thymesVar id="source" type="com.hz.controllers.models.BillResult"*/-->
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"></div>
         <div class="level-item has-text-centered">
@@ -112,7 +112,7 @@
 <!--/*@thymesVar id="source" type="com.hz.controllers.models.Usage"*/-->
 <!--/*@thymesVar id="days" type="java.lang.String"*/-->
 <div th:fragment="usageBox (source, days)" class="box">
-    <nav class="level">
+    <nav class="level" aria-label="energy usage">
         <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Total Consumption', ${source.getTotalConsumption()})}"></div>
         <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Grid Consumption', ${source.getGridConsumption()})}"></div>
         <div data-th-replace="~{qnaFieldFragment :: energyLevelItem('Solar Consumption', ${source.getSolarConsumption()})}"></div>
