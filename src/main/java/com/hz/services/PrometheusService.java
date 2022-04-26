@@ -56,7 +56,7 @@ public class PrometheusService {
 				.description("Production Voltage" + AS_AT_COLLECTION_TIME)
 				.register(registry);
 
-		Gauge.builder("solar.meter.import", this, value -> getMetric(Metric.METRIC_SOLAR_DIFFERENCE))
+		Gauge.builder("solar.meter.import", this, value -> Double.max(getMetric(Metric.METRIC_SOLAR_DIFFERENCE) * -1, 0))
 				.baseUnit(WATTS)
 				.description("Energy imported from the grid" + AS_AT_COLLECTION_TIME)
 				.register(registry);
