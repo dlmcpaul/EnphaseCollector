@@ -1,5 +1,6 @@
 package com.hz.services;
 
+import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.metrics.Metric;
 import com.hz.models.events.MetricCollectionEvent;
 import io.micrometer.core.instrument.*;
@@ -32,13 +33,18 @@ public class PrometheusService {
 				.orElse(BigDecimal.ZERO).doubleValue();
 	}
 
-	public PrometheusService(MeterRegistry registry) {
+	public PrometheusService(MeterRegistry registry, EnphaseCollectorProperties properties) {
 
 		this.registry = registry;
 
 		TimeGauge.builder("solar.collection.time", this, TimeUnit.MILLISECONDS, value -> this.metricCollectionEvent.getCollectionTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
 				.tags(Tags.of(Tag.of("TZ", ZoneId.systemDefault().getId())))
 				.description("Collection time")
+				.register(registry);
+
+		Gauge.builder("solar.collection.period", this, value -> properties.getRefreshSeconds())
+				.baseUnit("ms")
+				.description("Time in ms between collection events")
 				.register(registry);
 
 		Gauge.builder("solar.meter.production", this, value -> getMetric(Metric.METRIC_PRODUCTION_CURRENT))
