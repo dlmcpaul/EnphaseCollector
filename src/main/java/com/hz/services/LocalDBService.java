@@ -175,10 +175,10 @@ public class LocalDBService {
 	public Map<Float, List<Panel>> getPanelSummaries() {
 		try {
 			List<Panel> panels = this.getLastEvent().getPanels();
-			panels.sort((o1, o2) -> Float.valueOf(o1.getValue()).compareTo(o2.getValue()) * -1);
+			panels.sort((o1, o2) -> Float.compare(o1.getValue(), o2.getValue()) * -1);
 			return panels.stream().collect(Collectors.groupingBy(Panel::getValue, LinkedHashMap::new, Collectors.toList()));
 		} catch (Exception e) {
-			log.error("getPanelSummaries error : {}", e);
+			log.error("getPanelSummaries error : {}", e.getMessage(), e);
 		}
 		return new LinkedHashMap<>();
 	}
