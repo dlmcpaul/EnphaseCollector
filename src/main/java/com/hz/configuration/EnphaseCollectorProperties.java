@@ -46,7 +46,7 @@ public class EnphaseCollectorProperties {
     }
 
     public BigDecimal getRefreshAsMinutes(BigDecimal preferred) {
-        return (preferred.intValueExact() == 0) ? this.getRefreshAsMinutes() : preferred;
+        return (preferred.compareTo(BigDecimal.ZERO) == 0) ? this.getRefreshAsMinutes() : preferred;
     }
 
     @Data
