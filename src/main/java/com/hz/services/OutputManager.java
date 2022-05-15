@@ -1,5 +1,6 @@
 package com.hz.services;
 
+import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
@@ -25,16 +26,24 @@ public class OutputManager {
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final EnphaseService enphaseImportService;
 	private final EnvoyInfo envoyInfo;
+	private final EnphaseCollectorProperties properties;
+
+	private static long collection_period = 0;
 
 	private void publish(System system, List<Metric> metrics, LocalDateTime collectionTime) {
 		applicationEventPublisher.publishEvent(new SystemInfoEvent(this, makeSystemInfo(system, collectionTime)));
 		applicationEventPublisher.publishEvent(new MetricCollectionEvent(this, collectionTime, metrics));
 	}
 
-	@Scheduled(fixedRateString = "${envoy.refresh-seconds}")
+	@Scheduled(fixedRateString = "1000")
 	public void gather() {
 		try {
-			enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+			if (collection_period > 0) {
+				collection_period -= 1000;
+			} else {
+				collection_period = properties.getRefreshSeconds() - 1000;
+				enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+			}
 		} catch (Exception e) {
 			log.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);
 		}
