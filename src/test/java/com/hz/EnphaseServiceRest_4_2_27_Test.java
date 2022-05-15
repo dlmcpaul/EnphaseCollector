@@ -102,7 +102,7 @@ class EnphaseServiceRest_4_2_27_Test {
 
 		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
 
-		Assertions.assertEquals(24, metrics.size());
+		Assertions.assertEquals(25, metrics.size());
 
 		Assertions.assertFalse(envoyInfo.isV7orAbove());
 	}

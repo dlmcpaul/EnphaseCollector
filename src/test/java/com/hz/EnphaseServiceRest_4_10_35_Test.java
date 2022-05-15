@@ -104,7 +104,7 @@ class EnphaseServiceRest_4_10_35_Test {
 
 		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
 
-		Assertions.assertEquals(49, metrics.size());
+		Assertions.assertEquals(50, metrics.size());
 	}
 
 }
