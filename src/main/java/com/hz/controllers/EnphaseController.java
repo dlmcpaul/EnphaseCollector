@@ -82,7 +82,7 @@ public class EnphaseController {
 
 			Collections.shuffle(statusList);
 		} catch (Exception e) {
-			log.error("populateMultiStatsStatusList Exception: {} {}", e.getMessage(), e);
+			log.error("populateMultiStatsStatusList Exception: {}", e.getMessage(), e);
 		}
 		return statusList;
 	}
@@ -117,7 +117,7 @@ public class EnphaseController {
 			model.addAttribute("releaseVersion", release.getVersion());
 			model.addAttribute("exportLimit", properties.getExportLimit());
 		} catch (Exception e) {
-			log.error("index Page Exception {} {}", e.getMessage(), e);
+			log.error("index Page Exception {}", e.getMessage(), e);
 		}
 		return "index";
 	}
@@ -160,7 +160,7 @@ public class EnphaseController {
 			pvc.generateExcess(localDBService.getPanelProduction(), properties.getExportLimit());
 			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).collect(Collectors.toList())) ;
 		} catch (Exception e) {
-			log.error("getPvc Exception: {} {}", e.getMessage(), e);
+			log.error("getPvc Exception: {}", e.getMessage(), e);
 		}
 		return pvc;
 	}
@@ -179,7 +179,7 @@ public class EnphaseController {
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
 								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), duration));
 			} catch (Exception e) {
-				log.error("getHistory Exception: {} {}", e.getMessage(), e);
+				log.error("getHistory Exception: {}", e.getMessage(), e);
 			}
 		}
 		return result;
@@ -191,7 +191,7 @@ public class EnphaseController {
 		try {
 			return localDBService.getLastEvent().getProduction().intValue();
 		} catch (Exception e) {
-			log.error("getProduction Exception: {} {}", e.getMessage(), e);
+			log.error("getProduction Exception: {}", e.getMessage(), e);
 		}
 		return 0;
 	}
@@ -202,7 +202,7 @@ public class EnphaseController {
 		try {
 			return localDBService.getLastEvent().getConsumption().intValue();
 		} catch (Exception e) {
-			log.error("getConsumption Exception: {} {}", e.getMessage(), e);
+			log.error("getConsumption Exception: {}", e.getMessage(), e);
 		}
 		return 0;
 	}
