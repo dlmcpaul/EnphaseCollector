@@ -145,11 +145,13 @@ public class EnphaseService {
 	    if (production.compareTo(consumption) > 0) {
 		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, production, consumption));
 		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, consumption));
+			metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, 0));
 	    } else {
 		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
 		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production));
+		    metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, consumption, production));
 	    }
-	    metricList.add(new Metric( Metric.METRIC_SOLAR_DIFFERENCE,production, consumption));
+	    metricList.add(new Metric( Metric.METRIC_SOLAR_DIFFERENCE, production, consumption));
     }
 
 	public List<Metric> getMetrics(System system) {

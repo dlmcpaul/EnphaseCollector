@@ -18,6 +18,7 @@ public class Metric implements Serializable {
 	public static final String METRIC_PRODUCTION_VOLTAGE = "solar.production.voltage";
 	public static final String METRIC_SOLAR_EXCESS = "solar.excess";
 	public static final String METRIC_SOLAR_SAVINGS = "solar.savings";
+	public static final String METRIC_GRID_IMPORT = "solar.grid.import";
 	public static final String METRIC_SOLAR_DIFFERENCE = "solar.difference";
 
 	public static Metric createPanelMetric(String panelId, float value, int limit) {
