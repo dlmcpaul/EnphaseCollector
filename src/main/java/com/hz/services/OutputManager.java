@@ -28,7 +28,7 @@ public class OutputManager {
 	private final EnvoyInfo envoyInfo;
 	private final EnphaseCollectorProperties properties;
 
-	private static long collection_period = 0;
+	private int collectionPeriod = 0;
 
 	private void publish(System system, List<Metric> metrics, LocalDateTime collectionTime) {
 		applicationEventPublisher.publishEvent(new SystemInfoEvent(this, makeSystemInfo(system, collectionTime)));
@@ -38,10 +38,10 @@ public class OutputManager {
 	@Scheduled(fixedRateString = "1000")
 	public void gather() {
 		try {
-			if (collection_period > 0) {
-				collection_period -= 1000;
+			if (collectionPeriod > 0) {
+				collectionPeriod -= 1000;
 			} else {
-				collection_period = properties.getRefreshSeconds() - 1000;
+				collectionPeriod = properties.getRefreshSeconds() - 1000;
 				enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
 			}
 		} catch (Exception e) {

@@ -15,7 +15,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
-public class PropertyTest {
+class PropertyTest {
 
 	@Autowired
 	private EnphaseCollectorProperties properties;
