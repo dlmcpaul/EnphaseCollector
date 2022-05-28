@@ -168,7 +168,9 @@ public class LocalDBService {
 	public PanelProduction getMaxPanelProduction() {
 		NavigableMap<Float,List<Panel>> map = new TreeMap<>(this.getPanelSummaries());
 
-		return new PanelProduction(BigDecimal.valueOf(map.lastEntry().getKey()), BigDecimal.ZERO, map.lastEntry().getValue().size());
+		return map.size() > 0
+				? new PanelProduction(BigDecimal.valueOf(map.lastEntry().getKey()), BigDecimal.ZERO, map.lastEntry().getValue().size())
+				: new PanelProduction(BigDecimal.ZERO,BigDecimal.ZERO,0);
 	}
 
 	@Transactional
