@@ -58,10 +58,10 @@ public class Calculators {
 	public static LocalDate calculateEndDateFromDuration(String duration) {
 		ChronoUnit unit = ChronoUnit.valueOf(duration.substring(1).toUpperCase());
 
-		return Calculators.calculateEndDateFromDuration(LocalDate.now(), unit, duration);
+		return Calculators.calculateEndDateFromDuration(LocalDate.now(), unit);
 	}
 
-	public static LocalDate calculateEndDateFromDuration(LocalDate base, ChronoUnit unit, String duration) {
+	public static LocalDate calculateEndDateFromDuration(LocalDate base, ChronoUnit unit) {
 		// We want SUN to SAT as a WEEK
 		if (unit.compareTo(ChronoUnit.WEEKS) == 0 && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
 			base = base.minusDays(base.getDayOfWeek().getValue());

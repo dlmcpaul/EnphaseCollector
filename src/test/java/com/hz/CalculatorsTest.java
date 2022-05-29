@@ -17,7 +17,7 @@ class CalculatorsTest {
 	@Test
 	void WeekTests() {
 		LocalDate startOfWeek = Calculators.calculateStartDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.WEEKS, FOUR_WEEKS);
-		LocalDate endOfWeek = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.WEEKS, FOUR_WEEKS);
+		LocalDate endOfWeek = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.WEEKS);
 
 		Assertions.assertEquals(DayOfWeek.SUNDAY, startOfWeek.getDayOfWeek());
 		Assertions.assertEquals(DayOfWeek.SATURDAY, endOfWeek.getDayOfWeek());
@@ -29,7 +29,7 @@ class CalculatorsTest {
 	@Test
 	void MonthTests() {
 		LocalDate quarterStart = Calculators.calculateStartDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.MONTHS, THREE_MONTHS);
-		LocalDate quarterEnd = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.MONTHS, THREE_MONTHS);
+		LocalDate quarterEnd = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.MONTHS);
 
 		Assertions.assertEquals(LocalDate.of(2022, 2, 1), quarterStart);
 		Assertions.assertEquals(LocalDate.of(2022, 4, 30), quarterEnd);
