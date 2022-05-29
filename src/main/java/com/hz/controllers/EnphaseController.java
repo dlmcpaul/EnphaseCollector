@@ -53,8 +53,8 @@ public class EnphaseController {
 			NumberFormat currency = NumberFormat.getCurrencyInstance();
 			NumberFormat number = NumberFormat.getNumberInstance();
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-			BigDecimal payment = localDBService.calculateTodaysPayment();
-			BigDecimal cost = localDBService.calculateTodaysCost().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
+			BigDecimal payment = localDBService.calculatePaymentForToday();
+			BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
 
 			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
@@ -63,7 +63,7 @@ public class EnphaseController {
 
 			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
 			statusList.add(new Status(DOLLAR_SIGN, "Paid today from exporting to grid", currency.format(payment)));
-			statusList.add(new Status(DOLLAR_SIGN, "Savings today from not using grid", currency.format(localDBService.calculateTodaysSavings())));
+			statusList.add(new Status(DOLLAR_SIGN, "Savings today from not using grid", currency.format(localDBService.calculateSavingsForToday())));
 			statusList.add(new Status(DOLLAR_SIGN, "Cost today from grid usage", currency.format(cost)));
 			statusList.add(new Status(DOLLAR_SIGN, "Cost Estimate for Today", currency.format(cost.subtract(payment))));
 
@@ -156,7 +156,7 @@ public class EnphaseController {
 		PvC pvc = new PvC();
 
 		try {
-			localDBService.getTodaysEvents().forEach(pvc::addEvent);
+			localDBService.getEventsForToday().forEach(pvc::addEvent);
 			pvc.generateExcess(localDBService.getPanelProduction(), properties.getExportLimit());
 			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).collect(Collectors.toList())) ;
 		} catch (Exception e) {

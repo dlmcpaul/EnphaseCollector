@@ -18,11 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,7 +158,7 @@ public class LocalDBService {
 		return envoySystem.map(es -> eventRepository.findTopByTime(es.getLastReadTime())).orElseGet(Event::new);
 	}
 
-	public List<Event> getTodaysEvents() {
+	public List<Event> getEventsForToday() {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
 	}
 
@@ -194,7 +192,7 @@ public class LocalDBService {
 		List<Summary> dbValues = this.getLastDurationTotals(duration);
 		List<Summary> result = new ArrayList<>();
 
-		LocalDate dateIndex = calculateFromDateDuration(duration);
+		LocalDate dateIndex = Calculators.calculateStartDateFromDuration(duration);
 		int dbIndex = 0;
 
 		while (dbIndex < dbValues.size()) {
@@ -213,7 +211,7 @@ public class LocalDBService {
 	}
 
 	public List<Summary> getLastDurationTotals(String duration) {
-		return this.getSummaries(calculateFromDateDuration(duration), calculateToDateDuration(duration));
+		return this.getSummaries(Calculators.calculateStartDateFromDuration(duration), Calculators.calculateEndDateFromDuration(duration));
 	}
 
 	public List<Summary> getSummaries(LocalDate from, LocalDate to) {
@@ -222,15 +220,15 @@ public class LocalDBService {
 		return summaries;
 	}
 
-	public BigDecimal calculateTodaysCost() {
+	public BigDecimal calculateCostsForToday() {
 		return Calculators.calculateFinancial(eventRepository.findExcessConsumptionAfter(getMidnight()), properties.getChargePerKiloWatt(), "Cost", properties.getRefreshAsMinutes());
 	}
 
-	public BigDecimal calculateTodaysPayment() {
+	public BigDecimal calculatePaymentForToday() {
 		return Calculators.calculateFinancial(eventRepository.findExcessProductionAfter(getMidnight()), properties.getPaymentPerKiloWatt(), "Payment", properties.getRefreshAsMinutes());
 	}
 
-	public BigDecimal calculateTodaysSavings() {
+	public BigDecimal calculateSavingsForToday() {
 		Long totalWatts = eventRepository.findTotalProductionAfter(getMidnight());
 		Long excessWatts = eventRepository.findExcessProductionAfter(getMidnight());
 		return Calculators.calculateFinancial( totalWatts - excessWatts , properties.getChargePerKiloWatt(), "Savings", properties.getRefreshAsMinutes());
@@ -259,34 +257,4 @@ public class LocalDBService {
 		LocalDate now = LocalDate.now();
 		return now.atStartOfDay();
 	}
-
-	private LocalDate calculateFromDateDuration(String duration) {
-		LocalDate base = LocalDate.now();
-
-		int amount = Integer.parseInt(duration.substring(0,1));
-		String unit = duration.substring(1).toUpperCase();
-
-		if (unit.equalsIgnoreCase("WEEKS") && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
-			base = base.minusDays(base.getDayOfWeek().getValue());
-		}
-		if (unit.equalsIgnoreCase("MONTHS")) {
-			base = base.minusDays(base.getDayOfMonth()).plusDays(1);
-		}
-		return base.plus(amount * -1L, ChronoUnit.valueOf(unit));
-	}
-
-	private LocalDate calculateToDateDuration(String duration) {
-		LocalDate base = LocalDate.now();
-		String unit = duration.substring(1).toUpperCase();
-
-		// We want SUN to SAT as a WEEK
-		if (unit.equalsIgnoreCase("WEEKS") && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
-			base = base.minusDays(base.getDayOfWeek().getValue());
-		}
-		if (unit.equalsIgnoreCase("MONTHS")) {
-			return base.minusDays(base.getDayOfMonth());
-		}
-		return base.minusDays(1);
-	}
-
 }
