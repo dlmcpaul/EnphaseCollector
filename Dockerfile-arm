@@ -1,4 +1,4 @@
-FROM adoptopenjdk:17-jre-hotspot-bionic
+FROM eclipse-temurin:17-jre-focal
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG JAR_FILE
