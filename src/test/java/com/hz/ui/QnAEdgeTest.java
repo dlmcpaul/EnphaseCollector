@@ -6,9 +6,7 @@ import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -38,20 +36,13 @@ class QnAEdgeTest {
 		qnaForm = new QnAForm(Selenide.webdriver().object());
 	}
 
-	@BeforeEach
-	void reset() {
-		qnaForm.fromDate.clear();
-		qnaForm.toDate.clear();
-	}
-
 	@Test
 	void testErrorIfFromDateInFuture() {
 		LocalDate todayPlusOne = LocalDate.now().plusDays(1);
 		String todayPlusOneString = String.format(Locale.US, "%02d", todayPlusOne.getDayOfMonth()) + String.format(Locale.US, "%02d", todayPlusOne.getMonthValue()) + todayPlusOne.getYear();
 
 		log.info("Validating from Date can be set to tomorrow {} with keys {}", todayPlusOne, todayPlusOneString);
-		qnaForm.fromDate.clear();
-		qnaForm.fromDate.sendKeys(todayPlusOneString + Keys.TAB);
+		qnaForm.fromDate.sendKeys(todayPlusOneString);
 
 		$("input[id='dateRange.from']").shouldHave(value(todayPlusOne.toString()));
 
