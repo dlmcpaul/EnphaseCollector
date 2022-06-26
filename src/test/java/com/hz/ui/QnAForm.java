@@ -1,23 +1,40 @@
 package com.hz.ui;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.How;
+
+import java.time.LocalDate;
+
+import static com.codeborne.selenide.SetValueOptions.withDate;
 
 // page_url = http://localhost:8080/solar/
 public class QnAForm {
 
-    @FindBy(css = "input[id='dateRange.from']")
-    public WebElement fromDate;
+    @FindBy(how=How.CSS, using="input[id='dateRange.from']")
+    private SelenideElement fromDate;
 
     @FindBy(css = "input[id='dateRange.to']")
-    public WebElement toDate;
+    private SelenideElement toDate;
 
     @FindBy(css = "#bill-button")
-    public WebElement answerButton;
+    private SelenideElement answerButton;
 
-    public QnAForm(WebDriver driver) {
-        PageFactory.initElements(driver, this);
+    public void setFromDate(LocalDate fromDate) {
+        this.fromDate.setValue(withDate(fromDate));
     }
+
+    public void setToDate(LocalDate fromDate) {
+        this.toDate.setValue(withDate(fromDate));
+    }
+
+    public void clearInputs() {
+        this.fromDate.clear();
+        this.toDate.clear();
+    }
+
+    public void requestAnswer() {
+        answerButton.click();
+    }
+
 }

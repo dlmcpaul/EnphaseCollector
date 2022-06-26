@@ -64,7 +64,7 @@ class FirstTabEdgeBrowserTests {
 
 	@AfterAll
 	static void shutdown() {
-		closeWebDriver();
+		closeWindow();
 	}
 
 }

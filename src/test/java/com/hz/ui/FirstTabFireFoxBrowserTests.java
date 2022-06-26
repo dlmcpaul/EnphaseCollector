@@ -64,7 +64,7 @@ class FirstTabFireFoxBrowserTests {
 
 	@AfterAll
 	static void shutdown() {
-		closeWebDriver();
+		closeWindow();
 	}
 
 }
