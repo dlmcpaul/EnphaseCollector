@@ -15,11 +15,11 @@
                 <span class="icon is-small is-left">
                     <i class="fas fa-calendar" aria-hidden="true"></i>
                 </span>
-                <span th:if="${#fields.hasErrors(field)}" class="icon is-small is-right has-text-danger">
+                <span th:if="${#fields.hasErrors(field)}" th:id="${field} + '-icon-danger'" class="icon is-small is-right has-text-danger">
                     <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
                 </span>
             </p>
-            <p th:each="err : ${#fields.errors(field)}" th:text="${err}" class="help is-danger has-text-centered"></p>
+            <p th:each="err : ${#fields.errors(field)}" th:id="${field} + '-error-message'" th:text="${err}" class="help is-danger has-text-centered"></p>
         </div>
     </div>
 </div>
