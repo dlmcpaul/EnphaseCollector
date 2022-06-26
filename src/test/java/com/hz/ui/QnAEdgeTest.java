@@ -50,6 +50,7 @@ class QnAEdgeTest {
 		String todayPlusOneString = String.format(Locale.US, "%02d", todayPlusOne.getDayOfMonth()) + String.format(Locale.US, "%02d", todayPlusOne.getMonthValue()) + todayPlusOne.getYear();
 
 		log.info("Validating from Date can be set to tomorrow {} with keys {}", todayPlusOne, todayPlusOneString);
+		qnaForm.fromDate.clear();
 		qnaForm.fromDate.sendKeys(todayPlusOneString + Keys.TAB);
 
 		$("input[id='dateRange.from']").shouldHave(value(todayPlusOne.toString()));
