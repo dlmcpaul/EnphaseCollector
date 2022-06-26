@@ -45,7 +45,7 @@ public class Calculators {
 	}
 
 	public static LocalDate calculateStartDateFromDuration(LocalDate base, ChronoUnit unit, String duration) {
-		// We want SUN to SAT as a WEEK
+		// We want SUN to SAT as a WEEK instead of MON to SUN
 		if (unit.compareTo(ChronoUnit.WEEKS) == 0 && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
 			base = base.minusDays(base.getDayOfWeek().getValue());
 		}
@@ -62,7 +62,7 @@ public class Calculators {
 	}
 
 	public static LocalDate calculateEndDateFromDuration(LocalDate base, ChronoUnit unit) {
-		// We want SUN to SAT as a WEEK
+		// We want SUN to SAT as a WEEK instead of MON to SUN
 		if (unit.compareTo(ChronoUnit.WEEKS) == 0 && base.getDayOfWeek().equals(DayOfWeek.SUNDAY) == false) {
 			base = base.minusDays(base.getDayOfWeek().getValue());
 		}
