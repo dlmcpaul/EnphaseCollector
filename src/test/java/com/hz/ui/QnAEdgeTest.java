@@ -6,7 +6,9 @@ import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -17,6 +19,10 @@ import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
+
+/*
+This test only works in a timezone with ddmmyyyy formatted dates
+ */
 
 @Log4j2
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,13 +42,19 @@ class QnAEdgeTest {
 		qnaForm = new QnAForm(Selenide.webdriver().object());
 	}
 
+	@BeforeEach
+	void reset() {
+		qnaForm.fromDate.clear();
+		qnaForm.toDate.clear();
+	}
+
 	@Test
 	void testErrorIfFromDateInFuture() {
 		LocalDate todayPlusOne = LocalDate.now().plusDays(1);
 		String todayPlusOneString = String.format(Locale.US, "%02d", todayPlusOne.getDayOfMonth()) + String.format(Locale.US, "%02d", todayPlusOne.getMonthValue()) + todayPlusOne.getYear();
 
 		log.info("Validating from Date can be set to tomorrow {} with keys {}", todayPlusOne, todayPlusOneString);
-		qnaForm.fromDate.sendKeys(todayPlusOneString);
+		qnaForm.fromDate.sendKeys(todayPlusOneString + Keys.TAB);
 
 		$("input[id='dateRange.from']").shouldHave(value(todayPlusOne.toString()));
 
