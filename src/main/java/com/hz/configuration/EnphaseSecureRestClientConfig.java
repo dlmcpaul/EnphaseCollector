@@ -10,6 +10,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
+import static com.hz.configuration.EnphaseURLS.INVERTERS;
 import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 
 /**
@@ -29,8 +31,6 @@ import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 @Log4j2
 public class EnphaseSecureRestClientConfig {
 
-    // Needs Digest authentication
-	public static final String INVERTERS = "/api/v1/production/inverters";
 	private static final String REALM = "enphaseenergy.com";
 
     private final EnphaseCollectorProperties config;
@@ -42,7 +42,7 @@ public class EnphaseSecureRestClientConfig {
 
 	private CredentialsProvider provider() {
 		if (envoyInfo.isV7orAbove()) {
-			log.info("No Security Provider available for Envoy with this software version {}", envoyInfo.getSoftwareVersion());
+			log.info("Please set envoy.bearer.token with software version {}", envoyInfo.getSoftwareVersion());
 		} else {
 			log.info("Preparing Realm Authentication Provider with user {}", config.getController().getUser());
 		}
@@ -55,6 +55,7 @@ public class EnphaseSecureRestClientConfig {
 	}
 
     @Bean
+    @ConditionalOnProperty(name="envoy.bearer.token", matchIfMissing = true)
     public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
 
 	    log.info("Reading from protected Envoy controller endpoint {}{}", config.getController().getUrl(), INVERTERS);

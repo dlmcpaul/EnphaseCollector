@@ -1,6 +1,10 @@
 package com.hz.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hz.models.envoy.xml.EnvoyInfo;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -8,14 +12,29 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 @TestConfiguration
 @Profile("testing")
+@Log4j2
 public class TestEnphaseSystemInfoConfig {
+
 	@Bean
-	public EnvoyInfo envoyInfo() {
-		return new EnvoyInfo("unknown","unknown");
+	public String mockEnvoyInfo() {
+		return "";
+	}
+
+	@Bean
+	public EnvoyInfo envoyInfo(String mockEnvoyInfo) {
+		log.info("Creating Mocked EnvoyInfo");
+		try {
+			ObjectMapper xmlMapper = new XmlMapper();
+			xmlMapper.registerModule(new JaxbAnnotationModule());
+			return xmlMapper.readValue(mockEnvoyInfo, EnvoyInfo.class);
+		} catch (IOException e) {
+			return new EnvoyInfo(e.getMessage(),e.getMessage());
+		}
 	}
 
 	@Bean

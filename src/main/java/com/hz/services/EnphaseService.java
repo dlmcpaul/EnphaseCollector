@@ -1,7 +1,6 @@
 package com.hz.services;
 
-import com.hz.configuration.EnphaseRestClientConfig;
-import com.hz.configuration.EnphaseSecureRestClientConfig;
+import com.hz.configuration.EnphaseURLS;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.*;
@@ -68,7 +67,7 @@ public class EnphaseService {
 
 	public Optional<System> collectEnphaseData() {
     	try {
-		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseRestClientConfig.SYSTEM, System.class);
+		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseURLS.SYSTEM, System.class);
 			this.lastStatus = systemResponse.getStatusCodeValue();
 
 		    if (systemResponse.getStatusCodeValue() == 200) {
@@ -189,7 +188,7 @@ public class EnphaseService {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
 		    ResponseEntity<List<Inventory>> inventoryResponse =
-				    enphaseRestTemplate.exchange(EnphaseRestClientConfig.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+				    enphaseRestTemplate.exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
 	        this.lastStatus = inventoryResponse.getStatusCodeValue();
 
 		    if (inventoryResponse.getStatusCodeValue() == 200) {
@@ -204,7 +203,7 @@ public class EnphaseService {
     }
 
 	private void getProductionData(System system) {
-		system.setProduction( enphaseRestTemplate.getForObject(EnphaseRestClientConfig.PRODUCTION, Production.class) );
+		system.setProduction( enphaseRestTemplate.getForObject(EnphaseURLS.PRODUCTION, Production.class) );
 	}
 
 	private void getDeviceMeters(System system) {
@@ -215,7 +214,7 @@ public class EnphaseService {
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
-				    enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
+				    enphaseSecureRestTemplate.exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
 				    });
 		    this.lastStatus = deviceMeterResponse.getStatusCodeValue();
 
@@ -238,7 +237,7 @@ public class EnphaseService {
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
-					enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
+					enphaseSecureRestTemplate.exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 			this.lastStatus = powerMeterResponse.getStatusCodeValue();
 
 			if (powerMeterResponse.getStatusCodeValue() == 200) {
@@ -255,7 +254,7 @@ public class EnphaseService {
 	private void getIndividualPanelData(System system) {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
-			    enphaseSecureRestTemplate.exchange(EnphaseSecureRestClientConfig.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
+			    enphaseSecureRestTemplate.exchange(EnphaseURLS.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
 		this.lastStatus = inverterResponse.getStatusCodeValue();
 
 	    if (inverterResponse.getStatusCodeValue() == 200) {
@@ -267,7 +266,7 @@ public class EnphaseService {
 
     private void getWirelessInfo(System system) {
 		ResponseEntity<Wireless> wirelessResponse =
-				enphaseSecureRestTemplate.exchange(EnphaseRestClientConfig.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
+				enphaseSecureRestTemplate.exchange(EnphaseURLS.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
 		this.lastStatus = wirelessResponse.getStatusCodeValue();
 
 		if (wirelessResponse.getStatusCodeValue() == 200) {

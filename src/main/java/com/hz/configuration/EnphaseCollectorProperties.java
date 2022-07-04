@@ -27,6 +27,7 @@ public class EnphaseCollectorProperties {
     private double dailySupplyCharge;
     private int exportLimit = 0;
     private final List<Bands> bands = new ArrayList<>();
+    private final String bearerToken = "";
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveRateDate;

@@ -19,6 +19,8 @@ public class EnvoyInfo {
 	public List<EnvoyPackage> packages;
 	@XmlElement(name="build_info", nillable = true)
 	public BuildInfo buildInfo;
+	@XmlElement(name="web-tokens")
+	public boolean webTokens;
 
 	// Only needed for test bean
 	public EnvoyInfo(String softwareVersion, String serialNumber) {
