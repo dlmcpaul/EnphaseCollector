@@ -22,7 +22,7 @@ Can be run as a java application or using the docker image
 |---------------------------------------------------------------------------------|-------------------------|
 | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> |<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">|
 
-If using the jar file you will need a Java 11 that you can get from https://adoptopenjdk.net/
+If using the jar file you will need a Java 17 that you can get from https://adoptopenjdk.net/
 
 Example #1 with default internal website (assuming jar is named enphasecollector-DEV.jar)
 ```
@@ -150,7 +150,7 @@ dlmcpaul/enphasecollector
 While I make every effort to make this application secure I cannot make any guarantees.  The application should be hosted behind a firewall and only exposed through a reverse proxy which includes an authentication mechanism and utilises https.
 
 ## Dependencies
-- Docker (or Java 11)
+- Docker (or Java 17)
 
 - If profile set to influxdb then an 
 Influx DB is needed for storage of the statistics (Will autocreate 2 databases called 'solardb' and 'collectorStats')
@@ -160,3 +160,4 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 - You can set both profiles separated by a comma eg influxdb,pvoutput
 
 - The internal database is always populated so the local view is always available at /solar
+- Stats can be pulled to Prometheus by using the Actuator endpoint configured at /solar/actuator/prometheus  
