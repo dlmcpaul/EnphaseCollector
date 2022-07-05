@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ class EnphaseServiceRest_ThreePhase_Test {
 					.setConnectTimeout(Duration.ofSeconds(5))
 					.setReadTimeout(Duration.ofSeconds(30))
 					.build();
-			result.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+			result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 			return result;
 		}
 
@@ -57,7 +56,7 @@ class EnphaseServiceRest_ThreePhase_Test {
 					.setConnectTimeout(Duration.ofSeconds(5))
 					.setReadTimeout(Duration.ofSeconds(30))
 					.build();
-			result.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+			result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 			return result;
 		}
 	}

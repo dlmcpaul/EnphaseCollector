@@ -1,5 +1,6 @@
 package com.hz.configuration;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -52,6 +53,8 @@ public class EnphaseSystemInfoConfig {
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
 			xmlMapper.registerModule(new JaxbAnnotationModule());
+			xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 			String infoXml = infoRestTemplate(restTemplateBuilder).getForObject(EnphaseURLS.CONTROLLER, String.class);
 			if (infoXml != null) {
 				return xmlMapper.readValue(infoXml, EnvoyInfo.class);

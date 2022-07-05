@@ -20,4 +20,8 @@ public class EnvoyDevice {
 	public String apiver;
 	@XmlElement
 	public String imeter;
+	@XmlElement
+	public String version;
+	@XmlElement
+	public String build;
 }
