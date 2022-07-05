@@ -38,5 +38,6 @@ public class EnphaseServiceRest_7_3_75_Test {
 		Assertions.assertEquals("D7.3.75", this.envoyInfo.getSoftwareVersion());
 		Assertions.assertEquals("############", this.envoyInfo.getSerialNumber());
 		Assertions.assertEquals(true, this.envoyInfo.webTokens);
+		Assertions.assertEquals(true, this.envoyInfo.isV7orAbove());
 	}
 }

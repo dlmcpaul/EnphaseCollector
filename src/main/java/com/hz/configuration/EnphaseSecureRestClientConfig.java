@@ -41,7 +41,7 @@ public class EnphaseSecureRestClientConfig {
 	}
 
 	private CredentialsProvider provider() {
-		if (envoyInfo.isV7orAbove()) {
+		if (envoyInfo.webTokens) {
 			log.info("Please set envoy.bearer.token with software version {}", envoyInfo.getSoftwareVersion());
 		} else {
 			log.info("Preparing Realm Authentication Provider with user {}", config.getController().getUser());

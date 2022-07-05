@@ -91,6 +91,8 @@ class EnphaseServiceRest_4_10_35_Test {
 		Assertions.assertTrue(this.enphaseService.isOk());
 		Assertions.assertTrue(system.get().getWireless().isSupported());
 		Assertions.assertEquals("connected", system.get().getWireless().getCurrentNetwork().getStatus());
+		Assertions.assertEquals(false, this.envoyInfo.isV7orAbove());
+		Assertions.assertEquals(false, this.envoyInfo.webTokens);
 
 		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
 
