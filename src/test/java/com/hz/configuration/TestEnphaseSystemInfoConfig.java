@@ -23,7 +23,7 @@ public class TestEnphaseSystemInfoConfig {
 
 	@Bean
 	public String mockEnvoyInfo() {
-		return "";
+		return "<?xml version='1.0' encoding='UTF-8'?><envoy_info><device><sn>Unknown</sn><software>Unknown</software></device></envoy_info>";
 	}
 
 	@Bean
