@@ -2,7 +2,7 @@ FROM azul/zulu-openjdk-alpine:17 as builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ARG VERSION
-RUN wget -P / -O app.jar https://github.com/dlmcpaul/EnphaseCollector/releases/download/0.25/enphasecollector-${VERSION}.jar
+RUN wget -P / -O app.jar https://github.com/dlmcpaul/EnphaseCollector/releases/download/${VERSION}/enphasecollector-${VERSION}.jar
 
 # Generate a JDK class data share
 RUN "$JAVA_HOME/bin/java" -Xshare:dump
