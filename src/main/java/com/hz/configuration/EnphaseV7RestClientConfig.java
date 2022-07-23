@@ -10,9 +10,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.List;
 
@@ -40,16 +45,20 @@ public class EnphaseV7RestClientConfig {
 
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
+		try {
+			SSLContextBuilder sslContext = new SSLContextBuilder();
+			sslContext.loadTrustMaterial(null, new TrustAllStrategy());
+
 		HttpClient httpClient = HttpClients
 			.custom()
 			.useSystemProperties()
 			.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
 			.setDefaultHeaders(List.of(header))
+			.setSSLContext(sslContext.build())
 			.setSSLHostnameVerifier(new NoopHostnameVerifier())
 			.setDefaultCookieStore(cookieStore)
 			.build();
 
-		try {
 			// Make a call to the /auth/check_jwt endpoint to set the cookie
 			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
 			if (response.getStatusLine().getStatusCode() != 200) {
@@ -64,7 +73,7 @@ public class EnphaseV7RestClientConfig {
 					.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 					.build();
 
-		} catch (IOException e) {
+		} catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
 			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
