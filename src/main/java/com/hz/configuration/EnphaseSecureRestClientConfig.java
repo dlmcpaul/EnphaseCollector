@@ -55,7 +55,7 @@ public class EnphaseSecureRestClientConfig {
 	}
 
     @Bean
-    @ConditionalOnProperty(name="envoy.bearer.token", matchIfMissing = true)
+    @ConditionalOnProperty(name="envoy.bearer-token", havingValue="false", matchIfMissing = true)
     public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
 
 	    log.info("Reading from protected Envoy controller endpoint {}{}", config.getController().getUrl(), INVERTERS);

@@ -32,7 +32,7 @@ public class EnphaseRestClientConfig {
     private final EnphaseCollectorProperties config;
 
 	@Bean
-	@ConditionalOnProperty(name="envoy.bearer.token", matchIfMissing = true)
+	@ConditionalOnProperty(name="envoy.bearer-token", havingValue="false", matchIfMissing = true)
 	public RestTemplate enphaseRestTemplate(RestTemplateBuilder builder) {
 		log.info("Reading from insecure Envoy controller endpoint {}{}", config.getController().getUrl(), SYSTEM);
 

@@ -25,9 +25,9 @@ public class EnphaseCollectorProperties {
     private double paymentPerKiloWatt;
     private double chargePerKiloWatt;
     private double dailySupplyCharge;
+    private String bearerToken;
     private int exportLimit = 0;
     private final List<Bands> bands = new ArrayList<>();
-    private final String bearerToken = "";
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveRateDate;

@@ -1,15 +1,16 @@
 package com.hz.configuration;
 
 import com.hz.components.EnphaseRequestRetryHandler;
+import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,54 +33,57 @@ import static com.hz.configuration.EnphaseURLS.*;
 public class EnphaseV7RestClientConfig {
 
 	private final EnphaseCollectorProperties config;
+	private final EnvoyInfo envoyInfo;
 
 	private RestTemplate createTemplate(RestTemplateBuilder builder) {
 		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, config.getBearerToken());
 
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
-		CloseableHttpClient httpClient = HttpClients
-				.custom()
-				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
-				.setDefaultHeaders(List.of(header))
-				.setSSLHostnameVerifier(new NoopHostnameVerifier())
-				.setDefaultCookieStore(cookieStore)
-				.build();
+		HttpClient httpClient = HttpClients
+			.custom()
+			.useSystemProperties()
+			.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+			.setDefaultHeaders(List.of(header))
+			.setSSLHostnameVerifier(new NoopHostnameVerifier())
+			.setDefaultCookieStore(cookieStore)
+			.build();
 
-		// Make a call to the /auth/check_jwt endpoint to set the cookie
 		try {
-			log.info("Attempting to validate bearer token {} with local envoy", config.getBearerToken());
-			CloseableHttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
+			// Make a call to the /auth/check_jwt endpoint to set the cookie
+			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
 			if (response.getStatusLine().getStatusCode() != 200) {
-				log.error("Attempt to validate V7 bearer token failed - {}", response.getStatusLine());
+				log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getStatusLine());
 			}
-			log.info("Cookie Store now has {} cookies", cookieStore.getCookies().size());
+			log.info("Cookie Store now has {} cookies after result {}", cookieStore.getCookies().size(), response.getStatusLine());
+
+			return builder
+					.rootUri(config.getController().getUrl())
+					.setConnectTimeout(Duration.ofSeconds(5))
+					.setReadTimeout(Duration.ofSeconds(30))
+					.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
+					.build();
+
 		} catch (IOException e) {
-			log.error("Could not connect to envoy when configuring http client - {}", e.getMessage(), e);
+			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
-
-		return builder
-				.rootUri(config.getController().getUrl())
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(30))
-				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
-				.build();
 	}
 
 	@Bean
-	@ConditionalOnProperty(name="envoy.bearer.token")
+	@ConditionalOnProperty(name="envoy.bearer-token")
 	public RestTemplate enphaseRestTemplate(RestTemplateBuilder builder) {
-		log.info("Reading from insecure V7 Envoy controller endpoint {}{}", config.getController().getUrl(), SYSTEM);
+		log.info("Running against Envoy Software {}", envoyInfo.getSoftwareVersion());
+
+		log.info("Configuring insecure RestTemplate for V7 Envoy controller endpoint {}{}", config.getController().getUrl(), SYSTEM);
 
 		return createTemplate(builder);
 	}
 
 	@Bean
-	@ConditionalOnProperty(name="envoy.bearer.token")
+	@ConditionalOnProperty(name="envoy.bearer-token")
 	public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder builder) {
-		log.info("Reading from protected V7 Envoy controller endpoint {}{}", config.getController().getUrl(), INVERTERS);
+		log.info("Configuring protected RestTemplate for V7 Envoy controller endpoint {}{}", config.getController().getUrl(), INVERTERS);
 
 		return createTemplate(builder);
 	}

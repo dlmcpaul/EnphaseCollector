@@ -11,6 +11,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,7 @@ public class EnphaseInstallerRestClientConfig {
 	}
 
     @Bean
+    @ConditionalOnProperty(name="envoy.bearer-token", havingValue="false", matchIfMissing = true)
     public RestTemplate enphaseInstallerRestTemplate(RestTemplateBuilder builder) {
 
 	    log.info("Reading from installer Envoy controller endpoint {}{}", config.getController().getUrl(), METER_STREAM);
