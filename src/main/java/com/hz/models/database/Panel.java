@@ -30,6 +30,10 @@ public class Panel {
 		this.value = value;
 	}
 
+	public float bucket() {
+		return value <= 0f ? 0F : ((int) (value / 51) + 1) * 50f;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
