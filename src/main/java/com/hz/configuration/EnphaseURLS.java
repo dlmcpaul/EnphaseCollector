@@ -15,7 +15,7 @@ public class EnphaseURLS {
 	public static final String INVERTERS = "/api/v1/production/inverters";
 
 	// Needed for V7?
-	public static final String AUTHCHECK = "auth/check_jwt";
+	public static final String AUTH_CHECK = "/auth/check_jwt";
 
 	private EnphaseURLS() {}
 }
