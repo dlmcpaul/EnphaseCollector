@@ -41,37 +41,34 @@ public class EnphaseV7RestClientConfig {
 	private final EnvoyInfo envoyInfo;
 
 	private RestTemplate createTemplate(RestTemplateBuilder builder) {
-		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, config.getBearerToken());
+		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + config.getBearerToken());
 
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
 		try {
-			SSLContextBuilder sslContext = new SSLContextBuilder();
-			sslContext.loadTrustMaterial(null, new TrustAllStrategy());
+			HttpClient httpClient = HttpClients
+				.custom()
+				.useSystemProperties()
+				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+				.setDefaultHeaders(List.of(header))
+				.setSSLContext(new SSLContextBuilder().loadTrustMaterial(new TrustAllStrategy()).build())
+				.setSSLHostnameVerifier(new NoopHostnameVerifier())
+				.setDefaultCookieStore(cookieStore)
+				.build();
 
-		HttpClient httpClient = HttpClients
-			.custom()
-			.useSystemProperties()
-			.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
-			.setDefaultHeaders(List.of(header))
-			.setSSLContext(sslContext.build())
-			.setSSLHostnameVerifier(new NoopHostnameVerifier())
-			.setDefaultCookieStore(cookieStore)
-			.build();
-
-			// Make a call to the /auth/check_jwt endpoint to set the cookie
-			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
-			if (response.getStatusLine().getStatusCode() != 200) {
-				log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getStatusLine());
-			}
-			log.info("Cookie Store now has {} cookies after result {}", cookieStore.getCookies().size(), response.getStatusLine());
+				// Make a call to the /auth/check_jwt endpoint to set the cookie
+				HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
+				if (response.getStatusLine().getStatusCode() != 200) {
+					log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getStatusLine());
+				}
+				log.info("Cookie Store now has {} cookies after result {}", cookieStore.getCookies().size(), response.getStatusLine());
 
 			return builder
-					.rootUri(config.getController().getUrl())
-					.setConnectTimeout(Duration.ofSeconds(5))
-					.setReadTimeout(Duration.ofSeconds(30))
-					.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
-					.build();
+				.rootUri(config.getController().getUrl())
+				.setConnectTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(30))
+				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
+				.build();
 
 		} catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
 			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
