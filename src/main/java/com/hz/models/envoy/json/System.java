@@ -20,7 +20,7 @@ public class System {
     @JsonProperty(value="db_size")
     private String databaseSize;
     @JsonProperty(value="db_percent_full")
-    private int databasePercFull;
+    private float databasePercFull;
     private String timezone;
     @JsonProperty(value="current_date")
     private String currentDate;
