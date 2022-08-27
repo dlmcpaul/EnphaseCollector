@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Import(TestEnphaseSystemInfoConfig.class)
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D7.3.75")
 @Log4j2
-public class EnphaseServiceRest_7_3_75_Test {
+class EnphaseServiceRest_7_3_75_Test {
 
 	@TestConfiguration
 	static class EnphaseServiceTestContextConfiguration {
@@ -37,7 +37,7 @@ public class EnphaseServiceRest_7_3_75_Test {
 	void IdentifyVersion() {
 		Assertions.assertEquals("D7.3.75", this.envoyInfo.getSoftwareVersion());
 		Assertions.assertEquals("############", this.envoyInfo.getSerialNumber());
-		Assertions.assertEquals(true, this.envoyInfo.webTokens);
-		Assertions.assertEquals(true, this.envoyInfo.isV7orAbove());
+		Assertions.assertTrue(this.envoyInfo.webTokens);
+		Assertions.assertTrue(this.envoyInfo.isV7orAbove());
 	}
 }
