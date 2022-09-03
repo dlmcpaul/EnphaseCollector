@@ -50,6 +50,16 @@ public class InfluxDBConfig {
 			}
 
 			@Override
+			public String userName() {
+				return config.getInfluxdbResource().getUser();
+			}
+
+			@Override
+			public String password() {
+				return config.getInfluxdbResource().getPassword();
+			}
+
+			@Override
 			public String get(String k) {
 				return null; // accept the rest of the defaults
 			}
@@ -63,7 +73,7 @@ public class InfluxDBConfig {
 	public InfluxDB destinationInfluxDB() {
 		log.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
 
-		InfluxDB database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
+		InfluxDB database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
 		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
 
 		database.setDatabase(DATABASE_NAME);

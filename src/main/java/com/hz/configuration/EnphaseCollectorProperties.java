@@ -25,14 +25,18 @@ public class EnphaseCollectorProperties {
     private double paymentPerKiloWatt;
     private double chargePerKiloWatt;
     private double dailySupplyCharge;
-    private String bearerToken;
+    private String bearerToken;     // V7 user authentication configuration
     private int exportLimit = 0;
     private final List<Bands> bands = new ArrayList<>();
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveRateDate;
-    private HTTPResource influxdbResource;
+    private ProtectedHTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
+
+    // V7 Autofetch configuration
+    private String enphaseUser;
+    private String enphasePassword;
 
     public int getRefreshSeconds() {
         // Try to handle passing refreshSeconds as named instead of as microseconds
