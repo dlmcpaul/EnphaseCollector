@@ -24,7 +24,7 @@ import java.util.List;
 @Profile("!testing")
 public class OutputManager {
 	private final ApplicationEventPublisher applicationEventPublisher;
-	private final EnphaseService enphaseImportService;
+	private final EnvoyService enphaseImportService;
 	private final EnvoyInfo envoyInfo;
 	private final EnphaseCollectorProperties properties;
 

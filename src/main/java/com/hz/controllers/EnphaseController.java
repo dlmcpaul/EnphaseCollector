@@ -7,7 +7,7 @@ import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
-import com.hz.services.EnphaseService;
+import com.hz.services.EnvoyService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
@@ -40,7 +40,7 @@ public class EnphaseController {
 	private static final String DOLLAR_SIGN = "fas fa-dollar-sign";
 	private static final String SOLAR_SIGN = "fas fa-sun";
 
-	private final EnphaseService enphaseService;
+	private final EnvoyService envoyService;
 	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
 	private final EnvoyInfo envoyInfo;
@@ -56,6 +56,7 @@ public class EnphaseController {
 			BigDecimal payment = localDBService.calculatePaymentForToday();
 			BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
 
+			statusList.add(new Status("fas fa-key","Authentication expires", "Never"));
 			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
 
@@ -71,10 +72,10 @@ public class EnphaseController {
 			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
 			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kWh"));
 			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
-			if (enphaseService.isOk()) {
-				statusList.add(new Status("fas fa-rss", "Enphase data collected at", enphaseService.getLastReadTime().format(timeFormatter)));
+			if (envoyService.isOk()) {
+				statusList.add(new Status("fas fa-rss", "Enphase data collected at", envoyService.getLastReadTime().format(timeFormatter)));
 			} else {
-				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", enphaseService.getLastReadTime().format(timeFormatter)));
+				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", envoyService.getLastReadTime().format(timeFormatter)));
 			}
 
 			PanelProduction panelProduction = localDBService.getMaxPanelProduction();

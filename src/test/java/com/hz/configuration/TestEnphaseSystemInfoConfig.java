@@ -1,10 +1,13 @@
 package com.hz.configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.hz.models.envoy.AuthorisationToken;
 import com.hz.models.envoy.xml.EnvoyInfo;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -19,7 +22,10 @@ import java.util.List;
 @TestConfiguration
 @Profile("testing")
 @Log4j2
+@RequiredArgsConstructor
 public class TestEnphaseSystemInfoConfig {
+
+	private final EnphaseCollectorProperties config;
 
 	@Bean
 	public String mockEnvoyInfo() {
@@ -38,6 +44,19 @@ public class TestEnphaseSystemInfoConfig {
 		} catch (IOException e) {
 			return new EnvoyInfo(e.getMessage(),e.getMessage());
 		}
+	}
+
+	@Bean
+	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
+		if (envoyInfo.isV7orAbove()) {
+			if (config.getBearerToken() == null || config.getBearerToken().isEmpty()) {
+				return AuthorisationToken.makeV7TokenFetched(config.getEnphaseUser(), config.getEnphasePassword(), envoyInfo.getSerialNumber());
+			}
+
+			return AuthorisationToken.makeV7TokenProvided(config.getBearerToken());
+		}
+
+		return AuthorisationToken.makeV5(envoyInfo, config.getController().getPassword());
 	}
 
 	@Bean

@@ -11,8 +11,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,16 +27,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class EnphaseService {
+public class EnvoyService {
+	private final EnvoyConnectionProxy envoyConnectionProxy;
 
 	private long lastReadTime = 0L;
 	private int lastStatus = 200;
 	private int fullReadCount = 0;
 
 	private List<Inventory> inventoryList = null;
-
-    private final RestTemplate enphaseRestTemplate;
-    private final RestTemplate enphaseSecureRestTemplate;
 
     // Table of my serial numbers to map to simpler values
 	private final List<String> mySerialNumbers = Arrays.asList(
@@ -67,7 +65,7 @@ public class EnphaseService {
 
 	public Optional<System> collectEnphaseData() {
     	try {
-		    ResponseEntity<System> systemResponse = enphaseRestTemplate.getForEntity(EnphaseURLS.SYSTEM, System.class);
+		    ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
 			this.lastStatus = systemResponse.getStatusCodeValue();
 
 		    if (systemResponse.getStatusCodeValue() == 200) {
@@ -98,7 +96,7 @@ public class EnphaseService {
 		    } else {
 			    log.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
 		    }
-	    } catch (RestClientException e) {
+	    } catch (RestClientException | IOException e) {
 		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
 	    }
 		return Optional.empty();
@@ -188,7 +186,7 @@ public class EnphaseService {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
 		    ResponseEntity<List<Inventory>> inventoryResponse =
-				    enphaseRestTemplate.exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+				    envoyConnectionProxy.getDefaultTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
 	        this.lastStatus = inventoryResponse.getStatusCodeValue();
 
 		    if (inventoryResponse.getStatusCodeValue() == 200) {
@@ -203,7 +201,7 @@ public class EnphaseService {
     }
 
 	private void getProductionData(System system) {
-		system.setProduction( enphaseRestTemplate.getForObject(EnphaseURLS.PRODUCTION, Production.class) );
+		system.setProduction( envoyConnectionProxy.getDefaultTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class) );
 	}
 
 	private void getDeviceMeters(System system) {
@@ -214,7 +212,7 @@ public class EnphaseService {
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
-				    enphaseSecureRestTemplate.exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
+				    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
 				    });
 		    this.lastStatus = deviceMeterResponse.getStatusCodeValue();
 
@@ -225,6 +223,9 @@ public class EnphaseService {
 		    }
 	    } catch (RestClientException e) {
     		log.warn("Reading Device Meters failed {}", e.getMessage());
+		    system.getProduction().setDeviceMeterList(new ArrayList<>());
+	    } catch (IOException e) {
+		    log.error("Reading Device Meters failed {}", e.getMessage());
 		    system.getProduction().setDeviceMeterList(new ArrayList<>());
 	    }
 
@@ -237,7 +238,7 @@ public class EnphaseService {
 		    HttpEntity<String> entity = new HttpEntity<>(headers);
 
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
-					enphaseSecureRestTemplate.exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
+					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 			this.lastStatus = powerMeterResponse.getStatusCodeValue();
 
 			if (powerMeterResponse.getStatusCodeValue() == 200) {
@@ -245,16 +246,16 @@ public class EnphaseService {
 			} else {
 				log.error("Reading Power Meters failed {}", powerMeterResponse.getStatusCode());
 			}
-		} catch (RestClientException e) {
+		} catch (RestClientException | IOException e) {
 			log.warn("Reading Power Meters failed {}", e.getMessage());
 		    system.getProduction().setPowerMeterList(new ArrayList<>());
 		}
 	}
 
-	private void getIndividualPanelData(System system) {
+	private void getIndividualPanelData(System system) throws IOException {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
-			    enphaseSecureRestTemplate.exchange(EnphaseURLS.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
+			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
 		this.lastStatus = inverterResponse.getStatusCodeValue();
 
 	    if (inverterResponse.getStatusCodeValue() == 200) {
@@ -264,9 +265,9 @@ public class EnphaseService {
 	    }
     }
 
-    private void getWirelessInfo(System system) {
+    private void getWirelessInfo(System system) throws IOException {
 		ResponseEntity<Wireless> wirelessResponse =
-				enphaseSecureRestTemplate.exchange(EnphaseURLS.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
+				envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
 		this.lastStatus = wirelessResponse.getStatusCodeValue();
 
 		if (wirelessResponse.getStatusCodeValue() == 200) {

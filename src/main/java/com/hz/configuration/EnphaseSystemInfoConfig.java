@@ -1,26 +1,32 @@
 package com.hz.configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.hz.components.EnphaseRequestRetryHandler;
+import com.hz.models.envoy.AuthorisationToken;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
 
 @Configuration
 @RequiredArgsConstructor
@@ -65,4 +71,29 @@ public class EnphaseSystemInfoConfig {
 
 		return new EnvoyInfo("Unknown", "Unknown");
 	}
+
+	@Bean
+	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
+		if (envoyInfo.isV7orAbove()) {
+			if (config.getBearerToken() == null || config.getBearerToken().isEmpty()) {
+				return AuthorisationToken.makeV7TokenFetched(config.getEnphaseUser(), config.getEnphasePassword(), envoyInfo.getSerialNumber());
+			}
+
+			return AuthorisationToken.makeV7TokenProvided(config.getBearerToken());
+		}
+
+		return AuthorisationToken.makeV5(envoyInfo, config.getController().getPassword());
+	}
+
+	/**
+	 * Needed for /ivp/meters and /ivp/meters/readings
+	 * @return customer converter to handle json as application octet stream
+	 */
+	@Bean
+	public HttpMessageConverters customConverters() {
+		MappingJackson2HttpMessageConverter octetStreamConverter = new MappingJackson2HttpMessageConverter();
+		octetStreamConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+		return new HttpMessageConverters(octetStreamConverter);
+	}
+
 }

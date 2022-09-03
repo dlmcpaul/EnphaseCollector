@@ -4,13 +4,18 @@ import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
-import com.hz.services.EnphaseService;
+import com.hz.services.EnvoyConnectionProxy;
+import com.hz.services.EnvoyService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +26,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
@@ -31,6 +37,7 @@ import java.util.Optional;
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
 @Log4j2
+@ExtendWith(MockitoExtension.class)
 class EnphaseServiceRest_4_2_27_Test {
 
 	@TestConfiguration
@@ -69,16 +76,29 @@ class EnphaseServiceRest_4_2_27_Test {
 			result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 			return result;
 		}
+
 	}
 
+	@MockBean
+	private EnvoyConnectionProxy envoyConnectionProxy;
+
 	@Autowired
-	private EnphaseService enphaseService;
+	private EnvoyService enphaseService;
 
 	@Autowired
 	private EnvoyInfo envoyInfo;
 
+	@Autowired
+	private RestTemplate enphaseRestTemplate;
+
+	@Autowired
+	private RestTemplate enphaseSecureRestTemplate;
+
 	@Test
-	void enphase_4_2_27_ServiceTest() {
+	void enphase_4_2_27_ServiceTest() throws IOException {
+
+		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
+		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assertions.assertTrue(system.isPresent());

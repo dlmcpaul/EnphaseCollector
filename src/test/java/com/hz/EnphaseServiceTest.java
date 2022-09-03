@@ -3,7 +3,7 @@ package com.hz;
 import com.hz.models.envoy.json.EimType;
 import com.hz.models.envoy.json.Production;
 import com.hz.models.envoy.json.System;
-import com.hz.services.EnphaseService;
+import com.hz.services.EnvoyService;
 import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 class EnphaseServiceTest {
 
 	@Mock
-	private EnphaseService mockEnphaseService;
+	private EnvoyService mockEnphaseService;
 
 	private Optional<System> makeSystem(LocalDateTime now) {
 		Optional<System> system = Optional.of(new System());
