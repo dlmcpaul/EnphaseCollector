@@ -54,6 +54,7 @@ public class EnphaseJWTExtractor {
 		RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		HttpGet getMethod = new HttpGet("https://enlighten.enphaseenergy.com");
 		getMethod.setConfig(defaultConfig);
+		getMethod.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
 		try (CloseableHttpResponse response = httpClient.execute(getMethod)) {
 

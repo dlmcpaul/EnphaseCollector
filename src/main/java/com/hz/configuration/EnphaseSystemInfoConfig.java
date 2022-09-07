@@ -35,7 +35,6 @@ import java.util.Collections;
 public class EnphaseSystemInfoConfig {
 
 	private final EnphaseCollectorProperties config;
-	private final RestTemplateBuilder restTemplateBuilder;
 
 	private RestTemplate infoRestTemplate(RestTemplateBuilder builder) {
 
@@ -54,7 +53,7 @@ public class EnphaseSystemInfoConfig {
 	}
 
 	@Bean
-	public EnvoyInfo envoyInfo() {
+	public EnvoyInfo envoyInfo(RestTemplateBuilder restTemplateBuilder) {
 		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUrl(), EnphaseURLS.CONTROLLER);
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
