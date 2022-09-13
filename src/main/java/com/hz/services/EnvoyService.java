@@ -31,7 +31,7 @@ public class EnvoyService {
 	private final EnvoyConnectionProxy envoyConnectionProxy;
 
 	private long lastReadTime = 0L;
-	private int lastStatus = 200;
+	private boolean readSuccess = false;
 	private int fullReadCount = 0;
 
 	private List<Inventory> inventoryList = null;
@@ -56,7 +56,7 @@ public class EnvoyService {
 		    "121707050570");
 
 	public boolean isOk() {
-    	return this.lastStatus == 200;
+    	return this.readSuccess;
 	}
 
 	public LocalDateTime getLastReadTime() {
@@ -66,7 +66,6 @@ public class EnvoyService {
 	public Optional<System> collectEnphaseData() {
     	try {
 		    ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
-			this.lastStatus = systemResponse.getStatusCodeValue();
 
 		    if (systemResponse.getStatusCodeValue() == 200) {
 			    System system = systemResponse.getBody();
@@ -82,16 +81,17 @@ public class EnvoyService {
 
 				    getInventory(system);
 				    getIndividualPanelData(system);
-
 				    getDeviceMeters(system);
 				    getPowerMeters(system);
+
 				    if (system.getNetwork().isWifi()) {
 				    	getWirelessInfo(system);
 				    }
 
+				    this.readSuccess = true;
 				    return Optional.of(system);
 			    } else {
-				    log.error("Envoy Production read failed");
+				    log.error("Empty response from Envoy system read");
 			    }
 		    } else {
 			    log.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
@@ -99,6 +99,7 @@ public class EnvoyService {
 	    } catch (RestClientException | IOException e) {
 		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
 	    }
+		this.readSuccess = false;
 		return Optional.empty();
 	}
 
@@ -181,19 +182,18 @@ public class EnvoyService {
 	    return metricList;
     }
 
-    private void getInventory(System system) {
+    private void getInventory(System system) throws IOException {
 	    if (fullReadCount-- <= 0) {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
 		    ResponseEntity<List<Inventory>> inventoryResponse =
 				    envoyConnectionProxy.getDefaultTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
-	        this.lastStatus = inventoryResponse.getStatusCodeValue();
 
 		    if (inventoryResponse.getStatusCodeValue() == 200) {
 			    system.setInventoryList(inventoryResponse.getBody());
 			    inventoryList = system.getInventoryList();
 	        } else {
-		        log.error("Reading Inventory failed {}", inventoryResponse.getStatusCode());
+			    throw new IOException("Reading Inventory failed with status " + inventoryResponse.getStatusCode());
 	        }
 	    } else {
 		    system.setInventoryList(inventoryList);
@@ -204,51 +204,34 @@ public class EnvoyService {
 		system.setProduction( envoyConnectionProxy.getDefaultTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class) );
 	}
 
-	private void getDeviceMeters(System system) {
-    	try {
+	private void getDeviceMeters(System system) throws IOException {
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
+	    HttpEntity<String> entity = new HttpEntity<>(headers);
 
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
-		    HttpEntity<String> entity = new HttpEntity<>(headers);
+	    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
+			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
+			    });
 
-		    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
-				    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
-				    });
-		    this.lastStatus = deviceMeterResponse.getStatusCodeValue();
-
-		    if (deviceMeterResponse.getStatusCodeValue() == 200) {
-			    system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
-		    } else {
-			    log.error("Reading Device Meters failed {}", deviceMeterResponse.getStatusCode());
-		    }
-	    } catch (RestClientException e) {
-    		log.warn("Reading Device Meters failed {}", e.getMessage());
-		    system.getProduction().setDeviceMeterList(new ArrayList<>());
-	    } catch (IOException e) {
-		    log.error("Reading Device Meters failed {}", e.getMessage());
-		    system.getProduction().setDeviceMeterList(new ArrayList<>());
+	    if (deviceMeterResponse.getStatusCodeValue() == 200) {
+		    system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
+	    } else {
+			throw new IOException("Reading Device Meters failed with status " + deviceMeterResponse.getStatusCode());
 	    }
-
 	}
 
-	private void getPowerMeters(System system) {
-    	try {
-		    HttpHeaders headers = new HttpHeaders();
-		    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
-		    HttpEntity<String> entity = new HttpEntity<>(headers);
+	private void getPowerMeters(System system) throws IOException {
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
+	    HttpEntity<String> entity = new HttpEntity<>(headers);
 
-			ResponseEntity<List<PowerMeter>> powerMeterResponse =
-					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
-			this.lastStatus = powerMeterResponse.getStatusCodeValue();
+		ResponseEntity<List<PowerMeter>> powerMeterResponse =
+				envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 
-			if (powerMeterResponse.getStatusCodeValue() == 200) {
-				system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
-			} else {
-				log.error("Reading Power Meters failed {}", powerMeterResponse.getStatusCode());
-			}
-		} catch (RestClientException | IOException e) {
-			log.warn("Reading Power Meters failed {}", e.getMessage());
-		    system.getProduction().setPowerMeterList(new ArrayList<>());
+		if (powerMeterResponse.getStatusCodeValue() == 200) {
+			system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
+		} else {
+			throw new IOException("Reading Power Meters failed with status " + powerMeterResponse.getStatusCode());
 		}
 	}
 
@@ -256,24 +239,22 @@ public class EnvoyService {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
 			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
-		this.lastStatus = inverterResponse.getStatusCodeValue();
 
 	    if (inverterResponse.getStatusCodeValue() == 200) {
 		    system.getProduction().setInverterList(inverterResponse.getBody());
 	    } else {
-	    	log.error("Reading Inverters failed {}", inverterResponse.getStatusCode());
+		    throw new IOException("Reading Inverters failed with status " + inverterResponse.getStatusCode());
 	    }
     }
 
     private void getWirelessInfo(System system) throws IOException {
 		ResponseEntity<Wireless> wirelessResponse =
 				envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
-		this.lastStatus = wirelessResponse.getStatusCodeValue();
 
 		if (wirelessResponse.getStatusCodeValue() == 200) {
 			system.setWireless(wirelessResponse.getBody());
 		} else {
-			log.error("Reading Wireless failed {}", wirelessResponse.getStatusCode());
+			throw new IOException("Reading Wireless Info failed with status " + wirelessResponse.getStatusCode());
 		}
 	}
 
