@@ -46,6 +46,6 @@ public class BillAnswer {
 			return String.valueOf(totalSummaries);
 		}
 
-		return String.valueOf(totalSummaries) + " missing " + (daysInPeriod - totalSummaries);
+		return totalSummaries + " missing " + (daysInPeriod - totalSummaries);
 	}
 }
