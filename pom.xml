@@ -33,7 +33,7 @@
         <influxdb.connector.version>2.23</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.45</webjars.locator.version>
-        <selenide.version>6.6.6</selenide.version>
+        <selenide.version>6.7.4</selenide.version>
         <!-- Selenide needs V4 of selenium but spring boot is locked to V3 -->
         <selenium.version>4.3.0</selenium.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
