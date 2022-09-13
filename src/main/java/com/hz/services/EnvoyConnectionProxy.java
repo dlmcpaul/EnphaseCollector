@@ -144,14 +144,14 @@ public class EnvoyConnectionProxy {
 				secureTemplate = createSecureRestTemplateV5(StandardProvider());
 			} else if (authorisationToken.canFetchToken()) {
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
-				createSecureRestTemplateV7();
+				secureTemplate = createSecureRestTemplateV7();
 			} else {
-				createSecureRestTemplateV7();
+				secureTemplate = createSecureRestTemplateV7();
 			}
 		} else if (authorisationToken.hasExpired()) {
 			if (authorisationToken.canFetchToken()) {
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
-				createSecureRestTemplateV7();
+				secureTemplate = createSecureRestTemplateV7();
 			} else {
 				log.error("Token has expired.  Please update JWT and restart");
 			}
