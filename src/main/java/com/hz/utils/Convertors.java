@@ -10,6 +10,7 @@ import java.time.ZoneId;
 public class Convertors {
 
 	private Convertors() {
+		throw new IllegalStateException("Utility class");
 	}
 
 	public static BigDecimal convertToWattHours(BigDecimal watts, BigDecimal minutesOfOperation) {

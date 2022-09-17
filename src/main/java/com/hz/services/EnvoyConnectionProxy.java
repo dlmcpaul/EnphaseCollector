@@ -73,7 +73,7 @@ public class EnvoyConnectionProxy {
 		return buildTemplate(httpClient);
 	}
 
-	private CredentialsProvider StandardProvider() {
+	private CredentialsProvider standardProvider() {
 		log.info("Preparing Realm Authentication Provider with user {}", config.getController().getUser());
 
 		CredentialsProvider provider = new BasicCredentialsProvider();
@@ -141,7 +141,7 @@ public class EnvoyConnectionProxy {
 	public RestTemplate getSecureTemplate() throws IOException {
 		if (secureTemplate == null) {
 			if (authorisationToken.isV5()) {
-				secureTemplate = createSecureRestTemplateV5(StandardProvider());
+				secureTemplate = createSecureRestTemplateV5(standardProvider());
 			} else if (authorisationToken.canFetchToken()) {
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
 				secureTemplate = createSecureRestTemplateV7();

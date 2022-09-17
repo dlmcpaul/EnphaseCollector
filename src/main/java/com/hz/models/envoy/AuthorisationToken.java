@@ -13,9 +13,9 @@ import java.util.Base64;
 public class AuthorisationToken {
 
 	protected enum AuthorisationTokenType {
-		V5,         // Original User Password
-		V7Provided, // Jwt is Provided as part of configuration
-		V7Fetched   // Jwt needs to be fetched from enphase website
+		V5,             // Original User Password
+		V7_PROVIDED,    // Jwt is Provided as part of configuration
+		V7_FETCHABLE    // Jwt needs to be fetched from enphase website
 	}
 
 	private String user;
@@ -32,13 +32,13 @@ public class AuthorisationToken {
 	}
 
 	public AuthorisationToken(String jwt, LocalDateTime expires) {
-		this.tokenType = AuthorisationTokenType.V7Provided;
+		this.tokenType = AuthorisationTokenType.V7_PROVIDED;
 		this.jwt = jwt;
 		this.expires = expires;
 	}
 
 	public AuthorisationToken(String user, String password, String serialNo, LocalDateTime expires) {
-		this.tokenType = AuthorisationTokenType.V7Fetched;
+		this.tokenType = AuthorisationTokenType.V7_FETCHABLE;
 		this.user = user;
 		this.password = password;
 		this.serialNo = serialNo;
@@ -54,7 +54,7 @@ public class AuthorisationToken {
 	}
 
 	public boolean canFetchToken() {
-		return this.tokenType == AuthorisationTokenType.V7Fetched;
+		return this.tokenType == AuthorisationTokenType.V7_FETCHABLE;
 	}
 
 	public void updateToken(String jwt) throws JsonProcessingException {

@@ -29,7 +29,9 @@ import java.util.List;
 @Log4j2
 public class EnphaseJWTExtractor {
 
-	public EnphaseJWTExtractor() {}
+	private EnphaseJWTExtractor() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	private static String findInputValue(List<Element> inputElements, String name) {
 		return inputElements.stream()

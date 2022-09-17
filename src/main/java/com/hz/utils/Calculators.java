@@ -12,7 +12,9 @@ import java.time.temporal.ChronoUnit;
 @Log4j2
 public class Calculators {
 
-	private Calculators() {}
+	private Calculators() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	public static BigDecimal calculateMinutesOfOperation(int microseconds) {
 		return BigDecimal.valueOf(microseconds).divide(BigDecimal.valueOf(60000), 3, RoundingMode.HALF_UP);
