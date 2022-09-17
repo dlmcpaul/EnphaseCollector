@@ -20,9 +20,6 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +38,7 @@ public class EnphaseJWTExtractor {
 				.orElse("");
 	}
 
-	public static CloseableHttpClient setupHttpClient() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+	public static CloseableHttpClient setupHttpClient() {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
 		return HttpClients
@@ -52,7 +49,7 @@ public class EnphaseJWTExtractor {
 				.build();
 	}
 
-	public static Document GetLoginPage(CloseableHttpClient httpClient) throws IOException {
+	public static Document getLoginPage(CloseableHttpClient httpClient) throws IOException {
 		RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		HttpGet getMethod = new HttpGet("https://enlighten.enphaseenergy.com");
 		getMethod.setConfig(defaultConfig);
@@ -80,7 +77,7 @@ public class EnphaseJWTExtractor {
 		return new UrlEncodedFormEntity(formData, StandardCharsets.UTF_8);
 	}
 
-	public static void PostForm(CloseableHttpClient httpClient, UrlEncodedFormEntity body) throws IOException {
+	public static void postForm(CloseableHttpClient httpClient, UrlEncodedFormEntity body) throws IOException {
 		HttpPost request = new HttpPost("https://enlighten.enphaseenergy.com/login/login");
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setHeader("Origin", "https://enlighten.enphaseenergy.com");
@@ -126,15 +123,13 @@ public class EnphaseJWTExtractor {
 
 		try (CloseableHttpClient httpClient = setupHttpClient()) {
 			log.info("Fetching Enlighten Login Page");
-			Document loginPage = GetLoginPage(httpClient);
+			Document loginPage = getLoginPage(httpClient);
 
 			log.info("Attempting to Login with a Form Submit");
-			PostForm(httpClient, encodeFormData(loginPage, username, password));
+			postForm(httpClient, encodeFormData(loginPage, username, password));
 
 			log.info("Fetching and Scanning returned HTML for Token");
 			return scanForToken(httpClient, serialNumber);
-		} catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-			throw new RuntimeException(e);
 		}
 	}
 
