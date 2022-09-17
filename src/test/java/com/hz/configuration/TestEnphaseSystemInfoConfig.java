@@ -50,7 +50,7 @@ public class TestEnphaseSystemInfoConfig {
 	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
 		if (envoyInfo.isV7orAbove()) {
 			if (config.getBearerToken() == null || config.getBearerToken().isEmpty()) {
-				return AuthorisationToken.makeV7TokenFetched(config.getEnphaseUser(), config.getEnphasePassword(), envoyInfo.getSerialNumber());
+				return AuthorisationToken.makeV7TokenFetched(config.getEnphaseWebUser(), config.getEnphaseWebPassword(), envoyInfo.getSerialNumber());
 			}
 
 			return AuthorisationToken.makeV7TokenProvided(config.getBearerToken());
