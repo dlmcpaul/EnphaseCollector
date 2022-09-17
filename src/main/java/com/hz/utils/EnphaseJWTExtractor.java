@@ -26,6 +26,8 @@ import java.util.List;
 @Log4j2
 public class EnphaseJWTExtractor {
 
+	private static final String ENPHASE_BASE_URI = "https://enlighten.enphaseenergy.com";
+
 	private EnphaseJWTExtractor() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -51,7 +53,7 @@ public class EnphaseJWTExtractor {
 
 	public static Document getLoginPage(CloseableHttpClient httpClient) throws IOException {
 		RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
-		HttpGet getMethod = new HttpGet("https://enlighten.enphaseenergy.com");
+		HttpGet getMethod = new HttpGet(ENPHASE_BASE_URI);
 		getMethod.setConfig(defaultConfig);
 		getMethod.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
@@ -60,7 +62,7 @@ public class EnphaseJWTExtractor {
 			if (response.getStatusLine().getStatusCode() != 200) {
 				throw new IOException("Failed to load Enlighten Login Page");
 			}
-			return Jsoup.parse(response.getEntity().getContent(), "UTF-8", "https://enlighten.enphaseenergy.com");
+			return Jsoup.parse(response.getEntity().getContent(), "UTF-8", ENPHASE_BASE_URI);
 		}
 	}
 
@@ -78,9 +80,9 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static void postForm(CloseableHttpClient httpClient, UrlEncodedFormEntity body) throws IOException {
-		HttpPost request = new HttpPost("https://enlighten.enphaseenergy.com/login/login");
+		HttpPost request = new HttpPost(ENPHASE_BASE_URI + "/login/login");
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
-		request.setHeader("Origin", "https://enlighten.enphaseenergy.com");
+		request.setHeader("Origin", ENPHASE_BASE_URI);
 		request.setEntity(body);
 
 		try (CloseableHttpResponse response = httpClient.execute(request)) {
@@ -97,7 +99,7 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static String scanForToken(CloseableHttpClient httpClient, String serialNumber) throws IOException {
-		HttpGet jwtRequest = new HttpGet("https://enlighten.enphaseenergy.com/entrez-auth-token?serial_num=" + serialNumber);
+		HttpGet jwtRequest = new HttpGet(ENPHASE_BASE_URI + "/entrez-auth-token?serial_num=" + serialNumber);
 
 		try (CloseableHttpResponse response = httpClient.execute(jwtRequest)) {
 
@@ -105,7 +107,7 @@ public class EnphaseJWTExtractor {
 				throw new IOException("Failed to load the token page");
 			}
 
-			Document jwt = Jsoup.parse(response.getEntity().getContent(), "UTF-8", "https://enlighten.enphaseenergy.com");
+			Document jwt = Jsoup.parse(response.getEntity().getContent(), "UTF-8", ENPHASE_BASE_URI);
 
 			String tokenObject = jwt.getElementsByTag("body").text();
 
