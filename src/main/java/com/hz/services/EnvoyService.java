@@ -209,15 +209,20 @@ public class EnvoyService {
 	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 	    HttpEntity<String> entity = new HttpEntity<>(headers);
 
-	    ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
-			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
-			    });
+		try {
+			ResponseEntity<List<DeviceMeter>> deviceMeterResponse =
+					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
+					});
 
-	    if (deviceMeterResponse.getStatusCodeValue() == 200) {
-		    system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
-	    } else {
-			throw new IOException("Reading Device Meters failed with status " + deviceMeterResponse.getStatusCode());
-	    }
+			if (deviceMeterResponse.getStatusCodeValue() == 200) {
+				system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
+			} else {
+				throw new IOException("Reading Device Meters failed with status " + deviceMeterResponse.getStatusCode());
+			}
+		} catch (RestClientException e) {
+			log.warn("Software version does not support {}", EnphaseURLS.DEVICE_METERS);
+			system.getProduction().setDeviceMeterList(new ArrayList<>());
+		}
 	}
 
 	private void getPowerMeters(System system) throws IOException {
@@ -225,13 +230,18 @@ public class EnvoyService {
 	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 	    HttpEntity<String> entity = new HttpEntity<>(headers);
 
-		ResponseEntity<List<PowerMeter>> powerMeterResponse =
-				envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
+		try {
+			ResponseEntity<List<PowerMeter>> powerMeterResponse =
+					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 
-		if (powerMeterResponse.getStatusCodeValue() == 200) {
-			system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
-		} else {
-			throw new IOException("Reading Power Meters failed with status " + powerMeterResponse.getStatusCode());
+			if (powerMeterResponse.getStatusCodeValue() == 200) {
+				system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
+			} else {
+				throw new IOException("Reading Power Meters failed with status " + powerMeterResponse.getStatusCode());
+			}
+		} catch (RestClientException e) {
+			log.warn("Software version does not support {}", EnphaseURLS.POWER_METERS);
+			system.getProduction().setPowerMeterList(new ArrayList<>());
 		}
 	}
 
