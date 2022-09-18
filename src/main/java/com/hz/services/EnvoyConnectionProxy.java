@@ -33,6 +33,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.hz.configuration.EnphaseURLS.*;
@@ -173,6 +174,10 @@ public class EnvoyConnectionProxy {
 			installerTemplate = createSecureRestTemplateV5(installerProvider());
 		}
 		return installerTemplate;
+	}
+
+	public String getExpiryAsString() {
+		return authorisationToken.isV5() ? "Never" : authorisationToken.getExpires().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	}
 
 }

@@ -56,7 +56,7 @@ public class EnphaseController {
 			BigDecimal payment = localDBService.calculatePaymentForToday();
 			BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
 
-			statusList.add(new Status("fas fa-key","Authentication expires", "Never"));
+			statusList.add(new Status("fas fa-key","Authentication expires", envoyService.getExpiryAsString()));
 			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
 			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
 

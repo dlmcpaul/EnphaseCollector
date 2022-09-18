@@ -110,6 +110,10 @@ public class EnvoyService {
 			    .orElseGet(() -> LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
+	public String getExpiryAsString() {
+		return envoyConnectionProxy.getExpiryAsString();
+	}
+
     private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
 
