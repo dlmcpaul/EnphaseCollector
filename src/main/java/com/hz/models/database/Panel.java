@@ -31,7 +31,10 @@ public class Panel {
 	}
 
 	public float bucket() {
-		return value <= 0f ? 0F : value % 5 == 0 ? value : ((int) (value / 5) + 1) * 5f;
+		if (value <= 0f) {
+			return 0f;
+		}
+		return value % 5 == 0 ? value : ((int) (value / 5) + 1) * 5f;
 	}
 
 	@Override
