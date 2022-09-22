@@ -100,7 +100,9 @@ public class EnvoyService {
 			}
 
 		    Optional<EimType> eim = system.getProduction().getProductionEim();
-		    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
+			if (eim.isPresent()) {
+				this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
+			}
 
 			log.info("Reading Inventory with read time {}", this.lastReadTime);
 		    getInventory(system);
