@@ -100,9 +100,7 @@ public class EnvoyService {
 			}
 
 		    Optional<EimType> eim = system.getProduction().getProductionEim();
-			if (eim.isPresent()) {
-				this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
-			}
+			this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
 			log.info("Reading Inventory with read time {}", this.lastReadTime);
 		    getInventory(system);
@@ -142,11 +140,8 @@ public class EnvoyService {
 
     private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
-		if (eim.isEmpty()) {
-			return true;
-		}
-		log.info("System Read time {}", eim.map(typeBase -> typeBase.getReadingTime()));
-	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
+		log.info("System Read time {}", eim.map(typeBase -> typeBase.getReadingTime()).orElse(-1L));
+	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(false);
     }
 
     private String map(String serial) {
