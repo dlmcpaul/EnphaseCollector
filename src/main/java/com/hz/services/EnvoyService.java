@@ -33,6 +33,7 @@ public class EnvoyService {
 	private long lastReadTime = 0L;
 	private boolean readSuccess = false;
 	private int fullReadCount = 0;
+	private System cachedSystem;
 
 	private List<Inventory> inventoryList = null;
 
@@ -63,42 +64,65 @@ public class EnvoyService {
     	return (lastReadTime > 0L) ? Convertors.convertToLocalDateTime(lastReadTime) : LocalDateTime.now();
 	}
 
+	private System getSystemData() {
+		if (cachedSystem == null) {
+			ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
+
+			if (systemResponse.getStatusCodeValue() == 200) {
+				if (systemResponse.getBody() != null) {
+					log.info("Fetched Base System Data");
+					cachedSystem = systemResponse.getBody();
+					return cachedSystem;
+				}
+			}
+
+			throw new RuntimeException("Failed to Read " + EnphaseURLS.SYSTEM);
+		}
+		return cachedSystem;
+	}
+
 	public Optional<System> collectEnphaseData() {
     	try {
-		    ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
+		    log.info("Starting Envoy Data Collection");
+			System system = getSystemData();
+		    getProductionData(system);
 
-		    if (systemResponse.getStatusCodeValue() == 200) {
-			    System system = systemResponse.getBody();
-			    if (system != null) {
-				    getProductionData(system);
-				    // Wait until production read time is updated
-				    while (systemNotReady(system)) {
-					    getProductionData(system);
-			        }
+		    // Wait until production read time is updated
+		    log.info("Waiting for production data to be ready");
+		    long waitTime = 0L;
+		    while (systemNotReady(system)) {
+			    Thread.sleep(1000);
+				waitTime += 1000;
+			    getProductionData(system);
+	        }
+			if (waitTime > 0) {
+				log.warn("Waited {} ms", waitTime);
+			}
 
-				    Optional<EimType> eim = system.getProduction().getProductionEim();
-				    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
+		    Optional<EimType> eim = system.getProduction().getProductionEim();
+		    this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
-				    getInventory(system);
-				    getIndividualPanelData(system);
-				    getDeviceMeters(system);
-				    getPowerMeters(system);
+			log.info("Reading Inventory with read time {}", this.lastReadTime);
+		    getInventory(system);
+		    log.info("Reading Individual Panels");
+		    getIndividualPanelData(system);
+		    log.info("Reading Device Meters");
+		    getDeviceMeters(system);
+		    log.info("Reading Power Meters");
+		    getPowerMeters(system);
 
-				    if (system.getNetwork().isWifi()) {
-				    	getWirelessInfo(system);
-				    }
-
-				    this.readSuccess = true;
-				    return Optional.of(system);
-			    } else {
-				    log.error("Empty response from Envoy system read");
-			    }
-		    } else {
-			    log.error("Failed to retrieve Solar stats. status was {}", systemResponse.getStatusCodeValue());
+		    if (system.getNetwork().isWifi()) {
+		    	getWirelessInfo(system);
 		    }
+
+		    log.info("Envoy Data Collection Successful");
+		    this.readSuccess = true;
+		    return Optional.of(system);
 	    } catch (RestClientException | IOException e) {
 		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
-	    }
+	    } catch (InterruptedException e) {
+		    log.error("Interrupted while reading Solar stats. Exception was {}", e.getMessage(), e);
+		}
 		this.readSuccess = false;
 		return Optional.empty();
 	}
@@ -116,7 +140,7 @@ public class EnvoyService {
 
     private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
-
+		log.info("System Read time {}", eim.map(typeBase -> typeBase.getReadingTime()));
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
     }
 
