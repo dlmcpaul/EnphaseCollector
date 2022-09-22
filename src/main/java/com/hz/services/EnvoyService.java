@@ -140,6 +140,9 @@ public class EnvoyService {
 
     private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
+		if (eim.isEmpty()) {
+			return true;
+		}
 		log.info("System Read time {}", eim.map(typeBase -> typeBase.getReadingTime()));
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(true);
     }
