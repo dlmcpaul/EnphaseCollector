@@ -140,7 +140,6 @@ public class EnvoyService {
 
     private boolean systemNotReady(System system) {
 	    Optional<EimType> eim = system.getProduction().getProductionEim();
-		log.info("System Read time {}", eim.map(typeBase -> typeBase.getReadingTime()).orElse(-1L));
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(false);
     }
 
@@ -248,7 +247,7 @@ public class EnvoyService {
 				throw new IOException("Reading Device Meters failed with status " + deviceMeterResponse.getStatusCode());
 			}
 		} catch (RestClientException e) {
-			log.warn("Software version does not support {}", EnphaseURLS.DEVICE_METERS);
+			log.warn("Device does not support {}", EnphaseURLS.DEVICE_METERS);
 			system.getProduction().setDeviceMeterList(new ArrayList<>());
 		}
 	}
@@ -268,7 +267,7 @@ public class EnvoyService {
 				throw new IOException("Reading Power Meters failed with status " + powerMeterResponse.getStatusCode());
 			}
 		} catch (RestClientException e) {
-			log.warn("Software version does not support {}", EnphaseURLS.POWER_METERS);
+			log.warn("Device does not support {}", EnphaseURLS.POWER_METERS);
 			system.getProduction().setPowerMeterList(new ArrayList<>());
 		}
 	}

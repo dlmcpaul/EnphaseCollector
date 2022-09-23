@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -140,7 +141,7 @@ public class Production {
 	}
 
 	private List<EimType> filterToEimType(List<TypeBase> list) {
-		return list.stream()
+		return list == null ? new ArrayList<>() : list.stream()
 				.filter(module -> module.getType().equalsIgnoreCase("eim"))
 				.map(EimType.class::cast)
 				.collect(Collectors.toList());

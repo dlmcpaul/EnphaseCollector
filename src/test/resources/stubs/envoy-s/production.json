@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/production.json?details=1",
+    "headers": {
+      "Accept": {
+        "contains": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"production\":[{\"type\":\"inverters\",\"activeCount\":2,\"readingTime\":1663920152,\"wNow\":41,\"whLifetime\":72358}],\"storage\":[{\"type\":\"acb\",\"activeCount\":0,\"readingTime\":0,\"wNow\":0,\"whNow\":0,\"state\":\"idle\"}]}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

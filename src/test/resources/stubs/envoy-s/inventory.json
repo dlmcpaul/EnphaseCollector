@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/inventory.json?deleted=1",
+    "headers": {
+      "Accept": {
+        "contains": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "[{\"type\":\"PCU\",\"devices\":[{\"part_num\":\"800-00631-r02\",\"installed\":\"1657564492\",\"serial_num\":\"482139087678\",\"device_status\":[\"envoy.global.ok\"],\"last_rpt_date\":\"1663920452\",\"admin_state\":1,\"dev_type\":1,\"created_date\":\"1657564492\",\"img_load_date\":\"1658388650\",\"img_pnum_running\":\"520-00082-r01-v04.28.07\",\"ptpn\":\"540-00135-r01-v04.28.93\",\"chaneid\":1627390225,\"device_control\":[{\"gficlearset\":false}],\"producing\":true,\"communicating\":true,\"provisioned\":true,\"operating\":true},{\"part_num\":\"800-01127-r02\",\"installed\":\"1662120237\",\"serial_num\":\"482206116683\",\"device_status\":[\"envoy.global.ok\"],\"last_rpt_date\":\"1663920454\",\"admin_state\":2,\"dev_type\":1,\"created_date\":\"1662120237\",\"img_load_date\":\"1613405094\",\"img_pnum_running\":\"520-00082-r01-v04.27.04\",\"ptpn\":\"540-00169-r01-v04.27.09\",\"chaneid\":1627390481,\"device_control\":[{\"gficlearset\":false}],\"producing\":true,\"communicating\":true,\"provisioned\":true,\"operating\":true}]},{\"type\":\"ACB\",\"devices\":[]},{\"type\":\"NSRB\",\"devices\":[]}]",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

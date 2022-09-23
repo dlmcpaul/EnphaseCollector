@@ -28,6 +28,7 @@ public class EimType extends TypeBase {
 
 	public EimType() {
 		this.setWattsNow(BigDecimal.ZERO);
+		this.setRmsVoltage(BigDecimal.ZERO);
 	}
 
 	public EimType(BigDecimal wattsNow) {
