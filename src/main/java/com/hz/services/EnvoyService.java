@@ -70,7 +70,6 @@ public class EnvoyService {
 
 			if (systemResponse.getStatusCodeValue() == 200) {
 				if (systemResponse.getBody() != null) {
-					log.info("Fetched Base System Data");
 					cachedSystem = systemResponse.getBody();
 					return cachedSystem;
 				}
@@ -83,12 +82,10 @@ public class EnvoyService {
 
 	public Optional<System> collectEnphaseData() {
     	try {
-		    log.info("Starting Envoy Data Collection");
 			System system = getSystemData();
 		    getProductionData(system);
 
 		    // Wait until production read time is updated
-		    log.info("Waiting for production data to be ready");
 		    long waitTime = 0L;
 		    while (systemNotReady(system)) {
 			    Thread.sleep(1000);
@@ -102,20 +99,15 @@ public class EnvoyService {
 		    Optional<EimType> eim = system.getProduction().getProductionEim();
 			this.lastReadTime = eim.map(TypeBase::getReadingTime).orElse(0L);
 
-			log.info("Reading Inventory with read time {}", this.lastReadTime);
 		    getInventory(system);
-		    log.info("Reading Individual Panels");
 		    getIndividualPanelData(system);
-		    log.info("Reading Device Meters");
 		    getDeviceMeters(system);
-		    log.info("Reading Power Meters");
 		    getPowerMeters(system);
 
 		    if (system.getNetwork().isWifi()) {
 		    	getWirelessInfo(system);
 		    }
 
-		    log.info("Envoy Data Collection Successful");
 		    this.readSuccess = true;
 		    return Optional.of(system);
 	    } catch (RestClientException | IOException e) {
@@ -167,15 +159,22 @@ public class EnvoyService {
     }
 
     private void calculateSavings(ArrayList<Metric> metricList, BigDecimal production, BigDecimal consumption) {
-	    if (production.compareTo(consumption) > 0) {
-		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, production, consumption));
-		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, consumption));
+		if (consumption.compareTo(BigDecimal.ZERO) > 0) {
+			if (production.compareTo(consumption) > 0) {
+				metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, production, consumption));
+				metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, consumption));
+				metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, 0));
+			} else {
+				metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
+				metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production));
+				metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, consumption, production));
+			}
+		} else {
+			// No consumption available so zero these metrics as we cannot calculate them
 			metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, 0));
-	    } else {
-		    metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
-		    metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production));
-		    metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, consumption, production));
-	    }
+			metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
+			metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, 0));
+		}
 	    metricList.add(new Metric( Metric.METRIC_SOLAR_DIFFERENCE, production, consumption));
     }
 
