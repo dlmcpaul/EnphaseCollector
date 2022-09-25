@@ -182,4 +182,4 @@ This is a fairly standard maven project using spring boot so mvn package should 
 
 ### Docker Images
 - You can use the spring boot plugin build-image to generate a docker image that works but does not export a properties file location you can use
-- I also have a number of dockerfiles I use for my releases and experimentation.  I have documented them under DOCKER.md
+- I also have a number of dockerfiles I use for my releases and experimentation.  I have documented them under [DOCKER.md](https://github.com/dlmcpaul/EnphaseCollector/blob/master/DOCKER.md)
