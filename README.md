@@ -30,7 +30,7 @@ java -jar enphasecollector-DEV.jar
 ```
 where the application will attempt to guess the envoy location and password.
 
-Example #2 when envoy.local is not resolved and you need to specify the ip address and the password cannot be guessed.
+Example #2 when envoy.local is not resolved, and you need to specify the ip address and the password cannot be guessed.
 ```
 java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.controller.password=envoy-password
 ```
@@ -93,23 +93,35 @@ Your timezone is something like Australia/Sydney or similar
 
 Available environment variables descriptions:
 
-- ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address
-- ENVOY_CONTROLLER_PASSWORD       Set to your Envoy Controller password
+- ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address if envoy.local cannot be found (usually if run in Docker)
+- ENVOY_CONTROLLER_USER           Set if the default user is not "envoy"
+- ENVOY_CONTROLLER_PASSWORD       Set to your Envoy Controller password if you have changed it from the default
 - ENVOY_INFLUXDBRESOURCE_HOST     Set to your Influx Database IP Address
 - ENVOY_INFLUXDBRESOURCE_PORT     Set to your Influx Database Port No
+- ENVOY_INFLUXDBRESOURCE_USER     Set if your Influx Database needs a user/password
+- ENVOY_INFLUXDBRESOURCE_PASSWORD Set if your Influx Database needs a user/password
 - ENVOY_PVOUTPUTRESOURCE_SYSTEMID Set to your pvoutput systemid
-- ENBOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
-- SPRING_PROFILES_ACTIVE          Determines destination for stats.  if not set only an internal database gets the stats.  Values can be influxdb and pvoutput
-- ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60
+- ENVOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
+- SPRING_PROFILES_ACTIVE          Determines destination for stats.  If not set only an internal database gets the stats.  Values can be influxdb and pvoutput
+- ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60s
 - ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
 - ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
 - ENVOY_DAILYSUPPLYCHARGE         How much it costs to access the grid every day eg 0.93 is 93c/day
-- SERVER_SERVLET_CONTEXT-PATH     Context path for local view
+- SERVER_SERVLET_CONTEXT-PATH     Context path for local view if you want it on something other than /solar
+
+### V7 support
+Either supply
+- ENVOY_BEARERTOKEN               Set this if you want to control the token refresh process and not supply your website user/password
+
+Or if you want auto refresh
+
+- ENVOY_ENPHASEWEBUSER            Set this to your enphase website user id
+- ENVOY_ENPHASEWEBPASSWORD        Set this to your enphase website password
 
 ### New configuration
 
 - ENVOY_EXPORT-LIMIT              If you have a limit on your export this will display a upper boundary on the main graph and display a new excess production line
-- ENVOY_BANDS[].FROM              The bands array configuration will add a shaded band to the main graph that you can use to highlight changes to import costs and the like
+- ENVOY_BANDS[].FROM              The bands array configuration will add a shaded band to the main graph that you can use to highlight changes to import costs and the like (See example below)
 - ENVOY_BANDS[].TO                From and To are start and end times in 24hr format (must include a leading 0 eg 0700)
 - ENVOY_BANDS[].COLOUR            The Colour field can be formatted like #55BF3B or rgba(200, 60, 60, .2)
 
@@ -161,3 +173,13 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 
 - The internal database is always populated so the local view is always available at /solar
 - Stats can be pulled to Prometheus by using the Actuator endpoint configured at /solar/actuator/prometheus  
+
+## Building for yourself
+This is a fairly standard maven project using spring boot so mvn package should get your started and can build a working jar
+
+**There are some caveats**
+- The build will generate a jar with a default version of unreleased
+
+### Docker Images
+- You can use the spring boot plugin build-image to generate a docker image that works but does not export a properties file location you can use
+- I also have a number of dockerfiles I use for my releases and experimentation.  I have documented them under DOCKER.md
