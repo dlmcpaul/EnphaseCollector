@@ -113,6 +113,7 @@ public class EnvoyService {
 	    } catch (RestClientException | IOException e) {
 		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
 	    } catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		    log.error("Interrupted while reading Solar stats. Exception was {}", e.getMessage(), e);
 		}
 		this.readSuccess = false;
