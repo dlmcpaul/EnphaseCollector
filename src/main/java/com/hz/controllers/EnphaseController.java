@@ -67,7 +67,7 @@ public class EnphaseController {
 			statusList.add(new Status("fas fa-key","Authentication expires", envoyService.getExpiryAsString()));
 			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
 
-			if (localDBService.calculateTotalConsumption().compareTo(BigDecimal.ZERO) == 0) {   // Consumption figures available
+			if (localDBService.calculateTotalConsumption().compareTo(BigDecimal.ZERO) != 0) {   // Consumption figures available
 				NumberFormat currency = NumberFormat.getCurrencyInstance();
 				BigDecimal payment = localDBService.calculatePaymentForToday();
 				BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
