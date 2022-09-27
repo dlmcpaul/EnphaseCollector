@@ -33,7 +33,6 @@ public class EnvoyService {
 	private long lastReadTime = 0L;
 	private boolean readSuccess = false;
 	private int fullReadCount = 0;
-	private System cachedSystem;
 
 	private List<Inventory> inventoryList = null;
 
@@ -65,19 +64,14 @@ public class EnvoyService {
 	}
 
 	private System getSystemData() {
-		if (cachedSystem == null) {
-			ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
+		ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
 
-			if (systemResponse.getStatusCodeValue() == 200) {
-				if (systemResponse.getBody() != null) {
-					cachedSystem = systemResponse.getBody();
-					return cachedSystem;
-				}
+		if (systemResponse.getStatusCodeValue() == 200) {
+			if (systemResponse.getBody() != null) {
+				return systemResponse.getBody();
 			}
-
-			throw new RuntimeException("Failed to Read " + EnphaseURLS.SYSTEM);
 		}
-		return cachedSystem;
+		throw new RuntimeException("Failed to Read " + EnphaseURLS.SYSTEM);
 	}
 
 	public Optional<System> collectEnphaseData() {
