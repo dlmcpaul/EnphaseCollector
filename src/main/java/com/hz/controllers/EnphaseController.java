@@ -50,38 +50,42 @@ public class EnphaseController {
 		List<Status> statusList = new ArrayList<>();
 		try {
 			EnvoySystem envoySystem = localDBService.getSystemInfo();
-			NumberFormat currency = NumberFormat.getCurrencyInstance();
 			NumberFormat number = NumberFormat.getNumberInstance();
 			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-			BigDecimal payment = localDBService.calculatePaymentForToday();
-			BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
 
-			statusList.add(new Status("fas fa-key","Authentication expires", envoyService.getExpiryAsString()));
-			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
-			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
-
-			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
-
-			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
-			statusList.add(new Status(DOLLAR_SIGN, "Paid today from exporting to grid", currency.format(payment)));
-			statusList.add(new Status(DOLLAR_SIGN, "Savings today from not using grid", currency.format(localDBService.calculateSavingsForToday())));
-			statusList.add(new Status(DOLLAR_SIGN, "Cost today from grid usage", currency.format(cost)));
-			statusList.add(new Status(DOLLAR_SIGN, "Cost Estimate for Today", currency.format(cost.subtract(payment))));
-
-			statusList.add(new Status(SOLAR_SIGN, "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
-			statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
-			statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kWh"));
-			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
 			if (envoyService.isOk()) {
 				statusList.add(new Status("fas fa-rss", "Enphase data collected at", envoyService.getLastReadTime().format(timeFormatter)));
 			} else {
 				statusList.add(new Status("fas fa-exclamation-triangle red-icon", "Enphase data collection failed at", envoyService.getLastReadTime().format(timeFormatter)));
 			}
 
+			statusList.add(new Status("fas fa-solar-panel", "Total panels connected and sending data", String.valueOf(envoySystem.getPanelCount())));
+			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
+			statusList.add(new Status(SOLAR_SIGN, "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
+			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
+			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
+			statusList.add(new Status("fas fa-key","Authentication expires", envoyService.getExpiryAsString()));
+			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
+
+			if (localDBService.calculateTotalConsumption().compareTo(BigDecimal.ZERO) == 0) {   // Consumption figures available
+				NumberFormat currency = NumberFormat.getCurrencyInstance();
+				BigDecimal payment = localDBService.calculatePaymentForToday();
+				BigDecimal cost = localDBService.calculateCostsForToday().add(BigDecimal.valueOf(properties.getDailySupplyCharge()));
+
+				statusList.add(new Status(DOLLAR_SIGN, "Paid today from exporting to grid", currency.format(payment)));
+				statusList.add(new Status(DOLLAR_SIGN, "Savings today from not using grid", currency.format(localDBService.calculateSavingsForToday())));
+				statusList.add(new Status(DOLLAR_SIGN, "Cost today from grid usage", currency.format(cost)));
+				statusList.add(new Status(DOLLAR_SIGN, "Cost Estimate for Today", currency.format(cost.subtract(payment))));
+				statusList.add(new Status("fas fa-plug", "Consumption Today", number.format(localDBService.calculateTotalConsumption()) + " kWh"));
+				statusList.add(new Status("fas fa-lightbulb", "Grid Import Today", number.format(localDBService.calculateGridImport()) + " kWh"));
+			}
+
 			PanelProduction panelProduction = localDBService.getMaxPanelProduction();
 			statusList.add(new Status(SOLAR_SIGN, panelProduction.getTotalPanelsProducingMax() + " solar panels producing max ", panelProduction.getMaxProduction() + " W"));
 
-			Collections.shuffle(statusList);
+			if (statusList.size() > 9) {
+				Collections.shuffle(statusList);
+			}
 		} catch (Exception e) {
 			log.error("populateMultiStatsStatusList Exception: {}", e.getMessage(), e);
 		}
