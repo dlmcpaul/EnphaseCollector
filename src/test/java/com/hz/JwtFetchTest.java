@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnableConfigurationProperties(value = SecretConfig.class)
 @TestPropertySource(locations = "classpath:secrets.properties")
 @SkipWhenMissingFile(filename="secrets.properties")
-public class JwtFetchTest {
+class JwtFetchTest {
 
 	@Autowired
 	private SecretConfig secrets;
