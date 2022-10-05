@@ -66,10 +66,9 @@ public class EnvoyService {
 	private System getSystemData() {
 		ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
 
-		if (systemResponse.getStatusCodeValue() == 200) {
-			if (systemResponse.getBody() != null) {
+		if (systemResponse.getStatusCodeValue() == 200 &&
+			systemResponse.getBody() != null) {
 				return systemResponse.getBody();
-			}
 		}
 		throw new RuntimeException("Failed to Read " + EnphaseURLS.SYSTEM);
 	}
