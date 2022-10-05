@@ -33,7 +33,7 @@ public class JwtFetchTest {
 	private SecretConfig secrets;
 
 	@Test
-	void testFetchingJWTfromWebSite() {
+	void testFetchingJWTFromWebSite() {
 		try {
 			log.info(secrets.getEnphaseWebUser());
 			String jwt = EnphaseJWTExtractor.fetchJWT(secrets.getEnphaseWebUser(), secrets.getEnphaseWebPassword(), secrets.getEnvoySerialNumber());
@@ -58,7 +58,7 @@ public class JwtFetchTest {
 			assertTrue(jwtDataSection.getExpires().isEqual(jwtDataSection.getIssuerDate().plus(12, MONTHS)));
 		} catch (IOException e) {
 			log.error("ERROR: {}", e.getMessage(), e);
-			assertTrue(false);
+			fail();
 		}
 	}
 
