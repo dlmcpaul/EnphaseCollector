@@ -5,8 +5,8 @@ ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
 
 ENV SPRING_DATASOURCE_URL=jdbc:h2:/internal_db/solar_stats_db
-RUN mkdir "/properties"
-RUN touch "/properties/application.properties"
+RUN mkdir "/properties" && \
+    touch "/properties/application.properties"
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "-jar", "app.jar", "--spring.config.additional-location=file:/properties/application.properties"]
 
