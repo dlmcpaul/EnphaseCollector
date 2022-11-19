@@ -53,7 +53,7 @@ class EnphaseServiceTest {
 		Mockito.when(this.mockEnphaseService.collectEnphaseData()).thenReturn(makeSystem(now));
 		Mockito.when(this.mockEnphaseService.getCollectionTime(any(System.class))).thenCallRealMethod();
 		// When
-		LocalDateTime collectionTime = this.mockEnphaseService.getCollectionTime(this.mockEnphaseService.collectEnphaseData().get());
+		LocalDateTime collectionTime = this.mockEnphaseService.getCollectionTime(this.mockEnphaseService.collectEnphaseData().orElseThrow());
 		// Then
 		Assertions.assertEquals(now, collectionTime);
 	}
