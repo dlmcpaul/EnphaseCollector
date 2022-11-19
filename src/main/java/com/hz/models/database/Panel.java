@@ -18,6 +18,8 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 public class Panel {
+	private static int BUCKET_SIZE = 25;
+
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
@@ -34,7 +36,7 @@ public class Panel {
 		if (value <= 0f) {
 			return 0f;
 		}
-		return value % 5 == 0 ? value : ((int) (value / 5) + 1) * 5f;
+		return value % BUCKET_SIZE == 0 ? value : ((int) (value / BUCKET_SIZE) + 1) * (float) BUCKET_SIZE;
 	}
 
 	@Override
