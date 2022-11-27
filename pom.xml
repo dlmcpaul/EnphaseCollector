@@ -34,9 +34,14 @@
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.46</webjars.locator.version>
         <selenide.version>6.8.1</selenide.version>
+        <!-- Overrides remove/check when spring boot upgrades -->
         <!-- Selenide needs V4 of selenium but spring boot is locked to V3 -->
         <selenium.version>4.3.0</selenium.version>
-        <snakeyaml.version>1.32</snakeyaml.version>
+        <!-- Snakeyaml has vulnerabilities -->
+        <snakeyaml.version>1.33</snakeyaml.version>
+        <!-- Jackson has vulnerabilities -->
+        <jackson-bom.version>2.14.1</jackson-bom.version>
+        <!-- end version overrides -->
         <spring-cloud.version>2021.0.3</spring-cloud.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
