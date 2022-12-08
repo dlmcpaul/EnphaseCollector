@@ -16,7 +16,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
@@ -119,8 +119,8 @@ public class EnvoyConnectionProxy {
 					.useSystemProperties()
 					.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
 					.setDefaultHeaders(List.of(header))
-					.setSSLContext(new SSLContextBuilder().loadTrustMaterial(new TrustAllStrategy()).build())
-					.setSSLHostnameVerifier(new NoopHostnameVerifier())
+					.setSSLContext(SSLContextBuilder.create().loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE).build())
+					.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
 					.setDefaultCookieStore(cookieStore)
 					.build();
 
@@ -142,15 +142,19 @@ public class EnvoyConnectionProxy {
 	public RestTemplate getSecureTemplate() throws IOException {
 		if (secureTemplate == null) {
 			if (authorisationToken.isV5()) {
+				log.debug("Creating a new secure V5 access template");
 				secureTemplate = createSecureRestTemplateV5(standardProvider());
 			} else if (authorisationToken.canFetchToken()) {
+				log.debug("Creating a new secure V7 access template after fetching token from Enphase");
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
 				secureTemplate = createSecureRestTemplateV7();
 			} else {
+				log.debug("Creating a new secure V7 access template with provided token");
 				secureTemplate = createSecureRestTemplateV7();
 			}
 		} else if (authorisationToken.hasExpired()) {
 			if (authorisationToken.canFetchToken()) {
+				log.debug("Creating a new secure V7 access template after refreshing token from Enphase");
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
 				secureTemplate = createSecureRestTemplateV7();
 			} else {
@@ -163,6 +167,7 @@ public class EnvoyConnectionProxy {
 
 	public RestTemplate getDefaultTemplate() {
 		if (defaultTemplate == null) {
+			log.debug("Creating a new default access template");
 			defaultTemplate = createDefaultRestTemplate();
 		}
 		return defaultTemplate;

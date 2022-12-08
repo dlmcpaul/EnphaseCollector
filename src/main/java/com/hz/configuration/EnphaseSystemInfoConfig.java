@@ -74,7 +74,13 @@ public class EnphaseSystemInfoConfig {
 	@Bean
 	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
 		if (envoyInfo.isV7orAbove()) {
-			if (config.getBearerToken() == null || config.getBearerToken().isEmpty()) {
+			if (config.getBearerToken() == null || config.getBearerToken().trim().isEmpty()) {
+
+				if (config.getEnphaseWebUser() != null && config.getEnphaseWebUser().trim().isEmpty()
+						&& config.getEnphaseWebPassword() != null && config.getEnphaseWebPassword().trim().isEmpty()
+						&& envoyInfo.getSerialNumber() != null && envoyInfo.getSerialNumber().trim().isEmpty()) {
+					log.error("Neither Bearer Token or Enphase Web User details provided.  Cannot generate authentication");
+				}
 				return AuthorisationToken.makeV7TokenFetched(config.getEnphaseWebUser(), config.getEnphaseWebPassword(), envoyInfo.getSerialNumber());
 			}
 
