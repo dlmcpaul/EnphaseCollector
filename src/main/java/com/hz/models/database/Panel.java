@@ -18,7 +18,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 public class Panel {
-	private static int BUCKET_SIZE = 25;
+	private static final int BUCKET_SIZE = 25;
 
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
