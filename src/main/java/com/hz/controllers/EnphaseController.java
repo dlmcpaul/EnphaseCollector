@@ -94,7 +94,7 @@ public class EnphaseController {
 
 	private List<Status> populatePanelStatsStatusList() {
 		final List<Status> statusList = new ArrayList<>();
-		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing <=", aFloat.intValue() + " W")));
+		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing about", aFloat.intValue() + " W")));
 		if (statusList.size() < 9) {
 			statusList.addAll(populateMultiStatsStatusList());
 		}

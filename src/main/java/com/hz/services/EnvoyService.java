@@ -63,8 +63,8 @@ public class EnvoyService {
     	return (lastReadTime > 0L) ? Convertors.convertToLocalDateTime(lastReadTime) : LocalDateTime.now();
 	}
 
-	private System getSystemData() {
-		ResponseEntity<System> systemResponse = envoyConnectionProxy.getDefaultTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
+	private System getSystemData() throws IOException {
+		ResponseEntity<System> systemResponse = envoyConnectionProxy.getSecureTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
 
 		if (systemResponse.getStatusCodeValue() == 200 &&
 			systemResponse.getBody() != null) {
@@ -207,7 +207,7 @@ public class EnvoyService {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
 		    ResponseEntity<List<Inventory>> inventoryResponse =
-				    envoyConnectionProxy.getDefaultTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+				    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
 
 		    if (inventoryResponse.getStatusCodeValue() == 200) {
 			    system.setInventoryList(inventoryResponse.getBody());
@@ -220,8 +220,8 @@ public class EnvoyService {
 	    }
     }
 
-	private void getProductionData(System system) {
-		system.setProduction( envoyConnectionProxy.getDefaultTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class) );
+	private void getProductionData(System system) throws IOException {
+		system.setProduction( envoyConnectionProxy.getSecureTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class) );
 	}
 
 	private void getDeviceMeters(System system) throws IOException {
