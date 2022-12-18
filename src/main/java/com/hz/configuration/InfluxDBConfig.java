@@ -73,12 +73,12 @@ public class InfluxDBConfig {
 	public InfluxDB destinationInfluxDB() {
 		log.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
 
-		InfluxDB database = null;
+		InfluxDB database;
 
 		if (config.getInfluxdbResource().getUser() == null || config.getInfluxdbResource().getUser().isEmpty()) {
-			InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
+			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
 		} else {
-			InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
+			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
 		}
 		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
 
