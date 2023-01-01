@@ -151,7 +151,7 @@ public class LocalDBService {
 		return envoySystemRepository.findById(1L).orElseGet(EnvoySystem::new);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public Event getLastEvent() {
 		Optional<EnvoySystem> envoySystem = envoySystemRepository.findById(1L);
 
@@ -162,7 +162,7 @@ public class LocalDBService {
 		return eventRepository.findEventsByTimeAfter(getMidnight());
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public PanelProduction getMaxPanelProduction() {
 		NavigableMap<Float,List<Panel>> map = new TreeMap<>(this.getPanelSummaries());
 
@@ -171,7 +171,7 @@ public class LocalDBService {
 				: new PanelProduction(BigDecimal.ZERO,BigDecimal.ZERO,0);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public Map<Float, List<Panel>> getPanelSummaries() {
 		try {
 			List<Panel> panels = this.getLastEvent().getPanels();
