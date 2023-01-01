@@ -3,7 +3,11 @@
 
 <body>
 <!--/*@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"*/-->
-<div th:fragment="statusList (statusList)" id="statusComponent" class="column is-4 centre">
+<!--/*@thymesVar id="interval" type="integer"*/-->
+<div th:fragment="statusList (statusList, refresh_stats_interval)" id="statusComponent" class="column is-4 centre">
+    <div class="time-bar" th:style="'--duration: ' + ${refresh_stats_interval} + ';'">
+        <div></div>
+    </div>
     <table th:unless="${statusList.isEmpty()}" class="table is-fullwidth" aria-label="Solar Status Table">
         <tbody>
             <!--/*@thymesVar id="status" type="com.hz.controllers.models.Status"*/-->

@@ -54,3 +54,25 @@
 .separator::after {
     margin-left: .25em;
 }
+
+@keyframes shrink {
+    0% {
+        background: green;
+    }
+    75% {
+        background: yellow;
+    }
+    100% {
+        background: red;
+    }
+    to {
+        /* More performant than animating `width` */
+        transform: scaleX(0);
+    }
+}
+
+.time-bar div {
+    height: 5px;
+    animation: shrink calc(var(--duration) * 1s) linear forwards;
+    transform-origin: left center;
+}

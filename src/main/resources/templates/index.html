@@ -6,8 +6,6 @@
     <meta name="description" content="Enphase Solar System Visualiser">
     <title>Enphase Solar System Visualiser</title>
     <link rel="stylesheet" data-th-href="@{/webjars/bulma/css/bulma.min.css}"/>
-    <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/css/all.css}"/>
-    <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
     <link rel="apple-touch-icon" data-th-href="@{/images/sun.jpeg}">
 </head>
 <body class="has-background-light">
@@ -38,7 +36,7 @@
             <div class="columns is-multiline is-centered">
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{/images/power.png},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{/images/sun.jpeg},'Production',${production})}"></div>
-                <div data-th-replace="~{statusListFragment :: statusList( ${statusList} )}"></div>
+                <div data-th-replace="~{statusListFragment :: statusList( ${statusList}, ${refresh_stats_interval} )}"></div>
             </div>
             <div class="columns">
                 <div class="column is-12 is-narrow">
@@ -73,6 +71,8 @@
         </div>
     </div>
 </footer>
+<link rel="stylesheet" data-th-href="@{/webjars/font-awesome/css/all.css}"/>
+<link rel="stylesheet" data-th-href="@{/css/default.css}"/>
 <script type="text/javascript" data-th-src="@{/webjars/highcharts/highstock.js}"></script>
 <script type="text/javascript" data-th-src="@{/webjars/highcharts/highcharts-more.js}"></script>
 <script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
