@@ -13,6 +13,7 @@
 >- It does not look to be based on a standard authentication mechanism such as OAuth (**You should never write your own authentication protocol**)
 >- It is currently broken in a number of ways and will reduce the security of your envoy device (**I will not list the issues here**)
 >  
+> The current release does support V7 firmware but you will either need to manage the token generation yourself or supply your enphase web user & password details
 
 EnphaseCollector uses the **undocumented API** in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
 
