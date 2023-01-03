@@ -18,7 +18,7 @@ services:
       ENVOY_INFLUXDBRESOURCE_PORT: 8086
       ENVOY_CONTROLLER_PASSWORD:
   db:
-    image: "influxdb:latest"
+    image: "influxdb:1.8"
     hostname: influx
     container_name: enphaseCollectorDB
     expose:
