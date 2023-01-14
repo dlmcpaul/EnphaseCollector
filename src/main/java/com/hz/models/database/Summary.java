@@ -40,9 +40,9 @@ public class Summary {
 		this.date = daily.getDate();
 		this.consumption = daily.getConsumption();
 		this.production = daily.getProduction();
-		this.gridImport = BigDecimal.valueOf(gridImport.getValue());
-		this.gridExport = BigDecimal.valueOf(gridExport.getValue());
-		this.highestOutput = highestOutput.getValue();
+		this.gridImport = BigDecimal.valueOf(gridImport.getSummary());
+		this.gridExport = BigDecimal.valueOf(gridExport.getSummary());
+		this.highestOutput = highestOutput.getSummary();
 		this.conversionRate = conversionRate;
 	}
 

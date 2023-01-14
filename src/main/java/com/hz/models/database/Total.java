@@ -4,5 +4,5 @@ import java.time.LocalDate;
 
 public interface Total {
 	LocalDate getDate();
-	Long getValue();
+	Long getSummary();
 }

@@ -25,18 +25,18 @@ public class Panel {
 	private Long id;
 
 	private String identifier;
-	private float value;
+	private float panelValue;
 
-	public Panel(String identifier, float value) {
+	public Panel(String identifier, float panelValue) {
 		this.identifier = identifier;
-		this.value = value;
+		this.panelValue = panelValue;
 	}
 
 	public float bucket() {
-		if (value <= 0f) {
+		if (panelValue <= 0f) {
 			return 0f;
 		}
-		return value % BUCKET_SIZE == 0 ? value : ((int) (value / BUCKET_SIZE) + 1) * (float) BUCKET_SIZE;
+		return panelValue % BUCKET_SIZE == 0 ? panelValue : ((int) (panelValue / BUCKET_SIZE) + 1) * (float) BUCKET_SIZE;
 	}
 
 	@Override

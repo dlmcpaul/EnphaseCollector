@@ -112,7 +112,7 @@ public class LocalDBService {
 	}
 
 	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput, BigDecimal conversionRate) {
-		log.info("Saving Summary for {} with import {} and export {}", daily.getDate(), gridImport.getValue(), gridExport.getValue());
+		log.info("Saving Summary for {} with import {} and export {}", daily.getDate(), gridImport.getSummary(), gridExport.getSummary());
 		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput, conversionRate));
 	}
 
@@ -175,7 +175,7 @@ public class LocalDBService {
 	public Map<Float, List<Panel>> getPanelSummaries() {
 		try {
 			List<Panel> panels = this.getLastEvent().getPanels();
-			panels.sort((o1, o2) -> Float.compare(o1.getValue(), o2.getValue()) * -1);
+			panels.sort((o1, o2) -> Float.compare(o1.getPanelValue(), o2.getPanelValue()) * -1);
 			return panels.stream()
 					.collect(Collectors.groupingBy(Panel::bucket, LinkedHashMap::new, Collectors.toList()));
 		} catch (Exception e) {

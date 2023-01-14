@@ -9,7 +9,7 @@ public class EmptyTotal implements Total {
 	}
 
 	@Override
-	public Long getValue() {
+	public Long getSummary() {
 		return 0L;
 	}
 }
