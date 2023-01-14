@@ -1,6 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.envoy.json.System;
@@ -27,6 +28,7 @@ public class OutputManager {
 	private final EnvoyService enphaseImportService;
 	private final EnvoyInfo envoyInfo;
 	private final EnphaseCollectorProperties properties;
+	private final MetricCalculator metricCalculator;
 
 	private int collectionPeriod = 0;
 
@@ -42,7 +44,7 @@ public class OutputManager {
 				collectionPeriod -= 1000;
 			} else {
 				collectionPeriod = properties.getRefreshSeconds() - 1000;
-				enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, enphaseImportService.getMetrics(s), enphaseImportService.getCollectionTime(s)));
+				enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, metricCalculator.calculateMetrics(s), enphaseImportService.getCollectionTime(s)));
 			}
 		} catch (Exception e) {
 			log.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);

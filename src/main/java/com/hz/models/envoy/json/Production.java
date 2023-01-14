@@ -130,6 +130,16 @@ public class Production {
 	}
 
 	@JsonIgnore
+	public BigDecimal getNetConsumptionWatts() {
+		return getNetConsumptionMeter().orElse(new PowerMeter(getNetConsumptionEimWatts(), BigDecimal.ZERO)).getActivePower();
+	}
+
+	@JsonIgnore
+	public BigDecimal getNetConsumptionEimWatts() {
+		return getNetConsumptionEim().orElseGet(EimType::new).getWattsNow();
+	}
+
+	@JsonIgnore
 	public BigDecimal getConsumptionEimWatts() {
 		return getTotalConsumptionEim().orElseGet(EimType::new).getWattsNow();
 	}
