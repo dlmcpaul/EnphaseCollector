@@ -1,11 +1,13 @@
 package com.hz;
 
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
+import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnvoyConnectionProxy;
 import com.hz.services.EnvoyService;
+import com.hz.utils.MetricCalculatorStandard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -105,7 +107,8 @@ class EnphaseServiceRest_4_5_79_Test {
 		Assertions.assertTrue(system.get().getWireless().isSupported());
 		Assertions.assertEquals("connected", system.get().getWireless().getCurrentNetwork().getStatus());
 
-		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
+		MetricCalculator metricCalculator = new MetricCalculatorStandard();
+		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
 		Assertions.assertEquals(25, metrics.size());
 	}

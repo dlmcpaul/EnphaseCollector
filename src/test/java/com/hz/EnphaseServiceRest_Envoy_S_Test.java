@@ -1,10 +1,12 @@
 package com.hz;
 
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
+import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.services.EnvoyConnectionProxy;
 import com.hz.services.EnvoyService;
+import com.hz.utils.MetricCalculatorStandard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -88,7 +90,8 @@ class EnphaseServiceRest_Envoy_S_Test {
 		Assertions.assertEquals(BigDecimal.ZERO, system.get().getProduction().getConsumptionWatts());
 		Assertions.assertEquals(BigDecimal.valueOf(41), system.get().getProduction().getProductionWatts());
 
-		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
+		MetricCalculator metricCalculator = new MetricCalculatorStandard();
+		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
 		Assertions.assertEquals(23, metrics.size());
 	}

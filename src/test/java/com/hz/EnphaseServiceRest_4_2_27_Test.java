@@ -1,11 +1,13 @@
 package com.hz;
 
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
+import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnvoyConnectionProxy;
 import com.hz.services.EnvoyService;
+import com.hz.utils.MetricCalculatorStandard;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -109,7 +111,8 @@ class EnphaseServiceRest_4_2_27_Test {
 		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
 		Assertions.assertTrue(this.enphaseService.isOk());
 
-		List<Metric> metrics = this.enphaseService.getMetrics(system.get());
+		MetricCalculator metricCalculator = new MetricCalculatorStandard();
+		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
 		Assertions.assertEquals(25, metrics.size());
 
