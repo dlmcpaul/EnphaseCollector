@@ -3,7 +3,7 @@
 
 <body>
 <!--/*@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"*/-->
-<!--/*@thymesVar id="interval" type="integer"*/-->
+<!--/*@thymesVar id="refresh_stats_interval" type="java.lang.Integer"*/-->
 <div th:fragment="statusList (statusList, refresh_stats_interval)" id="statusComponent" class="column is-4 centre">
     <div class="time-bar" th:style="'--duration: ' + ${refresh_stats_interval} + ';'">
         <div></div>
