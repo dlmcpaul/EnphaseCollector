@@ -102,9 +102,9 @@ public class LocalDBService {
 		Event event = new Event();
 		event.setTime(metricCollectionEvent.getCollectionTime());
 
-		event.setProduction(getMetric(metricCollectionEvent.getMetrics(), "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setConsumption(getMetric(metricCollectionEvent.getMetrics(), "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setVoltage(getMetric(metricCollectionEvent.getMetrics(), "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setProduction(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_CURRENT).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setConsumption(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_CONSUMPTION_CURRENT).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		event.setVoltage(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_VOLTAGE).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
 
 		metricCollectionEvent.getMetrics().stream().filter(Metric::isSolarPanel).forEach(event::addSolarPanel);
 
