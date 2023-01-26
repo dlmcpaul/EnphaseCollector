@@ -11,20 +11,23 @@ import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Log4j2
 public class ReleaseInfoContributor implements InfoContributor, InitializingBean {
 
+	@NotNull
 	private final Environment env;
 
 	private static final String UNRELEASED = "unreleased";
 	private static final String RELEASE_VERSION_PROPERTY = "release.version";
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		log.info("Application Release version is {}", AnsiOutput.encode(AnsiColor.BLUE) + AnsiOutput.encode(AnsiStyle.BOLD) + getVersion() + AnsiOutput.encode(AnsiStyle.NORMAL));
 	}
 
@@ -35,6 +38,6 @@ public class ReleaseInfoContributor implements InfoContributor, InitializingBean
 	}
 
 	public String getVersion() {
-		return env != null && env.getProperty(RELEASE_VERSION_PROPERTY) != null ? env.getProperty(RELEASE_VERSION_PROPERTY).trim() : UNRELEASED;
+		return Optional.ofNullable(env.getProperty(RELEASE_VERSION_PROPERTY)).orElse(UNRELEASED).trim();
 	}
 }
