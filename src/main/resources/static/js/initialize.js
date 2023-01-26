@@ -176,16 +176,16 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
             plotBands: [{
                 id: "low",
                 from: 0,
-                to: 1000,
+                to: 1250,
                 color: "#DF5353" // red
             }, {
                 id: "middle",
-                from: 1000,
-                to: 2000,
+                from: 1250,
+                to: 2500,
                 color: "#DDDF0D" // yellow
             }, {
                 id: "high",
-                from: 2000,
+                from: 2500,
                 to: 5000,
                 color: "#55BF3B" // green
             }]
