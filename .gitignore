@@ -21,3 +21,6 @@ out/
 
 #maven
 target/
+
+#jacoco
+build/
