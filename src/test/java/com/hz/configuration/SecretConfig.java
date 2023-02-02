@@ -2,8 +2,10 @@ package com.hz.configuration;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("envoy")
+@ConfigurationProperties("secret")
+@Component
 @Data
 public class SecretConfig {
 	// V7 Auto fetch configuration
