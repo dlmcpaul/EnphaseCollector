@@ -16,6 +16,10 @@ import java.util.Optional;
 @Log4j2
 public class MetricCalculatorStandard implements MetricCalculator {
 
+	public MetricCalculatorStandard() {
+		log.info("Standard Consumption Metric Calculator Activated");
+	}
+
 	// Table of my serial numbers to map to simpler values
 	private final List<String> mySerialNumbers = Arrays.asList(
 			"121707050571",

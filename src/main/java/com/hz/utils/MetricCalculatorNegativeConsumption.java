@@ -19,6 +19,10 @@ import java.util.Optional;
 @Log4j2
 public class MetricCalculatorNegativeConsumption implements MetricCalculator {
 
+	public MetricCalculatorNegativeConsumption() {
+		log.info("Negative Consumption Metric Calculator Activated");
+	}
+
 	private void calculateSavings(ArrayList<Metric> metricList, BigDecimal production, BigDecimal consumption) {
 		if (consumption.compareTo(BigDecimal.ZERO) < 0) {
 			BigDecimal ABSConsumption = consumption.multiply(BigDecimal.valueOf(-1));
