@@ -1,37 +1,50 @@
 package com.hz.ui;
 
-import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FirstTabFireFoxBrowserTests {
 
-	@LocalServerPort //to inject port value
-	int port;
+	@Container
+	public static BrowserWebDriverContainer<?> firefox = new BrowserWebDriverContainer<>()
+			.withCapabilities(new FirefoxOptions().setHeadless(true))
+			.withAccessToHost(true);
+
+	@LocalServerPort //to inject port value to non-static field
+	int appPort;
 
 	@BeforeAll
-	static void initBrowser() {
-		Configuration.browser = "firefox";
-		Configuration.headless = true;
+	void startup() {
+		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
+		WebDriverRunner.setWebDriver(new RemoteWebDriver(firefox.getSeleniumAddress(), new FirefoxOptions().setHeadless(true)));
 	}
 
 	@BeforeEach
 	void reset() {
-		open("http://localhost:" + port + "/solar");
+		open(String.format("http://host.testcontainers.internal:%d/solar", appPort));
 	}
 
 	@Test
@@ -60,11 +73,6 @@ class FirstTabFireFoxBrowserTests {
 		$("#qna").click();
 		$("#qna").shouldHave(cssClass("is-active"));
 		$("#qna-data").shouldNotHave(cssClass("is-hidden"));
-	}
-
-	@AfterAll
-	static void shutdown() {
-		closeWindow();
 	}
 
 }

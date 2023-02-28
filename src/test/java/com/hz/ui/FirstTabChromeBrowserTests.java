@@ -1,37 +1,49 @@
 package com.hz.ui;
 
-import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("testing")
 @Import(TestEnphaseSystemInfoConfig.class)
-class FirstTabEdgeBrowserTests {
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class FirstTabChromeBrowserTests {
+	@Container
+	public static BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>()
+			.withCapabilities(new ChromeOptions().setHeadless(true))
+			.withAccessToHost(true);
 
-	@LocalServerPort //to inject port value
-	int port;
+	@LocalServerPort // to inject port value to non-static field
+	int appPort;
 
 	@BeforeAll
-	static void initBrowser() {
-		Configuration.browser = "edge";
-		Configuration.headless = true;
+	void startup() {
+		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
+		WebDriverRunner.setWebDriver(new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions().setHeadless(true)));
 	}
 
 	@BeforeEach
 	void reset() {
-		open("http://localhost:" + port + "/solar");
+		open(String.format("http://host.testcontainers.internal:%d/solar", appPort));
 	}
 
 	@Test
@@ -60,11 +72,6 @@ class FirstTabEdgeBrowserTests {
 		$("#qna").click();
 		$("#qna").shouldHave(cssClass("is-active"));
 		$("#qna-data").shouldNotHave(cssClass("is-hidden"));
-	}
-
-	@AfterAll
-	static void shutdown() {
-		closeWindow();
 	}
 
 }

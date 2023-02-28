@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.14</version>
+        <version>2.7.8</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -33,16 +33,19 @@
         <influxdb.connector.version>2.23</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.46</webjars.locator.version>
-        <selenide.version>6.10.3</selenide.version>
+        <karate.version>1.3.1</karate.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
+        <selenide.version>6.11.0</selenide.version>
         <!-- Overrides remove/check when spring boot upgrades -->
+        <!-- Snakeyaml has vulnerabilities - remove on update to spring boot 3 -->
+        <snakeyaml.version>1.33</snakeyaml.version>
         <!-- Selenide needs V4 of selenium but spring boot is locked to V3 -->
         <selenium.version>4.7.2</selenium.version>
-        <!-- Snakeyaml has vulnerabilities -->
-        <snakeyaml.version>1.33</snakeyaml.version>
         <!-- Jackson has vulnerabilities -->
         <jackson-bom.version>2.14.1</jackson-bom.version>
         <!-- end version overrides -->
-        <spring-cloud.version>2021.0.3</spring-cloud.version>
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <paho.version>1.2.5</paho.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
         <revision>${build.number}-${build.source}</revision>
@@ -72,6 +75,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -95,7 +108,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-indexer</artifactId>
+            <optional>true</optional>
+        </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>${paho.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.influxdb</groupId>
             <artifactId>influxdb-java</artifactId>
@@ -136,6 +159,10 @@
             <artifactId>jsoup</artifactId>
             <version>1.15.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
         <!-- Web View dependencies -->
         <dependency>
             <groupId>org.webjars</groupId>
@@ -174,9 +201,46 @@
             <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.intuit.karate</groupId>
+            <artifactId>karate-junit5</artifactId>
+            <version>${karate.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>selenium</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>4.7.2</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -218,6 +282,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
                     <failIfNoTests>true</failIfNoTests>
                 </configuration>
             </plugin>

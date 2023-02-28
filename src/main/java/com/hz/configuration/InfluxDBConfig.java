@@ -9,6 +9,8 @@ import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Query;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,11 +31,14 @@ public class InfluxDBConfig {
 
 		InfluxConfig metricsConfig = new InfluxConfig() {
 
+			@NotNull
+			@Contract(pure = true)
 			@Override
 			public String db() {
 				return "collectorStats";
 			}
 
+			@NotNull
 			@Override
 			public String uri() {
 				return config.getInfluxdbResource().getUrl();
@@ -60,7 +65,7 @@ public class InfluxDBConfig {
 			}
 
 			@Override
-			public String get(String k) {
+			public String get(@NotNull String k) {
 				return null; // accept the rest of the defaults
 			}
 		};
@@ -78,6 +83,7 @@ public class InfluxDBConfig {
 		if (config.getInfluxdbResource().getUser() == null || config.getInfluxdbResource().getUser().isEmpty()) {
 			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
 		} else {
+			log.info("Connecting with credentials {}", config.getInfluxdbResource().getUser());
 			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
 		}
 		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
