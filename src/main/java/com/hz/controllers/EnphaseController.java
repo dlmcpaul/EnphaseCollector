@@ -28,7 +28,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Created by David on 23-Oct-17.
@@ -165,7 +164,7 @@ public class EnphaseController {
 		try {
 			localDBService.getEventsForToday().forEach(pvc::addEvent);
 			pvc.generateExcess(localDBService.getPanelProduction(), properties.getExportLimit());
-			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).collect(Collectors.toList())) ;
+			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).toList());
 		} catch (Exception e) {
 			log.error("getPvc Exception: {}", e.getMessage(), e);
 		}
