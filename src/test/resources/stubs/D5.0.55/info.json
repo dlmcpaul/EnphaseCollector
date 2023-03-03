@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/info.xml",
+    "headers": {
+      "Accept": {
+        "contains": "text/plain"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "<?xml version='1.0' encoding='UTF-8'?>\n<envoy_info>\n  <time>1673211285</time>\n  <device>\n    <sn>202114XXXXXX</sn>\n    <pn>800-00655-r09</pn>\n    <software>D5.0.55</software>\n    <euaid>4c8675</euaid>\n    <seqnum>0</seqnum>\n    <apiver>1</apiver>\n    <imeter>true</imeter>\n  </device>\n  <package name='rootfs'>\n    <pn>500-00001-r01</pn>\n    <version>02.00.00</version>\n    <build>950</build>\n  </package>\n  <package name='kernel'>\n    <pn>500-00011-r01</pn>\n    <version>04.01.15</version>\n    <build>1905ae</build>\n  </package>\n  <package name='boot'>\n    <pn>590-00019-r01</pn>\n    <version>02.00.01</version>\n    <build>1f421b</build>\n  </package>\n  <package name='app'>\n    <pn>500-00002-r01</pn>\n    <version>05.00.55</version>\n    <build>4f2662</build>\n  </package>\n  <package name='devimg'>\n    <pn>500-00004-r01</pn>\n    <version>01.02.293</version>\n    <build>9cf065</build>\n  </package>\n  <package name='geo'>\n    <pn>500-00008-r01</pn>\n    <version>02.01.22</version>\n    <build>2faa48</build>\n  </package>\n  <package name='backbone'>\n    <pn>500-00010-r01</pn>\n    <version>05.00.02</version>\n    <build>4fe435</build>\n  </package>\n  <package name='meter'>\n    <pn>500-00013-r01</pn>\n    <version>03.02.07</version>\n    <build>276642</build>\n  </package>\n  <package name='agf'>\n    <pn>500-00012-r01</pn>\n    <version>02.02.00</version>\n    <build>8969f6</build>\n  </package>\n  <package name='security'>\n    <pn>500-00016-r01</pn>\n    <version>02.00.00</version>\n    <build>54a6dc</build>\n  </package>\n  <build_info>\n    <build_time_gmt>1607601617</build_time_gmt>\n    <build_id>release-5.0.x-106-Dec-10-20-02:30:12</build_id>\n  </build_info>\n</envoy_info>",
+    "headers": {
+      "Content-Type": "text/xml"
+    }
+  }
+}

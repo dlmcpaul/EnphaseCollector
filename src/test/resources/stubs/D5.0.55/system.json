@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/home.json",
+    "headers": {
+      "Accept": {
+        "contains": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"software_build_epoch\":1607591706,\"is_nonvoy\":false,\"db_size\":\"3 MB\",\"db_percent_full\":\"0\",\"timezone\":\"US/Pacific\",\"current_date\":\"01/08/2023\",\"current_time\":\"12:51\",\"network\":{\"web_comm\":true,\"ever_reported_to_enlighten\":true,\"last_enlighten_report_time\":1673210650,\"primary_interface\":\"wlan0\",\"interfaces\":[{\"type\":\"ethernet\",\"interface\":\"eth0\",\"mac\":\"00:1D:C0:B0:4F:0D\",\"dhcp\":true,\"ip\":\"169.254.120.1\",\"signal_strength\":0,\"signal_strength_max\":1,\"carrier\":false},{\"signal_strength\":4,\"signal_strength_max\":5,\"type\":\"wifi\",\"interface\":\"wlan0\",\"mac\":\"B0:B1:13:7F:8C:F0\",\"dhcp\":true,\"ip\":\"192.168.10.117\",\"carrier\":true,\"supported\":true,\"present\":true,\"configured\":true,\"status\":\"connected\"}]},\"tariff\":\"none\",\"comm\":{\"num\":16,\"level\":5,\"pcu\":{\"num\":16,\"level\":5},\"acb\":{\"num\":0,\"level\":0},\"nsrb\":{\"num\":0,\"level\":0}},\"alerts\":[],\"update_status\":\"not-satisfied\"}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+
