@@ -11,7 +11,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by David on 23-Oct-17.
@@ -56,17 +55,17 @@ public class Production {
 
 	@JsonIgnore
 	public Optional<EimType> getProductionEim() {
-		return findBymeasurementType(productionList, PRODUCTION_TYPE);
+		return findByMeasurementType(productionList, PRODUCTION_TYPE);
 	}
 
 	@JsonIgnore
 	public Optional<EimType> getTotalConsumptionEim() {
-		return findBymeasurementType(consumptionList, "total-consumption");
+		return findByMeasurementType(consumptionList, "total-consumption");
 	}
 
 	@JsonIgnore
 	public Optional<EimType> getNetConsumptionEim() {
-		return findBymeasurementType(consumptionList, "net-consumption");
+		return findByMeasurementType(consumptionList, "net-consumption");
 	}
 
 	private Optional<PowerMeter> getProductionMeter() {
@@ -144,7 +143,7 @@ public class Production {
 		return getTotalConsumptionEim().orElseGet(EimType::new).getWattsNow();
 	}
 
-	private Optional<EimType> findBymeasurementType(List<TypeBase> list, String measurementType) {
+	private Optional<EimType> findByMeasurementType(List<TypeBase> list, String measurementType) {
 		return filterToEimType(list).stream()
 				.filter(eim -> eim.getMeasurementType() == null || eim.getMeasurementType().equalsIgnoreCase(measurementType))
 				.findFirst();
@@ -154,7 +153,7 @@ public class Production {
 		return list == null ? new ArrayList<>() : list.stream()
 				.filter(module -> module.getType().equalsIgnoreCase("eim"))
 				.map(EimType.class::cast)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 }
