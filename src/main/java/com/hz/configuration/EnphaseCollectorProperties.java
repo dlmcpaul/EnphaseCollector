@@ -33,6 +33,7 @@ public class EnphaseCollectorProperties {
     private LocalDate effectiveRateDate;
     private ProtectedHTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
+    private MqqtResource mqqtResource;
 
     // V7 Autofetch configuration
     private String enphaseWebUser;
@@ -79,8 +80,31 @@ public class EnphaseCollectorProperties {
         private String user;
         private String password;
 
+        public boolean isUserEmpty() {
+            return (user == null || user.isEmpty());
+        }
         public boolean isPasswordEmpty() {
             return (password == null || password.isEmpty());
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @NoArgsConstructor
+    public static class MqqtResource extends ProtectedHTTPResource {
+        private String topic;
+        private String publisherId;
+
+        @Override
+        public String getUrl() {
+            return "tcp://" + this.getHost() + ":" + this.getPort();
+        }
+
+        public boolean isPublisherIdEmpty() {
+            return (publisherId == null || publisherId.isEmpty());
+        }
+        public boolean isTopicEmpty() {
+            return (topic == null || topic.isEmpty());
         }
     }
 
