@@ -43,6 +43,8 @@
         <selenium.version>4.7.2</selenium.version>
         <!-- Jackson has vulnerabilities -->
         <jackson-bom.version>2.14.1</jackson-bom.version>
+        <!-- Bug in JPA introduced in 2.7.9 remove for 2.7.10 or 3.0.4 -->
+        <spring-data-bom.version>2021.2.9</spring-data-bom.version>
         <!-- end version overrides -->
         <spring-cloud.version>2021.0.5</spring-cloud.version>
         <paho.version>1.2.5</paho.version>
