@@ -1,10 +1,11 @@
 package com.hz.configuration;
 
-import io.micrometer.core.instrument.Clock;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
@@ -22,55 +23,91 @@ public class InfluxDBConfig {
 
 	private final EnphaseCollectorProperties config;
 
-	private static final String DATABASE_NAME = "solardb";
+	private static final String SOLAR_DATABASE_NAME = "solardb";
+	private static final String SOLAR_METRICS_DATABASE_NAME = "collectorStats";
+	private static final String SOLAR_METRICS_ORGANISATION = "hzindustries";
 
 	@Bean
 	@Profile({"influxdb"})
 	public InfluxMeterRegistry influxMeterRegistry() {
-		log.info("Writing metrics to influx database at {}", config.getInfluxdbResource().getUrl());
 
-		InfluxConfig metricsConfig = new InfluxConfig() {
+		InfluxConfig metricsConfig;
 
-			@NotNull
-			@Contract(pure = true)
-			@Override
-			public String db() {
-				return "collectorStats";
-			}
+		if (config.getInfluxdbResource().isTokenSet()) {
+			// Configure for V2 InfluxDB
+			metricsConfig = new InfluxConfig() {
+				@NotNull
+				@Override
+				public String uri() {
+					return config.getInfluxdbResource().getUrl();
+				}
 
-			@NotNull
-			@Override
-			public String uri() {
-				return config.getInfluxdbResource().getUrl();
-			}
+				@Override
+				public String token() {
+					return config.getInfluxdbResource().getToken();
+				}
 
-			@Override
-			public boolean autoCreateDb() {
-				return true;
-			}
+				@Override
+				public @NotNull String bucket() {
+					return SOLAR_METRICS_DATABASE_NAME;
+				}
 
-			@Override
-			public String retentionDuration() {
-				return "24h";
-			}
+				@Override
+				public String org () {
+					return SOLAR_METRICS_ORGANISATION;
+				}
+				@Override
+				public String get(@NotNull String k) {
+					return null; // accept the rest of the defaults
+				}
+			};
+		} else {
+			// Configure for V1 InfluxDB
+			metricsConfig = new InfluxConfig() {
 
-			@Override
-			public String userName() {
-				return config.getInfluxdbResource().getUser();
-			}
+				@NotNull
+				@Contract(pure = true)
+				@Override
+				public String db() {
+					return SOLAR_METRICS_DATABASE_NAME;
+				}
 
-			@Override
-			public String password() {
-				return config.getInfluxdbResource().getPassword();
-			}
+				@NotNull
+				@Override
+				public String uri() {
+					return config.getInfluxdbResource().getUrl();
+				}
 
-			@Override
-			public String get(@NotNull String k) {
-				return null; // accept the rest of the defaults
-			}
-		};
+				@Override
+				public boolean autoCreateDb() {
+					return true;
+				}
 
-		return new InfluxMeterRegistry(metricsConfig, Clock.SYSTEM);
+				@Override
+				public String retentionDuration() {
+					return "24h";
+				}
+
+				@Override
+				public String userName() {
+					return config.getInfluxdbResource().getUser();
+				}
+
+				@Override
+				public String password() {
+					return config.getInfluxdbResource().getPassword();
+				}
+
+				@Override
+				public String get(@NotNull String k) {
+					return null; // accept the rest of the defaults
+				}
+			};
+		}
+
+		log.info("Writing micrometer metrics to influx {} database at {}", metricsConfig.apiVersion().toString(), config.getInfluxdbResource().getUrl());
+
+		return InfluxMeterRegistry.builder(metricsConfig).build();
 	}
 
 	@Bean
@@ -80,15 +117,37 @@ public class InfluxDBConfig {
 
 		InfluxDB database;
 
-		if (config.getInfluxdbResource().getUser() == null || config.getInfluxdbResource().getUser().isEmpty()) {
-			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
-		} else {
-			log.info("Connecting with credentials {}", config.getInfluxdbResource().getUser());
-			database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
-		}
-		database.query(new Query("CREATE DATABASE \"" + DATABASE_NAME + "\" WITH DURATION 365d", DATABASE_NAME));
+		try {
+			if (config.getInfluxdbResource().noAuthenticationSet()) {
+				log.info("Connecting to InfluxDB without credentials");
+				database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl());
+			} else if (config.getInfluxdbResource().isTokenSet()) {
+				log.info("Connecting to InfluxDB with token");
+				OkHttpClient.Builder client = new OkHttpClient.Builder();
 
-		database.setDatabase(DATABASE_NAME);
+				client.addInterceptor(chain -> {
+					Request original = chain.request();
+
+					Request request = original.newBuilder()
+							.header("Authorization", "Token " + config.getInfluxdbResource().getToken())
+							.method(original.method(), original.body())
+							.build();
+
+					return chain.proceed(request);
+				});
+				database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), client);
+			} else {
+				log.info("Connecting to InfluxDB with credentials as user {}", config.getInfluxdbResource().getUser());
+				database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
+			}
+
+			database.query(new Query(String.format("CREATE DATABASE \"%1s\" WITH DURATION 365d", SOLAR_DATABASE_NAME)));
+		} catch (Exception e) {
+			log.error("InfluxDB Exception: {}", e.getMessage());
+			throw e;
+		}
+
+		database.setDatabase(SOLAR_DATABASE_NAME);
 		database.enableBatch(BatchOptions.DEFAULTS);
 		database.setLogLevel(InfluxDB.LogLevel.NONE);
 		return database;

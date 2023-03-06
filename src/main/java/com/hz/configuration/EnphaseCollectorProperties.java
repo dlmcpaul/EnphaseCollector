@@ -79,6 +79,23 @@ public class EnphaseCollectorProperties {
     public static class ProtectedHTTPResource extends HTTPResource {
         private String user;
         private String password;
+        private String token;
+
+        public boolean isUserPasswordSet() {
+            return (isUserEmpty() == false && isPasswordEmpty() == false);
+        }
+
+        public boolean isTokenSet() {
+            return isTokenEmpty() == false;
+        }
+
+        public boolean noAuthenticationSet() {
+            return isUserEmpty() && isPasswordEmpty() && isTokenEmpty();
+        }
+
+        public boolean isTokenEmpty() {
+            return (token == null || token.isEmpty());
+        }
 
         public boolean isUserEmpty() {
             return (user == null || user.isEmpty());

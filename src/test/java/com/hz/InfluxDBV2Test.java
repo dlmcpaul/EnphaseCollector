@@ -5,7 +5,7 @@ import io.micrometer.influx.InfluxMeterRegistry;
 import lombok.extern.log4j.Log4j2;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,41 +30,51 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @ActiveProfiles({"testing", "influxdb"})
 @Import(TestEnphaseSystemInfoConfig.class)
 @Log4j2
-class InfluxDBSecureTest {
+class InfluxDBV2Test {
 
 	@Container
-	private static final InfluxDBContainer<?> influx = new InfluxDBContainer<>(DockerImageName.parse("influxdb:1.8"))
-			.withExposedPorts(8086);
+	private static final InfluxDBContainer<?> influx = new InfluxDBContainer<>(DockerImageName.parse("influxdb:2.0.7"))
+			.withBucket("collectorStats")
+			.withOrganization("hzindustries")
+			.withAdminToken("token");
 
 	@Autowired
 	InfluxDB destinationInfluxDB;
+
+	@Autowired
+	InfluxMeterRegistry influxMeterRegistry;
 
 	@DynamicPropertySource
 	static void registerMySQLProperties(DynamicPropertyRegistry registry) {
 		registry.add("envoy.influxdbResource.host", influx::getHost);
 		registry.add("envoy.influxdbResource.port", influx::getFirstMappedPort);
-		registry.add("envoy.influxdbResource.user", () -> "admin");
-		registry.add("envoy.influxdbResource.password", () -> "password");
+		registry.add("envoy.influxdbResource.token", () -> influx.getAdminToken().orElse(""));
 	}
 
 	@Test
+	@Order(1)
 	void influxDBStarted() {
 		assertThat(influx.isCreated()).isTrue();
 		assertThat(destinationInfluxDB).isNotNull();
+		assertThat(destinationInfluxDB.ping().isGood()).isTrue();
 	}
 
 	@Test
+	@Order(2)
 	void writeMetric() {
 		assertDoesNotThrow(() -> {
-			destinationInfluxDB.write(Point.measurement("testmeasurment").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
+			destinationInfluxDB.write(Point.measurement("test-measurement").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
 			destinationInfluxDB.flush();
 		}, "Failed to write metric to influxdb");
 	}
 
-	// Need to handle cleanup as Container will go away before spring teardown of beans
-	@AfterAll
-	static void shutdown(@Autowired InfluxMeterRegistry influxMeterRegistry) {
-		influxMeterRegistry.close();
-		influxMeterRegistry.clear();
+	@Test
+	@Order(3)
+	void flushMicrometerMetrics() {
+		assertDoesNotThrow(() -> {
+			influxMeterRegistry.close();
+			influxMeterRegistry.clear();
+		}, "Failed to flush micrometer metrics");
 	}
+
 }

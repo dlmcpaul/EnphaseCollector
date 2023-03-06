@@ -13,8 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
+import org.testcontainers.containers.InfluxDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -34,10 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 class InfluxDBTest {
 
 	@Container
-	private static final GenericContainer<?> influx = new GenericContainer<>(DockerImageName.parse("influxdb:1.8"))
-			.withExposedPorts(8086)
-			.withEnv("INFLUXDB_HTTP_AUTH_ENABLED", "false")
-			.waitingFor(new WaitAllStrategy());
+	private static final InfluxDBContainer<?> influx = new InfluxDBContainer<>(DockerImageName.parse("influxdb:1.8"))
+			.withAuthEnabled(false);
 
 	@Autowired
 	InfluxDB destinationInfluxDB;
@@ -57,7 +54,7 @@ class InfluxDBTest {
 	@Test
 	void writeMetric() {
 		assertDoesNotThrow(() -> {
-			destinationInfluxDB.write(Point.measurement("testmeasurment").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
+			destinationInfluxDB.write(Point.measurement("test-measurement").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
 			destinationInfluxDB.flush();
 		}, "Failed to write metric to influxdb");
 	}
