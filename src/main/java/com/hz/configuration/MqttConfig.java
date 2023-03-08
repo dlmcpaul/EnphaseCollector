@@ -6,6 +6,7 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -21,9 +22,10 @@ public class MqttConfig {
 	private static final String DEFAULTPUBLISHERID = UUID.randomUUID().toString();
 
 	@Profile("mqtt")
-	IMqttClient mqttClient() throws MqttException {
+	@Bean
+	public IMqttClient mqttClient() throws MqttException {
 		if (config.getMqqtResource() == null) {
-			throw new RuntimeException("Please congfigure the mqtt settings");
+			throw new RuntimeException("Please configure the mqtt settings");
 		}
 
 		EnphaseCollectorProperties.MqqtResource mqqtResource = config.getMqqtResource();
@@ -41,10 +43,8 @@ public class MqttConfig {
 
 		String publisherId = mqqtResource.isPublisherIdEmpty() ? DEFAULTPUBLISHERID : mqqtResource.getPublisherId();
 
-		try (IMqttClient publisher = new MqttClient(mqqtResource.getUrl(), publisherId)) {
-			publisher.connect(options);
-
-			return publisher;
-		}
+		IMqttClient publisher = new MqttClient(mqqtResource.getUrl(), publisherId);
+		publisher.connect(options);
+		return publisher;
 	}
 }

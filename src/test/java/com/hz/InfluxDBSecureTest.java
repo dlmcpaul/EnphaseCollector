@@ -56,7 +56,7 @@ class InfluxDBSecureTest {
 	@Test
 	void writeMetric() {
 		assertDoesNotThrow(() -> {
-			destinationInfluxDB.write(Point.measurement("testmeasurment").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
+			destinationInfluxDB.write(Point.measurement("test-measurement").time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), TimeUnit.MILLISECONDS).addField("value", 77f).build());
 			destinationInfluxDB.flush();
 		}, "Failed to write metric to influxdb");
 	}
