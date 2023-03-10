@@ -11,6 +11,9 @@ import com.hz.services.EnvoyService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -18,8 +21,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
@@ -106,7 +107,7 @@ public class EnphaseController {
 
 	// Generate main page from template
 	@GetMapping("/")
-	public String home(Model model) {
+	public String home(Model model, HttpServletRequest request) {
 		try {
 			model.addAttribute("consumption", localDBService.getLastEvent().getConsumption().intValue());
 			model.addAttribute("production", localDBService.getLastEvent().getProduction().intValue());
@@ -121,6 +122,7 @@ public class EnphaseController {
 			model.addAttribute("TZ", Calendar.getInstance().getTimeZone().toZoneId().getId());
 			model.addAttribute("releaseVersion", release.getVersion());
 			model.addAttribute("exportLimit", properties.getExportLimit());
+			model.addAttribute("contextPath", request.getContextPath());
 		} catch (Exception e) {
 			log.error("index Page Exception {}", e.getMessage(), e);
 		}

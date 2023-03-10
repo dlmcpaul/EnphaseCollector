@@ -1,13 +1,13 @@
 package com.hz.models.database;
 
 import com.hz.metrics.Metric;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class Event {
 	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long id;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
 	@ToString.Exclude
 	private List<Panel> panels = new ArrayList<>();
 	private LocalDateTime time = LocalDateTime.now();

@@ -2,9 +2,8 @@ package com.hz.components;
 
 import com.hz.annotations.ToLessThanFrom;
 import com.hz.controllers.models.DateRange;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ToLessThanFromValidator implements ConstraintValidator<ToLessThanFrom, DateRange> {
 	@Override

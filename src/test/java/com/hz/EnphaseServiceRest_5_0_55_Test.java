@@ -1,5 +1,6 @@
 package com.hz;
 
+import com.hz.components.EnphaseRequestRetryStrategy;
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
@@ -9,6 +10,8 @@ import com.hz.services.EnvoyConnectionProxy;
 import com.hz.services.EnvoyService;
 import com.hz.utils.MetricCalculatorNegativeConsumption;
 import lombok.extern.log4j.Log4j2;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +27,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -58,22 +64,31 @@ class EnphaseServiceRest_5_0_55_Test {
 		private RestTemplateBuilder restTemplateBuilder;
 
 		@Bean
-		public RestTemplate enphaseRestTemplate() {
+		public HttpClient createDefaultHttpClient() {
+			return HttpClients
+					.custom()
+					.useSystemProperties()
+					.setRetryStrategy(new EnphaseRequestRetryStrategy())
+					.build();
+		}
+
+		@Bean
+		public RestTemplate enphaseRestTemplate(HttpClient httpClient) {
 			RestTemplate result = restTemplateBuilder
 					.rootUri("http://localhost:" + this.environment.getProperty("wiremock.server.port"))
 					.setConnectTimeout(Duration.ofSeconds(5))
-					.setReadTimeout(Duration.ofSeconds(30))
+					.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 					.build();
 			result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 			return result;
 		}
 
 		@Bean
-		public RestTemplate enphaseSecureRestTemplate() {
+		public RestTemplate enphaseSecureRestTemplate(HttpClient httpClient) {
 			RestTemplate result = restTemplateBuilder
 					.rootUri("http://localhost:" + this.environment.getProperty("wiremock.server.port"))
 					.setConnectTimeout(Duration.ofSeconds(5))
-					.setReadTimeout(Duration.ofSeconds(30))
+					.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 					.build();
 			result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 			return result;
@@ -97,7 +112,7 @@ class EnphaseServiceRest_5_0_55_Test {
 	private RestTemplate enphaseSecureRestTemplate;
 
 	@Test
-	void enphase_5_0_55_ServiceTest() throws IOException {
+	void enphase_5_0_55_ServiceTest() throws IOException, URISyntaxException {
 
 		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);

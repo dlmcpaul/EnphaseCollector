@@ -26,9 +26,9 @@
         <nav class="tabs is-centered" id="main-tab" role="navigation">
             <ul>
                 <li id="live" class="is-active"><a data-th-onClick="switchToTab('main-tab', 'live')">Live</a></li>
-                <li id="weekly"><a data-th-onClick="switchToHistoryTab('main-tab', 'weekly', [[${#httpServletRequest.contextPath}]] + '/history?duration=7Days')">Week</a></li>
-                <li id="monthly"><a data-th-onClick="switchToHistoryTab('main-tab', 'monthly', [[${#httpServletRequest.contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
-                <li id="quarterly"><a data-th-onClick="switchToHistoryTab('main-tab', 'quarterly', [[${#httpServletRequest.contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
+                <li id="weekly"><a data-th-onClick="switchToHistoryTab('main-tab', 'weekly', [[${contextPath}]] + '/history?duration=7Days')">Week</a></li>
+                <li id="monthly"><a data-th-onClick="switchToHistoryTab('main-tab', 'monthly', [[${contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
+                <li id="quarterly"><a data-th-onClick="switchToHistoryTab('main-tab', 'quarterly', [[${contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
                 <li id="qna"><a data-th-onClick="switchToTab('main-tab', 'qna')">Q & A</a></li>
             </ul>
         </nav>
@@ -81,7 +81,7 @@
 <script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initHighCharts([[${TZ}]]);
-    initLiveCharts([[${#httpServletRequest.contextPath}]], [[${refresh_interval}]], [[${exportLimit}]]);
+    initLiveCharts([[${contextPath}]], [[${refresh_interval}]], [[${exportLimit}]]);
     initHistoryCharts();
 </script>
 </body>

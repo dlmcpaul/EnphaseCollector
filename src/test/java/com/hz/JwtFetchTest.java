@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.MONTHS;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Log4j2
@@ -55,7 +55,7 @@ class JwtFetchTest {
 
 			assertTrue(jwtDataSection.getSerialNumber().equalsIgnoreCase(secrets.getEnvoySerialNumber()));
 			assertTrue(jwtDataSection.getIssuerDate().isBefore(LocalDateTime.now().plus(1, MINUTES)));
-			assertTrue(jwtDataSection.getExpires().isEqual(jwtDataSection.getIssuerDate().plus(12, MONTHS)));
+			assertTrue(jwtDataSection.getExpires().isEqual(jwtDataSection.getIssuerDate().plus(365, DAYS)));
 		} catch (IOException e) {
 			log.error("ERROR: {}", e.getMessage(), e);
 			fail();

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import com.hz.models.envoy.AuthorisationToken;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class TestEnphaseSystemInfoConfig {
 		log.info("Creating Mocked EnvoyInfo");
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
-			xmlMapper.registerModule(new JaxbAnnotationModule());
+			xmlMapper.registerModule(new JakartaXmlBindAnnotationModule());
 			xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);   // We want to fail on unknown properties, so we can test new releases
 
 			return xmlMapper.readValue(mockEnvoyInfo, EnvoyInfo.class);

@@ -1,34 +1,44 @@
 package com.hz.services;
 
-import com.hz.components.EnphaseRequestRetryHandler;
+import com.hz.components.EnphaseRequestRetryStrategy;
 import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.models.envoy.AuthorisationToken;
 import com.hz.utils.EnphaseJWTExtractor;
 import com.hz.utils.InstallerPasswordCalculator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,7 +47,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.hz.configuration.EnphaseURLS.*;
-import static org.apache.http.auth.AuthScope.ANY_SCHEME;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +66,6 @@ public class EnvoyConnectionProxy {
 		return builder
 				.rootUri(config.getController().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(30))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
 	}
@@ -68,29 +76,29 @@ public class EnvoyConnectionProxy {
 		HttpClient httpClient = HttpClients
 				.custom()
 				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+				.setRetryStrategy(new EnphaseRequestRetryStrategy())
 				.build();
 
 		return buildTemplate(httpClient);
 	}
 
-	private CredentialsProvider standardProvider() {
+	private CredentialsProvider standardProvider() throws URISyntaxException {
 		log.info("Preparing Realm Authentication Provider with user {}", config.getController().getUser());
 
-		CredentialsProvider provider = new BasicCredentialsProvider();
+		BasicCredentialsProvider provider = new BasicCredentialsProvider();
 		UsernamePasswordCredentials credentials =
-				new UsernamePasswordCredentials(authorisationToken.getUser(), authorisationToken.getPassword());
-		provider.setCredentials(new AuthScope(config.getController().getHost(), 80, REALM, ANY_SCHEME), credentials);
+				new UsernamePasswordCredentials(authorisationToken.getUser(), authorisationToken.getPassword().toCharArray());
+		provider.setCredentials(new AuthScope(HttpHost.create(new URI(config.getController().getUrl())), REALM, null), credentials);
 		return provider;
 	}
 
-	private CredentialsProvider installerProvider() {
+	private CredentialsProvider installerProvider() throws URISyntaxException {
 		log.info("Preparing Installer Realm Authentication Provider with user {}", InstallerPasswordCalculator.USERNAME);
 
-		CredentialsProvider provider = new BasicCredentialsProvider();
+		BasicCredentialsProvider provider = new BasicCredentialsProvider();
 		UsernamePasswordCredentials credentials =
-			new UsernamePasswordCredentials(InstallerPasswordCalculator.USERNAME, InstallerPasswordCalculator.getPassword(authorisationToken.getSerialNo()));
-		provider.setCredentials(new AuthScope(config.getController().getHost(), 80, REALM, ANY_SCHEME), credentials);
+			new UsernamePasswordCredentials(InstallerPasswordCalculator.USERNAME, InstallerPasswordCalculator.getPassword(authorisationToken.getSerialNo()).toCharArray());
+		provider.setCredentials(new AuthScope(HttpHost.create(new URI(config.getController().getUrl())), REALM, null), credentials);
 		return provider;
 	}
 
@@ -101,10 +109,28 @@ public class EnvoyConnectionProxy {
 				.custom()
 				.setDefaultCredentialsProvider(provider)
 				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+				.setRetryStrategy(new EnphaseRequestRetryStrategy())
 				.build();
 
 		return buildTemplate(httpClient);
+	}
+
+	private BasicHttpClientConnectionManager createSSLConnectionManager() {
+		try {
+			SSLContext sslContext = SSLContexts.custom()
+				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+				.build();
+			Registry<ConnectionSocketFactory> socketFactoryRegistry =
+				RegistryBuilder.<ConnectionSocketFactory> create()
+						.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
+						.register("http", new PlainConnectionSocketFactory())
+						.build();
+
+			return new BasicHttpClientConnectionManager(socketFactoryRegistry);
+		} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+			log.error("Could not create an SSL context - {}", e.getMessage(), e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	private RestTemplate createSecureRestTemplateV7() {
@@ -117,29 +143,28 @@ public class EnvoyConnectionProxy {
 			HttpClient httpClient = HttpClients
 					.custom()
 					.useSystemProperties()
-					.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+					.setRetryStrategy(new EnphaseRequestRetryStrategy())
 					.setDefaultHeaders(List.of(header))
-					.setSSLContext(SSLContextBuilder.create().loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE).build())
-					.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+					.setConnectionManager(createSSLConnectionManager())
 					.setDefaultCookieStore(cookieStore)
 					.build();
 
 			// Make a call to the /auth/check_jwt endpoint to set the cookie
 			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
-			if (response.getStatusLine().getStatusCode() != 200) {
-				log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getStatusLine());
+			if (response.getCode() != 200) {
+				log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getCode());
 			}
 
 			return buildTemplate(httpClient);
 
-		} catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+		} catch (IOException e) {
 			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
 
 	}
 
-	public RestTemplate getSecureTemplate() throws IOException {
+	public RestTemplate getSecureTemplate() throws IOException, URISyntaxException {
 		if (secureTemplate == null) {
 			if (authorisationToken.isV5()) {
 				log.debug("Creating a new secure V5 access template");
@@ -174,7 +199,7 @@ public class EnvoyConnectionProxy {
 	}
 
 	// Installer Provider is also likely changed with V7
-	private RestTemplate getInstallerTemplate() {
+	private RestTemplate getInstallerTemplate() throws URISyntaxException {
 		if (installerTemplate == null) {
 			installerTemplate = createSecureRestTemplateV5(installerProvider());
 		}

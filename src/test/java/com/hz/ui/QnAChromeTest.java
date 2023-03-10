@@ -33,7 +33,7 @@ class QnAChromeTest {
 
 	@Container
 	public static BrowserWebDriverContainer<?> edge = new BrowserWebDriverContainer<>()
-			.withCapabilities(new ChromeOptions().setHeadless(true))
+			.withCapabilities(new ChromeOptions().addArguments("--headless=new"))
 			.withAccessToHost(true);
 
 	static QnAForm qnaForm;
@@ -44,7 +44,7 @@ class QnAChromeTest {
 	@BeforeAll
 	void startup() {
 		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
-		WebDriverRunner.setWebDriver(new RemoteWebDriver(edge.getSeleniumAddress(), new ChromeOptions().setHeadless(true)));
+		WebDriverRunner.setWebDriver(new RemoteWebDriver(edge.getSeleniumAddress(), new ChromeOptions().addArguments("--headless=new"), false));
 		qnaForm = open(String.format("http://host.testcontainers.internal:%d/solar", appPort), QnAForm.class);
 		$("#qna").click();
 	}

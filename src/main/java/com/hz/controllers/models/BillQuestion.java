@@ -1,13 +1,12 @@
 package com.hz.controllers.models;
 
 import com.hz.models.interfaces.RateInterface;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Validated

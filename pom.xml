@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.9</version>
+        <version>3.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -33,20 +33,9 @@
         <influxdb.connector.version>2.23</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.46</webjars.locator.version>
-        <karate.version>1.3.1</karate.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <selenide.version>6.11.0</selenide.version>
-        <!-- Overrides remove/check when spring boot upgrades -->
-        <!-- Snakeyaml has vulnerabilities - remove on update to spring boot 3 -->
-        <snakeyaml.version>1.33</snakeyaml.version>
-        <!-- Selenide needs V4 of selenium but spring boot is locked to V3 -->
-        <selenium.version>4.7.2</selenium.version>
-        <!-- Jackson has vulnerabilities -->
-        <jackson-bom.version>2.14.1</jackson-bom.version>
-        <!-- Bug in JPA introduced in 2.7.9 remove for 2.7.10 or 3.0.4 -->
-        <spring-data-bom.version>2021.2.9</spring-data-bom.version>
-        <!-- end version overrides -->
-        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <spring-cloud.version>2022.0.1</spring-cloud.version>
         <paho.version>1.2.5</paho.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
@@ -145,16 +134,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -165,6 +146,7 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+
         <!-- Web View dependencies -->
         <dependency>
             <groupId>org.webjars</groupId>
@@ -204,12 +186,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-junit5</artifactId>
-            <version>${karate.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <version>${testcontainers.version}</version>
@@ -242,7 +218,32 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-remote-driver</artifactId>
-            <version>4.8.0</version>
+            <version>${selenium.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-properties-migrator</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
     </dependencies>
 
@@ -276,8 +277,8 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
                 <configuration>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
                     <includeOnlyProperties>
@@ -326,6 +327,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

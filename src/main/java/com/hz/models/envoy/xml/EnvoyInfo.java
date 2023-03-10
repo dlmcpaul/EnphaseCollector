@@ -1,10 +1,10 @@
 package com.hz.models.envoy.xml;
 
 import com.hz.utils.Convertors;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.NoArgsConstructor;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class EnvoyInfo {
 			return false;
 		}
 		String majorVersion = envoyDevice.software.substring(1,2);
-		if (majorVersion.matches("[0-9]")) {
+		if (majorVersion.matches("\\d")) {
 			return Integer.parseInt(majorVersion) > 6;
 		}
 

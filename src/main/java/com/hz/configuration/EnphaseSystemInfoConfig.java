@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.hz.components.EnphaseRequestRetryHandler;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+import com.hz.components.EnphaseRequestRetryStrategy;
 import com.hz.models.envoy.AuthorisationToken;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -41,13 +41,12 @@ public class EnphaseSystemInfoConfig {
 		HttpClient httpClient = HttpClients
 				.custom()
 				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
+				.setRetryStrategy(new EnphaseRequestRetryStrategy())
 				.build();
 
 		return builder
 				.rootUri(config.getController().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(30))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
 	}
@@ -57,7 +56,7 @@ public class EnphaseSystemInfoConfig {
 		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUrl(), EnphaseURLS.CONTROLLER);
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
-			xmlMapper.registerModule(new JaxbAnnotationModule());
+			xmlMapper.registerModule(new JakartaXmlBindAnnotationModule());
 			xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 			String infoXml = infoRestTemplate(restTemplateBuilder).getForObject(EnphaseURLS.CONTROLLER, String.class);
