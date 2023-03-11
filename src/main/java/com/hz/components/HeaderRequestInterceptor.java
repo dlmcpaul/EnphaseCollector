@@ -1,5 +1,6 @@
 package com.hz.components;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -10,7 +11,6 @@ import java.io.IOException;
 public class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
 
 	private final String headerName;
-
 	private final String headerValue;
 
 	public HeaderRequestInterceptor(String headerName, String headerValue) {
@@ -19,7 +19,7 @@ public class HeaderRequestInterceptor implements ClientHttpRequestInterceptor {
 	}
 
 	@Override
-	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
+	public @NotNull ClientHttpResponse intercept(HttpRequest request, byte @NotNull [] body, ClientHttpRequestExecution execution) throws IOException {
 		request.getHeaders().add(headerName, headerValue);
 		return execution.execute(request, body);
 	}
