@@ -68,7 +68,7 @@ public class PvOutputService {
 				LocalTime lastUpdateTime = LocalTime.parse(elements[UPDATE_TIME], DateTimeFormatter.ISO_LOCAL_TIME);
 
 				log.info("PvOutput was last updated at {} {}", lastUpdateDate, lastUpdateTime);
-				if (lastUpdateDate.compareTo(LocalDate.now()) == 0) {
+				if (lastUpdateDate.isEqual(LocalDate.now())) {
 					// Today so we can set accumulators
 					this.energyGeneratedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[GENERATED_TOTAL]));
 					this.energyConsumedAccumulator = BigDecimal.valueOf(Integer.parseInt(elements[CONSUMED_TOTAL]));
@@ -118,7 +118,7 @@ public class PvOutputService {
 
 			try {
 				final ResponseEntity<String> stringResponseEntity = this.pvRestTemplate.postForEntity(properties.getPvOutputResource().getUrl() + PvOutputClientConfig.ADD_STATUS, requestEntity, String.class);
-				if (stringResponseEntity.getStatusCodeValue() != 200) {
+				if (stringResponseEntity.getStatusCode().value() != 200) {
 					log.error("Error updating PvOutput: Request {} -> {}", requestEntity.getBody(), stringResponseEntity.hasBody() ? stringResponseEntity.getBody() : "NO BODY");		// NOSONAR
 				}
 			} catch (HttpClientErrorException e) {

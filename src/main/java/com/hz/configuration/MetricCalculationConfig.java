@@ -14,13 +14,13 @@ public class MetricCalculationConfig {
 
 	@Bean
 	@Profile({"!experimental"})
-	public MetricCalculator Standard() {
+	public MetricCalculator standard() {
 		return new MetricCalculatorStandard();
 	}
 
 	@Bean
 	@Profile({"experimental"})
-	public MetricCalculator Experimental() {
+	public MetricCalculator experimental() {
 		return new MetricCalculatorNegativeConsumption();
 	}
 }
