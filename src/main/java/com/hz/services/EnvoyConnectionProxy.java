@@ -108,7 +108,7 @@ public class EnvoyConnectionProxy {
 	}
 
 	private RestTemplate createSecureRestTemplateV7() {
-		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + config.getBearerToken());
+		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authorisationToken.getJwt());
 
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
