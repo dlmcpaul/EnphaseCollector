@@ -1,5 +1,6 @@
 package com.hz.components;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.InitializingBean;
@@ -11,7 +12,6 @@ import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.Optional;
 

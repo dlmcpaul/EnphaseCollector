@@ -1,19 +1,18 @@
 package com.hz.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hz.components.EnphaseRequestRetryHandler;
 import com.hz.models.envoy.WebToken;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,22 +45,24 @@ public class EnphaseJWTExtractor {
 		return HttpClients
 				.custom()
 				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
 				.setDefaultCookieStore(cookieStore)
+				.setDefaultRequestConfig(RequestConfig.custom()
+						.setCookieSpec(StandardCookieSpec.STRICT)
+						.build())
+				.disableRedirectHandling()
 				.build();
 	}
 
 	public static Document getLoginPage(CloseableHttpClient httpClient) throws IOException {
-		RequestConfig defaultConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		HttpGet getMethod = new HttpGet(ENPHASE_BASE_URI);
-		getMethod.setConfig(defaultConfig);
 		getMethod.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
 		try (CloseableHttpResponse response = httpClient.execute(getMethod)) {
 
-			if (response.getStatusLine().getStatusCode() != 200) {
+			if (response.getCode() != 200) {
 				throw new IOException("Failed to load Enlighten Login Page");
 			}
+
 			return Jsoup.parse(response.getEntity().getContent(), "UTF-8", ENPHASE_BASE_URI);
 		}
 	}
@@ -86,7 +87,7 @@ public class EnphaseJWTExtractor {
 		request.setEntity(body);
 
 		try (CloseableHttpResponse response = httpClient.execute(request)) {
-			if (response.getStatusLine().getStatusCode() != 302) {
+			if (response.getCode() != 302) {
 				throw new IOException("Failed to perform Login");
 			}
 			HttpGet redirect = new HttpGet(response.getFirstHeader("location").getValue());
@@ -94,7 +95,7 @@ public class EnphaseJWTExtractor {
 				log.info("Redirect response {}", redirectResponse.getStatusLine().getStatusCode());
 			}
 
-			log.info("SubmitForm Status = {} with redirect to {}", response.getStatusLine(), response.getFirstHeader("location").getValue());
+			log.info("SubmitForm Status = {} with redirect to {}", response.getCode(), response.getFirstHeader("location").getValue());
 		}
 	}
 
@@ -103,7 +104,7 @@ public class EnphaseJWTExtractor {
 
 		try (CloseableHttpResponse response = httpClient.execute(jwtRequest)) {
 
-			if (response.getStatusLine().getStatusCode() != 200) {
+			if (response.getCode() != 200) {
 				throw new IOException("Failed to load the token page");
 			}
 

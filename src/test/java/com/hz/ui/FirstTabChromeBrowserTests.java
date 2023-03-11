@@ -29,7 +29,7 @@ import static com.codeborne.selenide.Selenide.open;
 class FirstTabChromeBrowserTests {
 	@Container
 	public static BrowserWebDriverContainer<?> chrome = new BrowserWebDriverContainer<>()
-			.withCapabilities(new ChromeOptions().setHeadless(true))
+			.withCapabilities(new ChromeOptions().addArguments("--headless=new"))
 			.withAccessToHost(true);
 
 	@LocalServerPort // to inject port value to non-static field
@@ -38,7 +38,7 @@ class FirstTabChromeBrowserTests {
 	@BeforeAll
 	void startup() {
 		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
-		WebDriverRunner.setWebDriver(new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions().setHeadless(true)));
+		WebDriverRunner.setWebDriver(new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions().addArguments("--headless=new"), false));
 	}
 
 	@BeforeEach

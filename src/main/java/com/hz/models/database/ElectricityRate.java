@@ -1,11 +1,11 @@
 package com.hz.models.database;
 
 import com.hz.models.interfaces.RateInterface;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.time.LocalDate;
 import java.util.Objects;
 

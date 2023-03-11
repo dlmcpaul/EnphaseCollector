@@ -1,13 +1,13 @@
 package com.hz.models.database;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;

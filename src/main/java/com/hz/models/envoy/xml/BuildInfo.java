@@ -1,6 +1,6 @@
 package com.hz.models.envoy.xml;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public class BuildInfo {
 	@XmlElement(name="build_id")

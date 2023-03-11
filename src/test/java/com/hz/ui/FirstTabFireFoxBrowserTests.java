@@ -30,7 +30,7 @@ class FirstTabFireFoxBrowserTests {
 
 	@Container
 	public static BrowserWebDriverContainer<?> firefox = new BrowserWebDriverContainer<>()
-			.withCapabilities(new FirefoxOptions().setHeadless(true))
+			.withCapabilities(new FirefoxOptions().addArguments("-headless"))
 			.withAccessToHost(true);
 
 	@LocalServerPort //to inject port value to non-static field
@@ -39,7 +39,7 @@ class FirstTabFireFoxBrowserTests {
 	@BeforeAll
 	void startup() {
 		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
-		WebDriverRunner.setWebDriver(new RemoteWebDriver(firefox.getSeleniumAddress(), new FirefoxOptions().setHeadless(true)));
+		WebDriverRunner.setWebDriver(new RemoteWebDriver(firefox.getSeleniumAddress(), new FirefoxOptions().addArguments("-headless"), false));
 	}
 
 	@BeforeEach

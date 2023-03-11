@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,10 +42,10 @@ public class EnvoyService {
     	return (lastReadTime > 0L) ? Convertors.convertToLocalDateTime(lastReadTime) : LocalDateTime.now();
 	}
 
-	private System getSystemData() throws IOException {
+	private System getSystemData() throws IOException, URISyntaxException {
 		ResponseEntity<System> systemResponse = envoyConnectionProxy.getSecureTemplate().getForEntity(EnphaseURLS.SYSTEM, System.class);
 
-		if (systemResponse.getStatusCodeValue() == 200 &&
+		if (systemResponse.getStatusCode().value() == 200 &&
 			systemResponse.getBody() != null) {
 				return systemResponse.getBody();
 		}
@@ -81,7 +82,7 @@ public class EnvoyService {
 
 		    this.readSuccess = true;
 		    return Optional.of(system);
-	    } catch (RestClientException | IOException e) {
+	    } catch (RestClientException | IOException | URISyntaxException e) {
 		    log.error("Failed to retrieve Solar stats. Exception was {}", e.getMessage(), e);
 	    } catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -107,14 +108,14 @@ public class EnvoyService {
 	    return eim.map(typeBase -> typeBase.getReadingTime() <= lastReadTime).orElse(false);
     }
 
-    private void getInventory(System system) throws IOException {
+    private void getInventory(System system) throws IOException, URISyntaxException {
 	    if (fullReadCount-- <= 0) {
 		    fullReadCount = 10;  // Only update every 10 calls.
 
 		    ResponseEntity<List<Inventory>> inventoryResponse =
 				    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
 
-		    if (inventoryResponse.getStatusCodeValue() == 200) {
+		    if (inventoryResponse.getStatusCode().value() == 200) {
 			    system.setInventoryList(inventoryResponse.getBody());
 			    inventoryList = system.getInventoryList();
 	        } else {
@@ -125,11 +126,11 @@ public class EnvoyService {
 	    }
     }
 
-	private void getProductionData(System system) throws IOException {
+	private void getProductionData(System system) throws IOException, URISyntaxException {
 		system.setProduction( envoyConnectionProxy.getSecureTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class) );
 	}
 
-	private void getDeviceMeters(System system) throws IOException {
+	private void getDeviceMeters(System system) throws IOException, URISyntaxException {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 	    HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -139,7 +140,7 @@ public class EnvoyService {
 					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.DEVICE_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<DeviceMeter>>() {
 					});
 
-			if (deviceMeterResponse.getStatusCodeValue() == 200) {
+			if (deviceMeterResponse.getStatusCode().value() == 200) {
 				system.getProduction().setDeviceMeterList(deviceMeterResponse.getBody());
 			} else {
 				throw new IOException("Reading Device Meters failed with status " + deviceMeterResponse.getStatusCode());
@@ -150,7 +151,7 @@ public class EnvoyService {
 		}
 	}
 
-	private void getPowerMeters(System system) throws IOException {
+	private void getPowerMeters(System system) throws IOException, URISyntaxException {
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setAccept(List.of(MediaType.APPLICATION_OCTET_STREAM));
 	    HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -159,7 +160,7 @@ public class EnvoyService {
 			ResponseEntity<List<PowerMeter>> powerMeterResponse =
 					envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.POWER_METERS, HttpMethod.GET, entity, new ParameterizedTypeReference<List<PowerMeter>>() { });
 
-			if (powerMeterResponse.getStatusCodeValue() == 200) {
+			if (powerMeterResponse.getStatusCode().value() == 200) {
 				system.getProduction().setPowerMeterList(powerMeterResponse.getBody());
 			} else {
 				throw new IOException("Reading Power Meters failed with status " + powerMeterResponse.getStatusCode());
@@ -170,23 +171,23 @@ public class EnvoyService {
 		}
 	}
 
-	private void getIndividualPanelData(System system) throws IOException {
+	private void getIndividualPanelData(System system) throws IOException, URISyntaxException {
 	    // Individual Panel values
 	    ResponseEntity<List<Inverter>> inverterResponse =
 			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVERTERS, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inverter>>() { });
 
-	    if (inverterResponse.getStatusCodeValue() == 200) {
+	    if (inverterResponse.getStatusCode().value() == 200) {
 		    system.getProduction().setInverterList(inverterResponse.getBody());
 	    } else {
 		    throw new IOException("Reading Inverters failed with status " + inverterResponse.getStatusCode());
 	    }
     }
 
-    private void getWirelessInfo(System system) throws IOException {
+    private void getWirelessInfo(System system) throws IOException, URISyntaxException {
 		ResponseEntity<Wireless> wirelessResponse =
 				envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.WIFI_INFO, HttpMethod.GET, null, new ParameterizedTypeReference<Wireless>() { });
 
-		if (wirelessResponse.getStatusCodeValue() == 200) {
+		if (wirelessResponse.getStatusCode().value() == 200) {
 			system.setWireless(wirelessResponse.getBody());
 		} else {
 			throw new IOException("Reading Wireless Info failed with status " + wirelessResponse.getStatusCode());

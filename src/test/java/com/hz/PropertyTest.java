@@ -22,7 +22,7 @@ class PropertyTest {
 
 	@Test
 	void preferredValueTest() {
-		// Test non zero value returns the input
+		// Test non-zero value returns the input
 		assertThat(BigDecimal.valueOf(1)).isEqualByComparingTo(properties.getRefreshAsMinutes(BigDecimal.valueOf(1)));
 		assertThat(BigDecimal.valueOf(0.25)).isEqualByComparingTo(properties.getRefreshAsMinutes(BigDecimal.valueOf(0.25)));
 

@@ -4,17 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.hz.components.EnphaseRequestRetryHandler;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+import com.hz.components.EnphaseRequestRetryStrategy;
 import com.hz.models.envoy.AuthorisationToken;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +25,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Collections;
 
@@ -42,20 +36,17 @@ public class EnphaseSystemInfoConfig {
 
 	private final EnphaseCollectorProperties config;
 
-	private RestTemplate infoRestTemplate(RestTemplateBuilder builder) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+	private RestTemplate infoRestTemplate(RestTemplateBuilder builder) {
 
 		HttpClient httpClient = HttpClients
 				.custom()
 				.useSystemProperties()
-				.setRetryHandler(new EnphaseRequestRetryHandler(3, true))
-				.setSSLContext(SSLContextBuilder.create().loadTrustMaterial(TrustSelfSignedStrategy.INSTANCE).build())
-				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+				.setRetryStrategy(new EnphaseRequestRetryStrategy())
 				.build();
 
 		return builder
 				.rootUri(config.getController().getUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(30))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
 	}
@@ -65,15 +56,14 @@ public class EnphaseSystemInfoConfig {
 		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUrl(), EnphaseURLS.CONTROLLER);
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
-			xmlMapper.registerModule(new JaxbAnnotationModule());
+			xmlMapper.registerModule(new JakartaXmlBindAnnotationModule());
 			xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 			String infoXml = infoRestTemplate(restTemplateBuilder).getForObject(EnphaseURLS.CONTROLLER, String.class);
 			if (infoXml != null) {
 				return xmlMapper.readValue(infoXml, EnvoyInfo.class);
 			}
-		} catch (IOException | ResourceAccessException | NoSuchAlgorithmException | KeyStoreException |
-				 KeyManagementException e) {
+		} catch (IOException | ResourceAccessException e) {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 
