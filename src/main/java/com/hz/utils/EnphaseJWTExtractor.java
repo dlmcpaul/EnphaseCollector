@@ -92,7 +92,7 @@ public class EnphaseJWTExtractor {
 			}
 			HttpGet redirect = new HttpGet(response.getFirstHeader("location").getValue());
 			try(CloseableHttpResponse redirectResponse = httpClient.execute(redirect)) {
-				log.info("Redirect response {}", redirectResponse.getStatusLine().getStatusCode());
+				log.info("Redirect response {}", redirectResponse.getCode());
 			}
 
 			log.info("SubmitForm Status = {} with redirect to {}", response.getCode(), response.getFirstHeader("location").getValue());

@@ -15,7 +15,8 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
@@ -115,7 +116,7 @@ public class EnvoyConnectionProxy {
 		return buildTemplate(httpClient);
 	}
 
-	private BasicHttpClientConnectionManager createSSLConnectionManager() {
+	private HttpClientConnectionManager createSSLConnectionManager() {
 		try {
 			SSLContext sslContext = SSLContexts.custom()
 				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
@@ -126,7 +127,7 @@ public class EnvoyConnectionProxy {
 						.register("http", new PlainConnectionSocketFactory())
 						.build();
 
-			return new BasicHttpClientConnectionManager(socketFactoryRegistry);
+			return new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 		} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
 			log.error("Could not create an SSL context - {}", e.getMessage(), e);
 			throw new RuntimeException(e);
