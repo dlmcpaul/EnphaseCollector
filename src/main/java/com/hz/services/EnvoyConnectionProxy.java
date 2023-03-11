@@ -134,7 +134,7 @@ public class EnvoyConnectionProxy {
 	}
 
 	private RestTemplate createSecureRestTemplateV7() {
-		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + config.getBearerToken());
+		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authorisationToken.getJwt());
 
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
@@ -152,7 +152,7 @@ public class EnvoyConnectionProxy {
 			// Make a call to the /auth/check_jwt endpoint to set the cookie
 			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
 			if (response.getCode() != 200) {
-				log.error("Attempt to validate bearer token {} against {} failed with result {}", config.getBearerToken(), config.getController().getUrl() + AUTH_CHECK, response.getCode());
+				log.error("Attempt to validate bearer token {} against {} failed with result {}", authorisationToken.getJwt(), config.getController().getUrl() + AUTH_CHECK, response.getCode());
 			}
 
 			return buildTemplate(httpClient);
