@@ -62,6 +62,7 @@ public class EnvoyConnectionProxy {
 	private RestTemplate secureTemplate;
 	private RestTemplate defaultTemplate;
 	private RestTemplate installerTemplate;
+	private final HttpClientConnectionManager sslConnectionManager;
 
 	private RestTemplate buildTemplate(HttpClient httpClient) {
 		return builder
@@ -116,24 +117,6 @@ public class EnvoyConnectionProxy {
 		return buildTemplate(httpClient);
 	}
 
-	private HttpClientConnectionManager createSSLConnectionManager() {
-		try {
-			SSLContext sslContext = SSLContexts.custom()
-				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-				.build();
-			Registry<ConnectionSocketFactory> socketFactoryRegistry =
-				RegistryBuilder.<ConnectionSocketFactory> create()
-						.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-						.register("http", new PlainConnectionSocketFactory())
-						.build();
-
-			return new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-		} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-			log.error("Could not create an SSL context - {}", e.getMessage(), e);
-			throw new RuntimeException(e);
-		}
-	}
-
 	private RestTemplate createSecureRestTemplateV7() {
 		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authorisationToken.getJwt());
 
@@ -146,7 +129,7 @@ public class EnvoyConnectionProxy {
 					.useSystemProperties()
 					.setRetryStrategy(new EnphaseRequestRetryStrategy())
 					.setDefaultHeaders(List.of(header))
-					.setConnectionManager(createSSLConnectionManager())
+					.setConnectionManager(sslConnectionManager)
 					.setDefaultCookieStore(cookieStore)
 					.build();
 
