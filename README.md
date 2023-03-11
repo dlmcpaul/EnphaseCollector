@@ -38,6 +38,10 @@ java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.cont
 where envoy-ip is the ip address of your envoy controller
 and envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
+Example #3 run spring boot locally
+```
+mvn spring-boot:run -Dspring-boot.run.arguments="--envoy.controller.host=<PRIVATE IP OF ENVOY> --envoy.controller.port=443 --envoy.enphaseWebUser=<USER> --envoy.enphaseWebPassword=<PASSWORD>" -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+```
 
 If using the docker image
 
