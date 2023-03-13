@@ -90,9 +90,9 @@ public class EnphaseJWTExtractor {
 			if (response.getCode() != 302) {
 				throw new IOException("Failed to perform Login");
 			}
-
-			if (response.getFirstHeader("location").getValue().contains("web") == false) {
-				throw new IOException("User or Password incorrect");
+			HttpGet redirect = new HttpGet(response.getFirstHeader("location").getValue());
+			try(CloseableHttpResponse redirectResponse = httpClient.execute(redirect)) {
+				log.info("Redirect response {}", redirectResponse.getCode());
 			}
 
 			log.info("SubmitForm Status = {} with redirect to {}", response.getCode(), response.getFirstHeader("location").getValue());

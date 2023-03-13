@@ -4,7 +4,7 @@
 <a href="https://bulma.io"><img src="https://img.shields.io/badge/Made_with-Bulma-brightgreen"></a>
 <a href="https://www.thymeleaf.org/"><img alt="Thymeleaf" src="https://img.shields.io/badge/Rendered_using-Thymeleaf-brightgreen"></a>
 
-> ## Support for envoy firmware > D5.0.34
+> ## Support for envoy firmware > D5.0.88
 > From around V7 of the envoy firmware the security model for API access was changed.  This is obviously problematic for software such as mine that relies on local access to the API's
 > 
 > While it is entirely up to Enphase as to how they develop their software I see a number of issues with their new security model
@@ -38,6 +38,10 @@ java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.cont
 where envoy-ip is the ip address of your envoy controller
 and envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
+Example #3 run spring boot locally
+```
+mvn spring-boot:run -Dspring-boot.run.arguments="--envoy.controller.host=<PRIVATE IP OF ENVOY> --envoy.controller.port=443 --envoy.enphaseWebUser=<USER> --envoy.enphaseWebPassword=<PASSWORD>" -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+```
 
 If using the docker image
 

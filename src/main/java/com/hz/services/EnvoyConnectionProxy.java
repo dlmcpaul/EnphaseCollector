@@ -15,7 +15,8 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
@@ -61,6 +62,7 @@ public class EnvoyConnectionProxy {
 	private RestTemplate secureTemplate;
 	private RestTemplate defaultTemplate;
 	private RestTemplate installerTemplate;
+	private final HttpClientConnectionManager sslConnectionManager;
 
 	private RestTemplate buildTemplate(HttpClient httpClient) {
 		return builder
@@ -115,24 +117,6 @@ public class EnvoyConnectionProxy {
 		return buildTemplate(httpClient);
 	}
 
-	private BasicHttpClientConnectionManager createSSLConnectionManager() {
-		try {
-			SSLContext sslContext = SSLContexts.custom()
-				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-				.build();
-			Registry<ConnectionSocketFactory> socketFactoryRegistry =
-				RegistryBuilder.<ConnectionSocketFactory> create()
-						.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-						.register("http", new PlainConnectionSocketFactory())
-						.build();
-
-			return new BasicHttpClientConnectionManager(socketFactoryRegistry);
-		} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-			log.error("Could not create an SSL context - {}", e.getMessage(), e);
-			throw new RuntimeException(e);
-		}
-	}
-
 	private RestTemplate createSecureRestTemplateV7() {
 		Header header = new BasicHeader(HttpHeaders.AUTHORIZATION, "Bearer " + authorisationToken.getJwt());
 
@@ -145,7 +129,7 @@ public class EnvoyConnectionProxy {
 					.useSystemProperties()
 					.setRetryStrategy(new EnphaseRequestRetryStrategy())
 					.setDefaultHeaders(List.of(header))
-					.setConnectionManager(createSSLConnectionManager())
+					.setConnectionManager(sslConnectionManager)
 					.setDefaultCookieStore(cookieStore)
 					.build();
 
