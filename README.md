@@ -4,7 +4,7 @@
 <a href="https://bulma.io"><img src="https://img.shields.io/badge/Made_with-Bulma-brightgreen"></a>
 <a href="https://www.thymeleaf.org/"><img alt="Thymeleaf" src="https://img.shields.io/badge/Rendered_using-Thymeleaf-brightgreen"></a>
 
-> ## Support for envoy firmware > D5.0.88
+> ## Support for envoy firmware >= D7.0.88
 > From around V7 of the envoy firmware the security model for API access was changed.  This is obviously problematic for software such as mine that relies on local access to the API's
 > 
 > While it is entirely up to Enphase as to how they develop their software I see a number of issues with their new security model
@@ -14,6 +14,7 @@
 >- It is currently broken in a number of ways and will reduce the security of your envoy device (**I will not list the issues here**)
 >  
 > The current release does support V7 firmware but you will either need to manage the token generation yourself or supply your enphase web user & password details
+> SSL over HTTP is also a requirement so the port will need to be set to 443
 
 EnphaseCollector uses the **undocumented API** in the Envoy device to collect individual solar panel data and upload to an influx db, pvoutput site or just as an internal view
 
@@ -23,11 +24,11 @@ Can be run as a java application or using the docker image
 |---------------------------------------------------------------------------------|-------------------------|
 | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> |<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">|
 
-If using the jar file you will need a Java 17 that you can get from https://adoptopenjdk.net/
+If using the jar file you will need a Java 17 that you can get from https://adoptium.net/
 
-Example #1 with default internal website (assuming jar is named enphasecollector-DEV.jar)
+Example #1 with default internal website (assuming jar is named enphasecollector-development-SNAPSHOT.jar which is the default build artifact)
 ```
-java -jar enphasecollector-DEV.jar
+java -jar enphasecollector-development-SNAPSHOT.jar
 ```
 where the application will attempt to guess the envoy location and password.
 
@@ -38,7 +39,7 @@ java -jar enphasecollector-DEV.jar --envoy.controller.host=envoy-ip --envoy.cont
 where envoy-ip is the ip address of your envoy controller
 and envoy-password is likely to be the last 6 characters of your envoy controller serial number
 
-Example #3 run spring boot locally
+Example #3 run spring boot locally with debugger support connecting to enphase to pull down a token
 ```
 mvn spring-boot:run -Dspring-boot.run.arguments="--envoy.controller.host=<PRIVATE IP OF ENVOY> --envoy.controller.port=443 --envoy.enphaseWebUser=<USER> --envoy.enphaseWebPassword=<PASSWORD>" -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 ```
