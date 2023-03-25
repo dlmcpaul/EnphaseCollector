@@ -50,7 +50,7 @@ public class EnphaseSystemInfoConfig {
 
 	private final EnphaseCollectorProperties config;
 
-	private RestTemplate infoRestTemplate(RestTemplateBuilder builder, HttpClientConnectionManager cm) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+	private RestTemplate infoRestTemplate(RestTemplateBuilder builder, HttpClientConnectionManager cm) {
 
 		HttpClient httpClient = HttpClients
 				.custom()
@@ -92,8 +92,7 @@ public class EnphaseSystemInfoConfig {
 			if (infoXml != null) {
 				return xmlMapper.readValue(infoXml, EnvoyInfo.class);
 			}
-		} catch (IOException | ResourceAccessException | NoSuchAlgorithmException | KeyStoreException |
-				 KeyManagementException e) {
+		} catch (IOException | ResourceAccessException e) {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 

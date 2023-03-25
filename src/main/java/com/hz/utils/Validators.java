@@ -6,6 +6,6 @@ public class Validators {
 	}
 
 	public static boolean isValidDuration(String duration) {
-		return duration.toUpperCase().matches("[0-9](DAYS|WEEKS|MONTHS|QUARTERS)");
+		return duration.toUpperCase().matches("\\d(DAYS|WEEKS|MONTHS|QUARTERS)");
 	}
 }

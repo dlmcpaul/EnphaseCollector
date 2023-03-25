@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by David on 22-Oct-17.
@@ -22,11 +21,11 @@ public class InvertersType extends TypeBase {
 	private List<Inverter> inverterList = new ArrayList<>();    // populated from api/v1/production/inverters
 
 	public List<Inverter> getMicroInverters() {
-		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).collect(Collectors.toList());
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).toList();
 	}
 
 	public List<Inverter> getBatteries() {
-		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == BATTERY).collect(Collectors.toList());
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == BATTERY).toList();
 	}
 
 }
