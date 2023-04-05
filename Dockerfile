@@ -10,7 +10,7 @@ COPY ${JAR_FILE} /app.jar
 RUN "$JAVA_HOME/bin/java" -Xshare:dump && \
     "$JAVA_HOME/bin/jar" -xf app.jar
 
-FROM azul/zulu-openjdk-alpine:17-jre-headless
+FROM azul/zulu-openjdk-alpine:17.0.6-17.40.19-jre-x86
 LABEL maintainer="dlmcpaul@gmail.com"
 
 COPY --from=builder "./BOOT-INF/lib" /app/lib
