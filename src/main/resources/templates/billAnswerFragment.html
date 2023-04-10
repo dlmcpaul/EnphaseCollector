@@ -3,7 +3,7 @@
 
 <body>
 <div th:fragment="billAnswer (visible)" th:id="bill-answer-data" th:class="${visible} ? '' : 'is-hidden'" role="main">
-    <!--/*@thymesVar id="bill_answer" type="com.hz.controllers.models.BillAnswer"*/-->
+    <!--@thymesVar id="bill_answer" type="com.hz.controllers.models.BillAnswer"-->
     <div th:object="${bill_answer}">
         <h3 class="subtitle">Usage</h3>
         <div data-th-replace="~{qnaFieldFragment :: usageBox (*{usage}, *{showTotalDays()})}"/>

@@ -2,15 +2,15 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
-<!--/*@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"*/-->
-<!--/*@thymesVar id="refresh_stats_interval" type="java.lang.Integer"*/-->
+<!--@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"-->
+<!--@thymesVar id="refresh_stats_interval" type="java.lang.Integer"-->
 <div th:fragment="statusList (statusList, refresh_stats_interval)" id="statusComponent" class="column is-4 centre">
     <div class="time-bar" th:style="'--duration: ' + ${refresh_stats_interval} + ';'">
         <div></div>
     </div>
     <table th:unless="${statusList.isEmpty()}" class="table is-fullwidth" aria-label="Solar Status Table">
         <tbody>
-            <!--/*@thymesVar id="status" type="com.hz.controllers.models.Status"*/-->
+            <!--@thymesVar id="status" type="com.hz.controllers.models.Status"-->
             <th:block th:each="status : ${statusList}">
                 <div data-th-replace="~{statusFragment :: status(${status.image},${status.text},${status.value})}"></div>
             </th:block>

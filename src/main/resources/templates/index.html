@@ -23,7 +23,7 @@
 </section>
 <section class="section is-paddingless has-background-white">
     <div class="container">
-        <nav class="tabs is-centered" id="main-tab" role="navigation">
+        <nav class="tabs is-centered" id="main-tab">
             <ul>
                 <li id="live" class="is-active"><a data-th-onClick="switchToTab('main-tab', 'live')">Live</a></li>
                 <li id="weekly"><a data-th-onClick="switchToHistoryTab('main-tab', 'weekly', [[${contextPath}]] + '/history?duration=7Days')">Week</a></li>
@@ -50,7 +50,7 @@
         <div data-th-replace="~{qnaFragment :: qna}"></div>
     </div>
 </section>
-<footer class="footer is-paddingless has-background-white" role="contentinfo">
+<footer class="footer is-paddingless has-background-white">
     <div class="container">
         <div class="tabs is-centered">
             <ul>
@@ -73,12 +73,12 @@
 </footer>
 <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/css/all.css}"/>
 <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
-<script type="text/javascript" data-th-src="@{/webjars/highcharts/highstock.js}"></script>
-<script type="text/javascript" data-th-src="@{/webjars/highcharts/highcharts-more.js}"></script>
-<script type="text/javascript" data-th-src="@{/js/initialize.js}"></script>
-<script type="text/javascript" data-th-src="@{/js/qna.js}"></script>
-<script type="text/javascript" data-th-src="@{/js/charts.js}"></script>
-<script type="text/javascript" data-th-src="@{/js/tabs.js}"></script>
+<script data-th-src="@{/webjars/highcharts/highstock.js}"></script>
+<script data-th-src="@{/webjars/highcharts/highcharts-more.js}"></script>
+<script data-th-src="@{/js/initialize.js}"></script>
+<script data-th-src="@{/js/qna.js}"></script>
+<script data-th-src="@{/js/charts.js}"></script>
+<script data-th-src="@{/js/tabs.js}"></script>
 <script data-th-inline="javascript">
     initHighCharts([[${TZ}]]);
     initLiveCharts([[${contextPath}]], [[${refresh_interval}]], [[${exportLimit}]]);

@@ -3,7 +3,7 @@
 
 <body>
     <div th:fragment="billQnA (visible)" id="bill-data">
-        <!--/*@thymesVar id="bill_question" type="com.hz.controllers.models.BillQuestion"*/-->
+        <!--@thymesVar id="bill_question" type="com.hz.controllers.models.BillQuestion"-->
         <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-form"
               onsubmit="return getAnswers('bill')">
             <div class="columns is-gapless">
@@ -17,7 +17,7 @@
                     <p th:each="err : ${#fields.errors('global')}" th:text="${err}" class="help block has-text-centered" />
                 </div>
             </div>
-            <div class="separator">Compare With</div></br>
+            <div class="separator">Compare With</div><br>
             <div class="columns is-gapless">
                 <div data-th-replace="~{qnaFieldFragment :: numberField('dailySupplyCharge', *{dailySupplyCharge},'Daily Charge')}"/>
                 <div data-th-replace="~{qnaFieldFragment :: numberField('chargePerKiloWatt', *{chargePerKiloWatt},'Charge Per kWh')}"/>
