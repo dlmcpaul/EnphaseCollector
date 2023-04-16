@@ -36,7 +36,7 @@ class JwtFetchTest {
 	void testFetchingJWTFromWebSite() {
 		try {
 			log.info(secrets.getEnphaseWebUser());
-			String jwt = EnphaseJWTExtractor.fetchJWT(secrets.getEnphaseWebUser(), secrets.getEnphaseWebPassword(), secrets.getEnvoySerialNumber());
+			String jwt = EnphaseJWTExtractor.fetchJWTV2(secrets.getEnphaseWebUser(), secrets.getEnphaseWebPassword(), secrets.getEnvoySerialNumber());
 			assertFalse(jwt.isEmpty());
 
 			// JWT cannot be validated because the key is hidden from us.

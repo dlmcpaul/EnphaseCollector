@@ -1,7 +1,10 @@
 package com.hz.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hz.models.envoy.LogInResponse;
+import com.hz.models.envoy.TokenRequest;
 import com.hz.models.envoy.WebToken;
+import io.micrometer.core.instrument.util.IOUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -12,6 +15,7 @@ import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,7 +43,7 @@ public class EnphaseJWTExtractor {
 				.orElse("");
 	}
 
-	public static CloseableHttpClient setupHttpClient() {
+	private static CloseableHttpClient setupHttpClient() {
 		BasicCookieStore cookieStore = new BasicCookieStore();
 
 		return HttpClients
@@ -51,6 +55,40 @@ public class EnphaseJWTExtractor {
 						.build())
 				.disableRedirectHandling()
 				.build();
+	}
+
+	private static String sendRequest(CloseableHttpClient httpClient, HttpPost request) throws IOException {
+		try (CloseableHttpResponse response = httpClient.execute(request)) {
+			if (response.getCode() != 200) {
+				throw new IOException("Failed to post to " + request.getRequestUri() + " returned " + response.getReasonPhrase());
+			}
+			return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
+		}
+	}
+
+	public static String postLogin(CloseableHttpClient httpClient, String username, String password) throws IOException {
+		HttpPost request = new HttpPost(ENPHASE_BASE_URI + "/login/login.json");
+
+		List<BasicNameValuePair> formData = new ArrayList<>();
+		formData.add(new BasicNameValuePair("user[email]", username));
+		formData.add(new BasicNameValuePair("user[password]", password));
+
+		request.setEntity(new UrlEncodedFormEntity(formData, StandardCharsets.UTF_8));
+
+		ObjectMapper jsonMapper = new ObjectMapper();
+		return jsonMapper.readValue(sendRequest(httpClient, request), LogInResponse.class).getSessionId();
+	}
+
+	public static String getToken(CloseableHttpClient httpClient, String serialNumber, String sessionId, String username) throws IOException {
+		ObjectMapper jsonMapper = new ObjectMapper();
+
+		HttpPost request = new HttpPost("https://entrez.enphaseenergy.com/tokens");
+		request.setHeader("Content-Type", "application/json");
+
+		TokenRequest tokenRequest = new TokenRequest(sessionId, serialNumber, username);
+		request.setEntity(new StringEntity(jsonMapper.writeValueAsString(tokenRequest)));
+
+		return sendRequest(httpClient, request);
 	}
 
 	public static Document getLoginPage(CloseableHttpClient httpClient) throws IOException {
@@ -122,7 +160,13 @@ public class EnphaseJWTExtractor {
 		}
 	}
 
-	public static String fetchJWT(String username, String password, String serialNumber) throws IOException {
+	public static String fetchJWTV2(String username, String password, String serialNumber) throws IOException {
+		try (CloseableHttpClient httpClient = setupHttpClient()) {
+			return getToken(httpClient, serialNumber, postLogin(httpClient, username, password), username);
+		}
+	}
+
+	public static String fetchJWTV1(String username, String password, String serialNumber) throws IOException {
 
 		try (CloseableHttpClient httpClient = setupHttpClient()) {
 			log.info("Fetching Enlighten Login Page");
