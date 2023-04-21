@@ -20,9 +20,9 @@ EnphaseCollector uses the **undocumented API** in the Envoy device to collect in
 
 Can be run as a java application or using the docker image
 
-|  Main Page                                                                      |  Weekly History Tab|
-|---------------------------------------------------------------------------------|-------------------------|
-| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> |<img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png">|
+| Main Page                                                                       | Weekly History Tab                                                             |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png"> |
 
 If using the jar file you will need a Java 17 that you can get from https://adoptium.net/
 
@@ -181,7 +181,7 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 - Stats can be pulled to Prometheus by using the Actuator endpoint configured at /solar/actuator/prometheus  
 
 ## Building for yourself
-This is a fairly standard maven project using spring boot so mvn package should get your started and can build a working jar
+This is a fairly standard maven project using spring boot so ```mvn package -Dmaven.test.skip``` should get your started and can build a working jar located in the target directory
 
 **There are some caveats**
 - The build will generate a jar with a default version of unreleased
