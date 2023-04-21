@@ -183,6 +183,18 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 ## Building for yourself
 This is a fairly standard maven project using spring boot so ```mvn package -Dmaven.test.skip``` should get your started and can build a working jar located in the target directory
 
+You will need the following tools installed to develop and build this code.
+- Git to clone the code and commit changes
+- Java 17 to compile the code
+- Maven to manage the build process
+- Docker to support the testing
+
+There are also modules built in if you want to store the data somewhere other than the internal database.  To use them you will need an installation or authentication for the specific system:
+- InfluxDB 1.8
+- PvOutput system id and key
+- Prometheus
+- Mqtt Server
+
 **There are some caveats**
 - The build will generate a jar with a default version of unreleased
 
