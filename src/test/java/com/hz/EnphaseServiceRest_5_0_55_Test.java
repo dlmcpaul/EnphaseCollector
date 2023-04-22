@@ -120,8 +120,8 @@ class EnphaseServiceRest_5_0_55_Test {
 		Optional<System> system = this.enphaseService.collectEnphaseData();
 		Assertions.assertTrue(system.isPresent());
 		Assertions.assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
-		Assertions.assertEquals(19, system.get().getProduction().getInverter().get().getActiveCount());
-		Assertions.assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().get().getWattsLifetime());
+		Assertions.assertEquals(19, system.get().getProduction().getInverter().orElseThrow().getActiveCount());
+		Assertions.assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
 		Assertions.assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
 		Assertions.assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
 		Assertions.assertEquals(BigDecimal.valueOf(-1554.171), system.get().getProduction().getNetConsumptionWatts());
@@ -132,7 +132,7 @@ class EnphaseServiceRest_5_0_55_Test {
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
 		Assertions.assertEquals(50, metrics.size());
-		Assertions.assertEquals(-1554.1710205078125, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().get().getValue());
+		Assertions.assertEquals(-1554.1710205078125, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().orElseThrow().getValue());
 
 		Assertions.assertFalse(envoyInfo.isV7orAbove());
 	}
