@@ -2,6 +2,7 @@ package com.hz.utils;
 
 import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
+import com.hz.models.envoy.json.AcbType;
 import com.hz.models.envoy.json.EimType;
 import com.hz.models.envoy.json.InvertersType;
 import com.hz.models.envoy.json.System;
@@ -106,6 +107,16 @@ public class MetricCalculatorStandard implements MetricCalculator {
 		}
 
 		calculateSavings(metricList, production, consumption);
+
+		// log battery data
+		// First battery inverters
+		system.getProduction().getBatteryList().forEach(battery -> log.info("Battery Last {} Max {}", battery.getLastReportWatts(), battery.getMaxReportWatts()));
+
+		// then battery storage
+		system.getProduction().getStorageList().stream()
+				.filter(storage -> storage.getType().equalsIgnoreCase("acb"))
+				.map(AcbType.class::cast)
+				.forEach(storage -> log.info("Storage #{} state {} perc full {} Watts {}", storage.getActiveCount(), storage.getState(), storage.getPercentFull(), storage.getWattsNow()));
 
 		system.getProduction().getMicroInvertersList().forEach(micro -> metricList.add(Metric.createPanelMetric(map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
 
