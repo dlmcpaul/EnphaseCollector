@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 FROM azul/zulu-openjdk-alpine:17 as builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
