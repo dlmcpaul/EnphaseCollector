@@ -113,11 +113,12 @@ public class MetricCalculatorStandard implements MetricCalculator {
 		system.getProduction().getBatteryList().forEach(battery -> log.info("Battery Last {} Max {}", battery.getLastReportWatts(), battery.getMaxReportWatts()));
 
 		// then battery storage
-		system.getProduction().getStorageList().stream()
-				.filter(storage -> storage.getType().equalsIgnoreCase("acb"))
-				.map(AcbType.class::cast)
-				.forEach(storage -> log.info("Storage #{} state {} perc full {} Watts {}", storage.getActiveCount(), storage.getState(), storage.getPercentFull(), storage.getWattsNow()));
-
+		if (system.getProduction().getStorageList() != null) {
+			system.getProduction().getStorageList().stream()
+					.filter(storage -> storage.getType().equalsIgnoreCase("acb"))
+					.map(AcbType.class::cast)
+					.forEach(storage -> log.info("Storage #{} state {} perc full {} Watts {}", storage.getActiveCount(), storage.getState(), storage.getPercentFull(), storage.getWattsNow()));
+		}
 		system.getProduction().getMicroInvertersList().forEach(micro -> metricList.add(Metric.createPanelMetric(map(micro.getSerialNumber()), micro.getLastReportWatts(), 5)));
 
 		return metricList;
