@@ -1,8 +1,8 @@
 # syntax = docker/dockerfile:1.4
-FROM eclipse-temurin:17-jre-focal as builder
+FROM eclipse-temurin:17-jdk-focal as builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
-RUN apt --no-cache add curl && curl -Lo H2MigrationTool.jar https://github.com/manticore-projects/H2MigrationTool/releases/download/1.2/H2MigrationTool-all.jar
+RUN wget -P / -O H2MigrationTool.jar https://github.com/manticore-projects/H2MigrationTool/releases/download/1.2/H2MigrationTool-all.jar
 
 ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
@@ -10,7 +10,7 @@ COPY ${JAR_FILE} /app.jar
 # Generate a JDK class data share and
 # Explode Uber jar into lib jars and classes
 RUN "$JAVA_HOME/bin/java" -Xshare:dump && \
-    "$JAVA_HOME/bin/jar" -xf app.jar
+         "$JAVA_HOME/bin/jar" -xf app.jar
 
 FROM eclipse-temurin:17-jre-focal
 LABEL maintainer="dlmcpaul@gmail.com"
@@ -42,8 +42,8 @@ java -cp app:app/lib/* -Xshare:auto -Djava.security.egd=file:/dev/./urandom -Dsp
 EOF
 
 RUN chmod +x /app/runapp.sh && \
-          mkdir "/properties" && \
-          touch "/properties/application.properties" \
+         mkdir "/properties" && \
+         touch "/properties/application.properties"
 
 ENTRYPOINT ["/app/runapp.sh"]
 
