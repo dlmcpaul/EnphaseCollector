@@ -2,7 +2,7 @@
 FROM azul/zulu-openjdk-alpine:17 as builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
-RUN wget -P / -O H2MigrationTool.jar https://github.com/manticore-projects/H2MigrationTool/releases/download/1.2/H2MigrationTool-all.jar
+RUN wget -q -P / -O H2MigrationTool.jar https://github.com/manticore-projects/H2MigrationTool/releases/download/1.2/H2MigrationTool-all.jar
 
 ARG JAR_FILE
 COPY ${JAR_FILE} /app.jar
@@ -19,7 +19,7 @@ COPY --from=builder "./BOOT-INF/lib" /app/lib
 COPY --from=builder "./META-INF" /app/META-INF
 COPY --from=builder "./BOOT-INF/classes" /app
 COPY --from=builder "${JAVA_HOME}/lib/server/classes.jsa" "${JAVA_HOME}/lib/server"
-COPY --from=builder "./H2MigrationTool.jar" "./H2MigrationTool.jar"
+COPY --from=builder "./H2MigrationTool.jar" "/H2MigrationTool.jar"
 
 COPY <<EOF /app/runapp.sh
 #!/bin/sh
