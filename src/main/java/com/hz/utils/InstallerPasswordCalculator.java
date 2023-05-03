@@ -1,9 +1,9 @@
 package com.hz.utils;
 
+import jakarta.xml.bind.DatatypeConverter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
-import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.util.stream.Collectors;
 
@@ -15,7 +15,9 @@ public class InstallerPasswordCalculator {
 	private static int countZero;
 	private static int countOne;
 
-	private InstallerPasswordCalculator() {}
+	private InstallerPasswordCalculator() {
+		throw new IllegalStateException("Utility class");
+	}
 
 	public static String getPassword(String serialNumber) {
 		String digest = getDigest(serialNumber);
@@ -39,10 +41,9 @@ public class InstallerPasswordCalculator {
 		return (int) input.chars().filter(ch -> ch == value).count();
 	}
 
-	private static String getLast8Chars(String input) {	return new StringBuffer(input.substring(input.length()-8)).reverse().toString(); }
+	private static String getLast8Chars(String input) {	return new StringBuilder(input.substring(input.length()-8)).reverse().toString(); }
 
 	private static Character decode(int value) {
-		int result;
 
 		switch (countZero) {
 			case -1     : countZero++; break;
@@ -56,14 +57,11 @@ public class InstallerPasswordCalculator {
 			default     : break;
 		}
 
-		result = switch (value) {
-			case '0' -> "f".codePointAt(0) + countZero--;
-			case '1' -> "@".codePointAt(0) + countOne--;
-			default -> value;
+		return switch (value) {
+			case '0' -> (char) ("f".codePointAt(0) + countZero--);
+			case '1' -> (char) ("@".codePointAt(0) + countOne--);
+			default -> (char) value;
 		};
-
-		return (char) result;
-
 	}
 
 	private static String calculatePassword(String encodedPassword) {
