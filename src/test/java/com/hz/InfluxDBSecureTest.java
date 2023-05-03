@@ -40,7 +40,7 @@ class InfluxDBSecureTest {
 	InfluxDB destinationInfluxDB;
 
 	@DynamicPropertySource
-	static void registerMySQLProperties(DynamicPropertyRegistry registry) {
+	static void registerInfluxProperties(DynamicPropertyRegistry registry) {
 		registry.add("envoy.influxdbResource.host", influx::getHost);
 		registry.add("envoy.influxdbResource.port", influx::getFirstMappedPort);
 		registry.add("envoy.influxdbResource.user", () -> "admin");

@@ -35,7 +35,7 @@ class MqqtTest {
 	IMqttClient mqttClient;
 
 	@DynamicPropertySource
-	static void registerMySQLProperties(DynamicPropertyRegistry registry) {
+	static void registerHiveMqProperties(DynamicPropertyRegistry registry) {
 		registry.add("envoy.mqqtResource.host", hivemqCe::getHost);
 		registry.add("envoy.mqqtResource.port", hivemqCe::getFirstMappedPort);
 		registry.add("envoy.mqqtResource.topic", () -> "my-topic");
