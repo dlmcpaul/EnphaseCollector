@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:17 as builder
+FROM azul/zulu-openjdk-alpine:17 AS builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
 ENV JAVA_MINIMAL=/opt/jre

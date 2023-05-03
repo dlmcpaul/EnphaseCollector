@@ -25,14 +25,14 @@ public class MetricCalculatorNegativeConsumption implements MetricCalculator {
 
 	private void calculateSavings(ArrayList<Metric> metricList, BigDecimal production, BigDecimal consumption) {
 		if (consumption.compareTo(BigDecimal.ZERO) < 0) {
-			BigDecimal AbsConsumption = consumption.multiply(BigDecimal.valueOf(-1));
+			BigDecimal absConsumption = consumption.multiply(BigDecimal.valueOf(-1));
 
-			metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, AbsConsumption, 0));
-			metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production, AbsConsumption));
+			metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, absConsumption, 0));
+			metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production, absConsumption));
 			metricList.add(new Metric(Metric.METRIC_GRID_IMPORT, 0));
 
 			// Attempt to calculate consumption
-			metricList.add(new Metric(Metric.METRIC_CONSUMPTION_CURRENT, production, AbsConsumption));
+			metricList.add(new Metric(Metric.METRIC_CONSUMPTION_CURRENT, production, absConsumption));
 		} else {
 			metricList.add(new Metric(Metric.METRIC_SOLAR_EXCESS, 0));
 			metricList.add(new Metric(Metric.METRIC_SOLAR_SAVINGS, production));

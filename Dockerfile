@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.4
-FROM azul/zulu-openjdk-alpine:17 as builder
+FROM azul/zulu-openjdk-alpine:17 AS builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
 RUN wget -q -P / -O H2MigrationTool.jar https://github.com/manticore-projects/H2MigrationTool/releases/download/1.2/H2MigrationTool-all.jar

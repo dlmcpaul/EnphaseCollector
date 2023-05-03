@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM azul/zulu-openjdk-alpine:17 as builder
+FROM azul/zulu-openjdk-alpine:17 AS builder
 LABEL maintainer="dlmcpaul@gmail.com"
 
 RUN apk update && apk add git maven

@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim as builder
+FROM openjdk:17-jdk-slim AS builder
 
 ARG JAR_FILE
 COPY ${JAR_FILE} ./app.jar
