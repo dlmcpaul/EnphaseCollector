@@ -1,6 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseURLS;
+import com.hz.exceptions.ConnectionException;
 import com.hz.models.envoy.json.System;
 import com.hz.models.envoy.json.*;
 import com.hz.utils.Convertors;
@@ -49,7 +50,7 @@ public class EnvoyService {
 			systemResponse.getBody() != null) {
 				return systemResponse.getBody();
 		}
-		throw new RuntimeException("Failed to Read " + EnphaseURLS.SYSTEM);
+		throw new ConnectionException("Failed to Read " + EnphaseURLS.SYSTEM);
 	}
 
 	public Optional<System> collectEnphaseData() {

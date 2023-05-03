@@ -2,6 +2,7 @@ package com.hz.services;
 
 import com.hz.components.EnphaseRequestRetryStrategy;
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.exceptions.ConnectionException;
 import com.hz.models.envoy.AuthorisationToken;
 import com.hz.utils.EnphaseJWTExtractor;
 import com.hz.utils.InstallerPasswordCalculator;
@@ -130,7 +131,7 @@ public class EnvoyConnectionProxy {
 
 		} catch (IOException e) {
 			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
-			throw new RuntimeException(e);
+			throw new ConnectionException(e);
 		}
 
 	}

@@ -1,5 +1,6 @@
 package com.hz.configuration;
 
+import com.hz.exceptions.ConfigurationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -25,7 +26,7 @@ public class MqttConfig {
 	@Bean
 	public IMqttClient mqttClient() throws MqttException {
 		if (config.getMqqtResource() == null) {
-			throw new RuntimeException("Please configure the mqtt settings");
+			throw new ConfigurationException("Please configure the mqtt settings");
 		}
 
 		EnphaseCollectorProperties.MqqtResource mqqtResource = config.getMqqtResource();

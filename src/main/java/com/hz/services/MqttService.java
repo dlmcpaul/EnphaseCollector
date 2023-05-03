@@ -1,6 +1,7 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.exceptions.ConnectionException;
 import com.hz.metrics.Metric;
 import com.hz.models.events.MetricCollectionEvent;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,7 @@ public class MqttService {
 	@EventListener
 	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
 		if (mqttClient.isConnected() == false) {
-			throw new RuntimeException("Mqtt client not connected");
+			throw new ConnectionException("Mqtt client not connected");
 		}
 
 		log.debug("Sending metric stats at {} with {} items to MQTT topic {}", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size(), properties.getMqqtResource().getTopic());
@@ -68,7 +69,7 @@ public class MqttService {
 		try {
 			mqttClient.publish(properties.getMqqtResource().getTopic(), msg);
 		} catch (MqttException e) {
-			throw new RuntimeException(e);
+			throw new ConnectionException(e);
 		}
 	}
 }
