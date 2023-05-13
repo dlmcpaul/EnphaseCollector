@@ -30,6 +30,7 @@ import java.util.List;
 public class EnphaseJWTExtractor {
 
 	private static final String ENPHASE_BASE_URI = "https://enlighten.enphaseenergy.com";
+	private static final String ENPHASE_TOKEN_URI = "https://entrez.enphaseenergy.com/tokens";
 
 	private EnphaseJWTExtractor() {
 		throw new IllegalStateException("Utility class");
@@ -67,6 +68,7 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static String postLogin(CloseableHttpClient httpClient, String username, String password) throws IOException {
+		log.info("log into Enphase using POST to enphase login page {}", ENPHASE_BASE_URI + "/login/login.json");
 		HttpPost request = new HttpPost(ENPHASE_BASE_URI + "/login/login.json");
 
 		List<BasicNameValuePair> formData = new ArrayList<>();
@@ -80,9 +82,10 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static String getToken(CloseableHttpClient httpClient, String serialNumber, String sessionId, String username) throws IOException {
+		log.info("Retrieve Token using {}", ENPHASE_TOKEN_URI);
 		ObjectMapper jsonMapper = new ObjectMapper();
 
-		HttpPost request = new HttpPost("https://entrez.enphaseenergy.com/tokens");
+		HttpPost request = new HttpPost(ENPHASE_TOKEN_URI);
 		request.setHeader("Content-Type", "application/json");
 
 		TokenRequest tokenRequest = new TokenRequest(sessionId, serialNumber, username);
@@ -92,6 +95,7 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static Document getLoginPage(CloseableHttpClient httpClient) throws IOException {
+		log.info("Fetching Enlighten Login Page {}", ENPHASE_BASE_URI);
 		HttpGet getMethod = new HttpGet(ENPHASE_BASE_URI);
 		getMethod.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
@@ -105,7 +109,7 @@ public class EnphaseJWTExtractor {
 		}
 	}
 
-	public static UrlEncodedFormEntity encodeFormData(Document document, String username, String password) {
+	private static UrlEncodedFormEntity encodeFormData(Document document, String username, String password) {
 		List<Element> inputElements = document.getElementsByTag("input");
 
 		List<BasicNameValuePair> formData = new ArrayList<>();
@@ -119,6 +123,7 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static void postForm(CloseableHttpClient httpClient, UrlEncodedFormEntity body) throws IOException {
+		log.info("Attempting to Login with a Form Submit");
 		HttpPost request = new HttpPost(ENPHASE_BASE_URI + "/login/login");
 		request.setHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setHeader("Origin", ENPHASE_BASE_URI);
@@ -138,6 +143,7 @@ public class EnphaseJWTExtractor {
 	}
 
 	public static String scanForToken(CloseableHttpClient httpClient, String serialNumber) throws IOException {
+		log.info("Fetching and Scanning returned HTML for Token");
 		HttpGet jwtRequest = new HttpGet(ENPHASE_BASE_URI + "/entrez-auth-token?serial_num=" + serialNumber);
 
 		try (CloseableHttpResponse response = httpClient.execute(jwtRequest)) {
@@ -169,13 +175,7 @@ public class EnphaseJWTExtractor {
 	public static String fetchJWTV1(String username, String password, String serialNumber) throws IOException {
 
 		try (CloseableHttpClient httpClient = setupHttpClient()) {
-			log.info("Fetching Enlighten Login Page");
-			Document loginPage = getLoginPage(httpClient);
-
-			log.info("Attempting to Login with a Form Submit");
-			postForm(httpClient, encodeFormData(loginPage, username, password));
-
-			log.info("Fetching and Scanning returned HTML for Token");
+			postForm(httpClient, encodeFormData(getLoginPage(httpClient), username, password));
 			return scanForToken(httpClient, serialNumber);
 		}
 	}
