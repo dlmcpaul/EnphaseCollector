@@ -102,6 +102,10 @@ public class EnphaseSystemInfoConfig {
 	@Bean
 	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
 		if (envoyInfo.isV7orAbove()) {
+			// V7 default should be 443
+			if (config.getController().getPort() == 80) {
+				config.getController().setPort(443);
+			}
 			if (config.getBearerToken() == null || config.getBearerToken().trim().isEmpty()) {
 				if (config.getEnphaseWebUser() != null && config.getEnphaseWebUser().trim().isEmpty()
 						&& config.getEnphaseWebPassword() != null && config.getEnphaseWebPassword().trim().isEmpty()
