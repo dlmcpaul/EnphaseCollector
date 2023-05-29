@@ -62,13 +62,23 @@ public class EnphaseCollectorProperties {
         private int port;
         private String context;
 
+        public String getUnencryptedUrl() {
+            return "http://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+        }
+
+        public String getEncryptedUrl() {
+            return "https://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+        }
+
         public String getUrl() {
             if (port == 80) {
-                return "http://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+                return getUnencryptedUrl();
             }
             if (port == 443) {
-                return "https://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+                return getEncryptedUrl();
             }
+
+            // Unknown port.  Should we treat this as encrypted?
             return "http://" + host + ":" + port + (context == null || context.isEmpty() ? "" : "/" + context);
         }
     }

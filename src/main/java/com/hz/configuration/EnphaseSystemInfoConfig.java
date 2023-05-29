@@ -60,7 +60,7 @@ public class EnphaseSystemInfoConfig {
 				.build();
 
 		return builder
-				.rootUri(config.getController().getUrl())
+				.rootUri(config.getController().getUnencryptedUrl())
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
@@ -82,7 +82,7 @@ public class EnphaseSystemInfoConfig {
 
 	@Bean
 	public EnvoyInfo envoyInfo(RestTemplateBuilder restTemplateBuilder, HttpClientConnectionManager sslConnectionManager) {
-		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUrl(), EnphaseURLS.CONTROLLER);
+		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUnencryptedUrl(), EnphaseURLS.CONTROLLER);
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
 			xmlMapper.registerModule(new JakartaXmlBindAnnotationModule());
