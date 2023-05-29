@@ -46,11 +46,11 @@ public class EnvoyConnectionProxy {
 	private final AuthorisationToken authorisationToken;
 	private final EnphaseCollectorProperties config;
 	private final RestTemplateBuilder builder;
+	private final HttpClientConnectionManager sslConnectionManager;
 
 	private RestTemplate secureTemplate;
 	private RestTemplate defaultTemplate;
 	private RestTemplate installerTemplate;
-	private final HttpClientConnectionManager sslConnectionManager;
 
 	private RestTemplate buildTemplate(HttpClient httpClient) {
 		return builder
