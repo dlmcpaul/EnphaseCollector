@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface ElectricityRateRepository extends CrudRepository<ElectricityRate, LocalDate> {
-	public Optional<ElectricityRate> findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDesc(LocalDate effectiveDate);
+	Optional<ElectricityRate> findFirstByEffectiveDateLessThanEqualOrderByEffectiveDateDesc(LocalDate effectiveDate);
 }
