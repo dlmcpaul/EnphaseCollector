@@ -1,7 +1,9 @@
 /*global console */
 
-function getAnswers(target) {
+function getAnswers(target, event) {
     "use strict";
+
+    event.preventDefault();
 
     const form = document.getElementById(target + "-form");
 
@@ -18,13 +20,19 @@ function getAnswers(target) {
         };
         if (request.status === 200) {
             document.getElementById(target + "-data").outerHTML = request.response;
-            button.innerText = "Answer";
+            document.getElementById("bill-form")
+                .addEventListener("submit", (ev) => getAnswers('bill', ev), false);
         } else {
             console.log("Refresh Error for " + target);
             button.innerText = "Error";
         }
     };
     request.send(new FormData(form));
+}
 
-    return false;
+function setupQnA() {
+    "use strict";
+
+    document.getElementById("bill-form")
+        .addEventListener("submit", (ev) => getAnswers('bill', ev), false);
 }

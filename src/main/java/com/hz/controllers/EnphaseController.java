@@ -115,7 +115,6 @@ public class EnphaseController {
 			model.addAttribute("serial_number", envoyInfo.getSerialNumber());
 			model.addAttribute("software_release", envoyInfo.getReleaseDate());
 			model.addAttribute("refresh_interval", properties.getRefreshSeconds());
-			model.addAttribute("refresh_stats_interval", properties.getRefreshSeconds() / 1000);
 			model.addAttribute("statusList", this.populateStatusList());
 			model.addAttribute("bill_question", new BillQuestion());
 			model.addAttribute("bill_answer", new BillAnswer(0));
@@ -154,8 +153,7 @@ public class EnphaseController {
 	@GetMapping("/refreshStats")
 	public String status(Model model) {
 		model.addAttribute("statusList", this.populateStatusList());
-		model.addAttribute("refresh_stats_interval", properties.getRefreshSeconds() / 1000);
-		return "statusListFragment :: statusList (statusList=${statusList},refresh_stats_interval=${refresh_stats_interval})";
+		return "statusListFragment :: statusList (statusList=${statusList})";
 	}
 
 	@GetMapping(value = "/pvc", produces = "application/json; charset=UTF-8")

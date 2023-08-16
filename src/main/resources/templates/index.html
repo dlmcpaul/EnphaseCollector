@@ -25,18 +25,18 @@
     <div class="container">
         <nav class="tabs is-centered" id="main-tab">
             <ul>
-                <li id="live" class="is-active"><a data-th-onClick="switchToTab('main-tab', 'live')">Live</a></li>
-                <li id="weekly"><a data-th-onClick="switchToHistoryTab('main-tab', 'weekly', [[${contextPath}]] + '/history?duration=7Days')">Week</a></li>
-                <li id="monthly"><a data-th-onClick="switchToHistoryTab('main-tab', 'monthly', [[${contextPath}]] + '/history?duration=4Weeks')">Month</a></li>
-                <li id="quarterly"><a data-th-onClick="switchToHistoryTab('main-tab', 'quarterly', [[${contextPath}]] + '/history?duration=3Months')">Quarter</a></li>
-                <li id="qna"><a data-th-onClick="switchToTab('main-tab', 'qna')">Q & A</a></li>
+                <li id="live" class="is-active"><a id="live-event">Live</a></li>
+                <li id="weekly"><a id="weekly-event">Week</a></li>
+                <li id="monthly"><a id="monthly-event">Month</a></li>
+                <li id="quarterly"><a id="quarterly-event">Quarter</a></li>
+                <li id="qna"><a id="qna-event">Q & A</a></li>
             </ul>
         </nav>
         <div id="live-data" role="main">
             <div class="columns is-multiline is-centered">
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('consumption',@{/images/power.png},'Consumption',${consumption})}"></div>
                 <div data-th-replace="~{gaugeChartFragment :: gaugeChart('production',@{/images/sun.jpeg},'Production',${production})}"></div>
-                <div data-th-replace="~{statusListFragment :: statusList( ${statusList}, ${refresh_stats_interval} )}"></div>
+                <div data-th-replace="~{statusListFragment :: statusList( ${statusList})}"></div>
             </div>
             <div class="columns">
                 <div class="column is-12 is-narrow">
@@ -75,14 +75,10 @@
 <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
 <script data-th-src="@{/webjars/highcharts/highstock.js}"></script>
 <script data-th-src="@{/webjars/highcharts/highcharts-more.js}"></script>
-<script data-th-src="@{/js/initialize.js}"></script>
+<script data-th-src="@{/js/initcharts.js}"></script>
 <script data-th-src="@{/js/qna.js}"></script>
 <script data-th-src="@{/js/charts.js}"></script>
 <script data-th-src="@{/js/tabs.js}"></script>
-<script data-th-inline="javascript">
-    initHighCharts([[${TZ}]]);
-    initLiveCharts([[${contextPath}]], [[${refresh_interval}]], [[${exportLimit}]]);
-    initHistoryCharts();
-</script>
+<script data-th-src="@{/initUI.js}"></script>
 </body>
 </html>

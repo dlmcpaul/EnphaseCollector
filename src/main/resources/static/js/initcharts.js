@@ -1,4 +1,4 @@
-/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList */
+/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList, switchToTab, switchToHistoryTab, getAnswers, switchStacking */
 
 function initHighCharts(timezone) {
     "use strict";
@@ -241,7 +241,7 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
             verticalAlign: "top",
             y: 50,
             floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || "rgba(255,255,255,0.25)"
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendColor.backgroundColor) || "rgba(255,255,255,0.25)"
         },
         series: [
             {
@@ -519,4 +519,41 @@ function initHistoryCharts() {
     makeChart("weekly-graph", weeklyProperties);
     makeChart("monthly-graph", monthlyProperties);
     makeChart("quarterly-graph", quarterlyProperties);
+}
+
+function setupCharts(timeZone, contextPath, refreshInterval, exportLimit) {
+    "use strict";
+    initHighCharts(timeZone);
+    initLiveCharts(contextPath, refreshInterval, exportLimit);
+    initHistoryCharts();
+}
+
+function setupClickEvents(contextPath) {
+    "use strict";
+    document.getElementById("live-event")
+        .addEventListener("click", function () {
+            switchToTab('main-tab', 'live');
+        }, false);
+    document.getElementById("weekly-event")
+        .addEventListener("click", function () {
+            switchToHistoryTab('main-tab', 'weekly', contextPath + '/history?duration=7Days');
+        }, false);
+    document.getElementById("monthly-event")
+        .addEventListener("click", function () {
+            switchToHistoryTab('main-tab', 'monthly', contextPath + '/history?duration=4Weeks');
+        }, false);
+    document.getElementById("quarterly-event")
+        .addEventListener("click", function () {
+            switchToHistoryTab('main-tab', 'quarterly', contextPath + '/history?duration=3Months');
+        }, false);
+    document.getElementById("qna-event")
+        .addEventListener("click", function () {
+            switchToTab('main-tab', 'qna');
+        }, false);
+
+    let names = ["weekly", "monthly", "quarterly"];
+    for (let i = 0; i < names.length; i++) {
+        document.getElementById("btn-" + names[i] + "-normal").addEventListener("click", (ev) => switchStacking(ev), false);
+        document.getElementById("btn-" + names[i] + "-percent").addEventListener("click", (ev) => switchStacking(ev), false);
+    }
 }

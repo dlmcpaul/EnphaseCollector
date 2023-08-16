@@ -17,11 +17,11 @@ public class SecurityHeaderFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse httpServletResponse=(HttpServletResponse)response;
-		httpServletResponse.setHeader("Content-Security-Policy","default-src 'self' 'unsafe-inline';");
+		httpServletResponse.setHeader("Content-Security-Policy","default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self';");
 		httpServletResponse.setHeader("X-Frame-Options","SAMEORIGIN");
 		httpServletResponse.setHeader("X-Content-Type-Options","nosniff");
 		httpServletResponse.setHeader("Referrer-Policy","no-referrer");
-		httpServletResponse.setHeader("Feature-Policy","sync-xhr 'self'");
+		httpServletResponse.setHeader("Permissions-Policy","sync-xhr=(self)");
 		chain.doFilter(request, response);      // continue execution of other filter chain.
 	}
 

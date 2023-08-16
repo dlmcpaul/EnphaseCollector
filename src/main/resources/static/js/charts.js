@@ -1,4 +1,4 @@
-/*global Highcharts, console */
+/*global updateStatusList, Highcharts, console */
 
 const productionColors = ["#DF5353", "#DDDF0D", "#55BF3B"];
 const consumptionColors = ["#55BF3B", "#DDDF0D", "#DF5353"];
@@ -120,10 +120,10 @@ function getColor(index, type) {
     return consumptionColors[index];
 }
 
-function updatePlotBands(target, chart, guageValue) {
+function updatePlotBands(target, chart, gaugeValue) {
     "use strict";
 
-    const maximum = calculateMaximum(chart.yAxis[0].max, guageValue);
+    const maximum = calculateMaximum(chart.yAxis[0].max, gaugeValue);
 
     // Only update if new maximum is greater than old
     if (maximum > chart.yAxis[0].max) {
@@ -149,10 +149,10 @@ function updatePlotBands(target, chart, guageValue) {
     }
 }
 
-function updatePoint(chart, guageValue) {
+function updatePoint(chart, gaugeValue) {
     "use strict";
 
-    chart.series[0].points[0].update(guageValue);
+    chart.series[0].points[0].update(gaugeValue);
 }
 
 function updateGauge(target, response) {
@@ -183,13 +183,7 @@ function updatePvc(target, response) {
     });
 }
 
-function updateStatusList(target, response) {
-    "use strict";
-
-    document.getElementById(target).outerHTML = response;
-}
-
-function makeRefreshChart(target, properties, refreshUrl, interval, updateFunction) {
+function makeRefreshChart(target, properties, refreshUrl, refreshInterval, updateFunction) {
     "use strict";
 
     const chart = makeChart(target, properties);
@@ -200,16 +194,16 @@ function makeRefreshChart(target, properties, refreshUrl, interval, updateFuncti
     // Refresh every interval
     setInterval(function () {
         refreshTarget(target, refreshUrl, "json", updateFunction);
-    }, interval);
+    }, refreshInterval);
 
     return chart;
 }
 
-function makeStatusList(target, refreshUrl, interval) {
+function makeStatusList(target, refreshUrl, refreshInterval) {
     "use strict";
 
     // Refresh every interval
     setInterval(function () {
         refreshTarget(target, refreshUrl,"", updateStatusList);
-    }, interval);
+    }, refreshInterval);
 }
