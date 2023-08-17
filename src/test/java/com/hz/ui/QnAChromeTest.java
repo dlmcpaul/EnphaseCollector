@@ -45,7 +45,7 @@ class QnAChromeTest {
 	void startup() {
 		org.testcontainers.Testcontainers.exposeHostPorts(appPort);
 		WebDriverRunner.setWebDriver(new RemoteWebDriver(edge.getSeleniumAddress(), new ChromeOptions().addArguments("--headless=new"), false));
-		qnaForm = open(String.format("http://host.testcontainers.internal:%d/solar", appPort), QnAForm.class);
+		qnaForm = open("http://host.testcontainers.internal:%d/solar".formatted(appPort), QnAForm.class);
 		$("#qna").click();
 	}
 

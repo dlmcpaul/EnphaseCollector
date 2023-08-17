@@ -20,7 +20,7 @@ class DateRangeTest {
 	private static Validator validator;
 
 	@BeforeAll
-	public static void setupValidatorInstance() {
+	static void setupValidatorInstance() {
 		validator = Validation.buildDefaultValidatorFactory().getValidator();
 	}
 

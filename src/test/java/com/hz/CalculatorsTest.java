@@ -1,12 +1,13 @@
 package com.hz;
 
 import com.hz.utils.Calculators;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorsTest {
 
@@ -19,11 +20,11 @@ class CalculatorsTest {
 		LocalDate startOfWeek = Calculators.calculateStartDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.WEEKS, FOUR_WEEKS);
 		LocalDate endOfWeek = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.WEEKS);
 
-		Assertions.assertEquals(DayOfWeek.SUNDAY, startOfWeek.getDayOfWeek());
-		Assertions.assertEquals(DayOfWeek.SATURDAY, endOfWeek.getDayOfWeek());
+		assertEquals(DayOfWeek.SUNDAY, startOfWeek.getDayOfWeek());
+		assertEquals(DayOfWeek.SATURDAY, endOfWeek.getDayOfWeek());
 
-		Assertions.assertEquals(LocalDate.of(2022, 5, 1), startOfWeek);
-		Assertions.assertEquals(LocalDate.of(2022, 5, 28), endOfWeek);
+		assertEquals(LocalDate.of(2022, 5, 1), startOfWeek);
+		assertEquals(LocalDate.of(2022, 5, 28), endOfWeek);
 	}
 
 	@Test
@@ -31,8 +32,8 @@ class CalculatorsTest {
 		LocalDate quarterStart = Calculators.calculateStartDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.MONTHS, THREE_MONTHS);
 		LocalDate quarterEnd = Calculators.calculateEndDateFromDuration(LocalDate.of(2022, 5, 29), ChronoUnit.MONTHS);
 
-		Assertions.assertEquals(LocalDate.of(2022, 2, 1), quarterStart);
-		Assertions.assertEquals(LocalDate.of(2022, 4, 30), quarterEnd);
+		assertEquals(LocalDate.of(2022, 2, 1), quarterStart);
+		assertEquals(LocalDate.of(2022, 4, 30), quarterEnd);
 	}
 
 	@Test
@@ -40,7 +41,7 @@ class CalculatorsTest {
 		LocalDate sevenDaysAgo = Calculators.calculateStartDateFromDuration(SEVEN_DAYS);
 		LocalDate yesterday = Calculators.calculateEndDateFromDuration(SEVEN_DAYS);
 
-		Assertions.assertEquals(LocalDate.now().minusDays(7), sevenDaysAgo);
-		Assertions.assertEquals(LocalDate.now().minusDays(1L), yesterday);
+		assertEquals(LocalDate.now().minusDays(7), sevenDaysAgo);
+		assertEquals(LocalDate.now().minusDays(1L), yesterday);
 	}
 }

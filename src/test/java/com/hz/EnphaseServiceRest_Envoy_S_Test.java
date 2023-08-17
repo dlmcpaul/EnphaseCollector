@@ -10,7 +10,6 @@ import com.hz.services.EnvoyService;
 import com.hz.utils.MetricCalculatorStandard;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,9 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/envoy-s")
@@ -100,15 +102,15 @@ class EnphaseServiceRest_Envoy_S_Test {
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
-		Assertions.assertTrue(system.isPresent());
-		Assertions.assertTrue(this.enphaseService.isOk());
-		Assertions.assertEquals(BigDecimal.ZERO, system.get().getProduction().getConsumptionWatts());
-		Assertions.assertEquals(BigDecimal.valueOf(41), system.get().getProduction().getProductionWatts());
+		assertTrue(system.isPresent());
+		assertTrue(this.enphaseService.isOk());
+		assertEquals(BigDecimal.ZERO, system.get().getProduction().getConsumptionWatts());
+		assertEquals(BigDecimal.valueOf(41), system.get().getProduction().getProductionWatts());
 
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		Assertions.assertEquals(23, metrics.size());
+		assertEquals(23, metrics.size());
 	}
 
 }

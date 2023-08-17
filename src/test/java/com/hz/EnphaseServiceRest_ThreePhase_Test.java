@@ -10,7 +10,6 @@ import com.hz.services.EnvoyService;
 import com.hz.utils.MetricCalculatorStandard;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,9 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/ThreePhase")
@@ -100,18 +102,18 @@ class EnphaseServiceRest_ThreePhase_Test {
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
-		Assertions.assertTrue(system.isPresent());
-		Assertions.assertEquals(BigDecimal.valueOf(3), system.get().getProduction().getPhaseCount());
-		Assertions.assertEquals(BigDecimal.valueOf(242.635), system.get().getProduction().getProductionVoltage());
-		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
-		Assertions.assertEquals(BigDecimal.valueOf(16112904.995), system.get().getProduction().getProductionEim().get().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(8447165, 3), system.get().getProduction().getProductionWatts());
-		Assertions.assertTrue(this.enphaseService.isOk());
+		assertTrue(system.isPresent());
+		assertEquals(BigDecimal.valueOf(3), system.get().getProduction().getPhaseCount());
+		assertEquals(BigDecimal.valueOf(242.635), system.get().getProduction().getProductionVoltage());
+		assertEquals(0, system.get().getProduction().getBatteryList().size());
+		assertEquals(BigDecimal.valueOf(16112904.995), system.get().getProduction().getProductionEim().get().getWattsLifetime());
+		assertEquals(BigDecimal.valueOf(8447165, 3), system.get().getProduction().getProductionWatts());
+		assertTrue(this.enphaseService.isOk());
 
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		Assertions.assertEquals(50, metrics.size());
+		assertEquals(50, metrics.size());
 	}
 
 }

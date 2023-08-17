@@ -11,7 +11,6 @@ import com.hz.services.EnvoyService;
 import com.hz.utils.MetricCalculatorStandard;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,8 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/R4.10.35")
@@ -110,25 +111,25 @@ class EnphaseServiceRest_4_10_35_Test {
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
-		Assertions.assertTrue(system.isPresent());
-		Assertions.assertEquals("R4.10.35", this.envoyInfo.getSoftwareVersion());
-		Assertions.assertEquals("121806XXXXXX", this.envoyInfo.getSerialNumber());
-		Assertions.assertEquals(41, system.get().getProduction().getMicroInvertersList().size());
-		Assertions.assertEquals(BigDecimal.valueOf(13827622.064), system.get().getProduction().getProductionEim().get().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(1207430, 3), system.get().getProduction().getProductionWatts());
-		Assertions.assertEquals(BigDecimal.ONE, system.get().getProduction().getPhaseCount());
-		Assertions.assertEquals(BigDecimal.valueOf(246.152), system.get().getProduction().getProductionVoltage());
-		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
-		Assertions.assertTrue(this.enphaseService.isOk());
-		Assertions.assertTrue(system.get().getWireless().isSupported());
-		Assertions.assertEquals("connected", system.get().getWireless().getCurrentNetwork().getStatus());
-		Assertions.assertFalse(this.envoyInfo.isV7orAbove());
-		Assertions.assertFalse(this.envoyInfo.webTokens);
+		assertTrue(system.isPresent());
+		assertEquals("R4.10.35", this.envoyInfo.getSoftwareVersion());
+		assertEquals("121806XXXXXX", this.envoyInfo.getSerialNumber());
+		assertEquals(41, system.get().getProduction().getMicroInvertersList().size());
+		assertEquals(BigDecimal.valueOf(13827622.064), system.get().getProduction().getProductionEim().get().getWattsLifetime());
+		assertEquals(BigDecimal.valueOf(1207430, 3), system.get().getProduction().getProductionWatts());
+		assertEquals(BigDecimal.ONE, system.get().getProduction().getPhaseCount());
+		assertEquals(BigDecimal.valueOf(246.152), system.get().getProduction().getProductionVoltage());
+		assertEquals(0, system.get().getProduction().getBatteryList().size());
+		assertTrue(this.enphaseService.isOk());
+		assertTrue(system.get().getWireless().isSupported());
+		assertEquals("connected", system.get().getWireless().getCurrentNetwork().getStatus());
+		assertFalse(this.envoyInfo.isV7orAbove());
+		assertFalse(this.envoyInfo.webTokens);
 
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		Assertions.assertEquals(50, metrics.size());
+		assertEquals(50, metrics.size());
 	}
 
 }

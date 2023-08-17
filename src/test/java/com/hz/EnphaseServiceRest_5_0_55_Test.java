@@ -12,7 +12,6 @@ import com.hz.utils.MetricCalculatorNegativeConsumption;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -39,6 +38,8 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D5.0.55")
@@ -118,23 +119,23 @@ class EnphaseServiceRest_5_0_55_Test {
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
-		Assertions.assertTrue(system.isPresent());
-		Assertions.assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
-		Assertions.assertEquals(19, system.get().getProduction().getInverter().orElseThrow().getActiveCount());
-		Assertions.assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
-		Assertions.assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
-		Assertions.assertEquals(BigDecimal.valueOf(-1554.171), system.get().getProduction().getNetConsumptionWatts());
-		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
-		Assertions.assertTrue(this.enphaseService.isOk());
+		assertTrue(system.isPresent());
+		assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
+		assertEquals(19, system.get().getProduction().getInverter().orElseThrow().getActiveCount());
+		assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
+		assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
+		assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
+		assertEquals(BigDecimal.valueOf(-1554.171), system.get().getProduction().getNetConsumptionWatts());
+		assertEquals(0, system.get().getProduction().getBatteryList().size());
+		assertTrue(this.enphaseService.isOk());
 
 		MetricCalculator metricCalculator = new MetricCalculatorNegativeConsumption();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		Assertions.assertEquals(50, metrics.size());
-		Assertions.assertEquals(-1554.1710205078125, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().orElseThrow().getValue());
+		assertEquals(50, metrics.size());
+		assertEquals(-1554.1710205078125, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().orElseThrow().getValue());
 
-		Assertions.assertFalse(envoyInfo.isV7orAbove());
+		assertFalse(envoyInfo.isV7orAbove());
 	}
 
 }

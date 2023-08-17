@@ -7,7 +7,6 @@ import com.hz.services.EnvoyService;
 import com.hz.utils.Calculators;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,6 +22,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +55,7 @@ class EnphaseServiceTest {
 		// When
 		LocalDateTime collectionTime = this.mockEnphaseService.getCollectionTime(this.mockEnphaseService.collectEnphaseData().orElseThrow());
 		// Then
-		Assertions.assertEquals(now, collectionTime);
+		assertEquals(now, collectionTime);
 	}
 
 	@Test
@@ -69,13 +69,13 @@ class EnphaseServiceTest {
 
 	@Test
 	void ValidatorsTest() {
-		Assertions.assertTrue(Validators.isValidDuration("7days"));
-		Assertions.assertTrue(Validators.isValidDuration("2WEeks"));
-		Assertions.assertTrue(Validators.isValidDuration("3Months"));
+		assertTrue(Validators.isValidDuration("7days"));
+		assertTrue(Validators.isValidDuration("2WEeks"));
+		assertTrue(Validators.isValidDuration("3Months"));
 
-		Assertions.assertFalse(Validators.isValidDuration("23Days"));
-		Assertions.assertFalse(Validators.isValidDuration("Days"));
-		Assertions.assertFalse(Validators.isValidDuration("3alpha"));
+		assertFalse(Validators.isValidDuration("23Days"));
+		assertFalse(Validators.isValidDuration("Days"));
+		assertFalse(Validators.isValidDuration("3alpha"));
 	}
 
 	@Test

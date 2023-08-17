@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PanelRepository extends JpaRepository<Panel, Long> {
-	@Query(value = "SELECT Event.id as id, Event.time as time, Event.consumption as consumption, SUM(Panel.PANEL_VALUE) as production FROM Panel, EVENT_PANELS, Event where Panel.id = EVENT_PANELS.panels_id and EVENT_PANELS.event_id = Event.id " +
-			"and Event.time >= ?1 " +
-			"group by Event.time " +
-			"order by Event.time", nativeQuery = true)
+	@Query(value = """
+			SELECT Event.id as id, Event.time as time, Event.consumption as consumption, SUM(Panel.PANEL_VALUE) as production FROM Panel, EVENT_PANELS, Event where Panel.id = EVENT_PANELS.panels_id and EVENT_PANELS.event_id = Event.id \
+			and Event.time >= ?1 \
+			group by Event.time \
+			order by Event.time\
+			""", nativeQuery = true)
 	List<PanelSummary> getPanelSummaries(LocalDateTime time);
 
 	@Query(value="delete from Panel where Panel.id not in (select panels_id from EVENT_PANELS)", nativeQuery=true)

@@ -141,7 +141,7 @@ public class InfluxDBConfig {
 				database = InfluxDBFactory.connect(config.getInfluxdbResource().getUrl(), config.getInfluxdbResource().getUser(), config.getInfluxdbResource().getPassword());
 			}
 
-			database.query(new Query(String.format("CREATE DATABASE \"%1s\" WITH DURATION 365d", SOLAR_DATABASE_NAME)));
+			database.query(new Query("CREATE DATABASE \"%1s\" WITH DURATION 365d".formatted(SOLAR_DATABASE_NAME)));
 		} catch (Exception e) {
 			log.error("InfluxDB Exception: {}", e.getMessage());
 			throw e;

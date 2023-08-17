@@ -3,7 +3,6 @@ package com.hz;
 import com.hz.configuration.TestEnphaseSystemInfoConfig;
 import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("testing")
@@ -35,9 +37,9 @@ class EnphaseServiceRest_7_3_75_Test {
 
 	@Test
 	void IdentifyVersion() {
-		Assertions.assertEquals("D7.3.75", this.envoyInfo.getSoftwareVersion());
-		Assertions.assertEquals("############", this.envoyInfo.getSerialNumber());
-		Assertions.assertTrue(this.envoyInfo.webTokens);
-		Assertions.assertTrue(this.envoyInfo.isV7orAbove());
+		assertEquals("D7.3.75", this.envoyInfo.getSoftwareVersion());
+		assertEquals("############", this.envoyInfo.getSerialNumber());
+		assertTrue(this.envoyInfo.webTokens);
+		assertTrue(this.envoyInfo.isV7orAbove());
 	}
 }

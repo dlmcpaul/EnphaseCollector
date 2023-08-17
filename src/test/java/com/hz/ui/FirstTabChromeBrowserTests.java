@@ -43,7 +43,7 @@ class FirstTabChromeBrowserTests {
 
 	@BeforeEach
 	void reset() {
-		open(String.format("http://host.testcontainers.internal:%d/solar", appPort));
+		open("http://host.testcontainers.internal:%d/solar".formatted(appPort));
 	}
 
 	@Test

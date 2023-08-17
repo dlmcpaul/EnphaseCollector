@@ -12,7 +12,6 @@ import com.hz.utils.MetricCalculatorStandard;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -39,6 +38,8 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D4.2.27")
@@ -118,20 +119,20 @@ class EnphaseServiceRest_4_2_27_Test {
 		Mockito.when(this.envoyConnectionProxy.getDefaultTemplate()).thenReturn(enphaseRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData();
-		Assertions.assertTrue(system.isPresent());
-		Assertions.assertEquals("D4.2.27", this.envoyInfo.getSoftwareVersion() );
-		Assertions.assertEquals(20, system.get().getProduction().getInverter().get().getActiveCount());
-		Assertions.assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
-		Assertions.assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionWatts());
-		Assertions.assertEquals(0, system.get().getProduction().getBatteryList().size());
-		Assertions.assertTrue(this.enphaseService.isOk());
+		assertTrue(system.isPresent());
+		assertEquals("D4.2.27", this.envoyInfo.getSoftwareVersion() );
+		assertEquals(20, system.get().getProduction().getInverter().get().getActiveCount());
+		assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
+		assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionWatts());
+		assertEquals(0, system.get().getProduction().getBatteryList().size());
+		assertTrue(this.enphaseService.isOk());
 
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		Assertions.assertEquals(25, metrics.size());
+		assertEquals(25, metrics.size());
 
-		Assertions.assertFalse(envoyInfo.isV7orAbove());
+		assertFalse(envoyInfo.isV7orAbove());
 	}
 
 }
