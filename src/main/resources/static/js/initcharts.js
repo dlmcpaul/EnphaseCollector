@@ -552,8 +552,8 @@ function setupClickEvents(contextPath) {
         }, false);
 
     let names = ["weekly", "monthly", "quarterly"];
-    for (let i = 0; i < names.length; i++) {
-        document.getElementById("btn-" + names[i] + "-normal").addEventListener("click", (ev) => switchStacking(ev), false);
-        document.getElementById("btn-" + names[i] + "-percent").addEventListener("click", (ev) => switchStacking(ev), false);
+    for (const element of names) {
+        document.getElementById("btn-" + element + "-normal").addEventListener("click", (ev) => switchStacking(ev), false);
+        document.getElementById("btn-" + element + "-percent").addEventListener("click", (ev) => switchStacking(ev), false);
     }
 }

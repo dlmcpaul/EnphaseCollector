@@ -20,7 +20,6 @@ import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
@@ -122,18 +121,18 @@ public class EnvoyConnectionProxy {
 					.build();
 
 			// Make a call to the /auth/check_jwt endpoint to set the cookie
-			HttpResponse response = httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK));
-			if (response.getCode() != 200) {
-				log.error("Attempt to validate bearer token {} against {} failed with result {}", authorisationToken.getJwt(), config.getController().getUrl() + AUTH_CHECK, response.getCode());
-			}
-
-			return buildTemplate(httpClient);
+			return httpClient.execute(new HttpGet(config.getController().getUrl() + AUTH_CHECK),
+					response -> {
+						if (response.getCode() != 200) {
+							log.error("Attempt to validate bearer token {} against {} failed with result {}", authorisationToken.getJwt(), config.getController().getUrl() + AUTH_CHECK, response.getCode());
+						}
+						return buildTemplate(httpClient);
+					});
 
 		} catch (IOException e) {
 			log.error("Could not connect to envoy when configuring a v7 http client - {}", e.getMessage(), e);
 			throw new ConnectionException(e);
 		}
-
 	}
 
 	public RestTemplate getSecureTemplate() throws IOException, URISyntaxException {

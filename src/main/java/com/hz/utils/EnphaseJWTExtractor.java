@@ -13,7 +13,6 @@ import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
@@ -59,12 +58,12 @@ public class EnphaseJWTExtractor {
 	}
 
 	private static String sendRequest(CloseableHttpClient httpClient, HttpPost request) throws IOException {
-		try (CloseableHttpResponse response = httpClient.execute(request)) {
+		return httpClient.execute(request, response -> {
 			if (response.getCode() != 200) {
 				throw new IOException("Failed to post to " + request.getRequestUri() + " returned " + response.getReasonPhrase());
 			}
 			return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-		}
+		});
 	}
 
 	public static String postLogin(CloseableHttpClient httpClient, String username, String password) throws IOException {
@@ -99,14 +98,13 @@ public class EnphaseJWTExtractor {
 		HttpGet getMethod = new HttpGet(ENPHASE_BASE_URI);
 		getMethod.setHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
 
-		try (CloseableHttpResponse response = httpClient.execute(getMethod)) {
-
+		return httpClient.execute(getMethod, response -> {
 			if (response.getCode() != 200) {
 				throw new IOException("Failed to load Enlighten Login Page");
 			}
 
 			return Jsoup.parse(response.getEntity().getContent(), "UTF-8", ENPHASE_BASE_URI);
-		}
+		});
 	}
 
 	private static UrlEncodedFormEntity encodeFormData(Document document, String username, String password) {
@@ -129,31 +127,29 @@ public class EnphaseJWTExtractor {
 		request.setHeader("Origin", ENPHASE_BASE_URI);
 		request.setEntity(body);
 
-		try (CloseableHttpResponse response = httpClient.execute(request)) {
+		httpClient.execute(request, response -> {
 			if (response.getCode() != 302) {
 				throw new IOException("Failed to perform Login");
 			}
 			HttpGet redirect = new HttpGet(response.getFirstHeader("location").getValue());
-			try(CloseableHttpResponse redirectResponse = httpClient.execute(redirect)) {
+			httpClient.execute(redirect, redirectResponse -> {
 				log.info("Redirect response {}", redirectResponse.getCode());
-			}
-
+				return redirectResponse;
+			});
 			log.info("SubmitForm Status = {} with redirect to {}", response.getCode(), response.getFirstHeader("location").getValue());
-		}
+			return response;
+		});
 	}
 
 	public static String scanForToken(CloseableHttpClient httpClient, String serialNumber) throws IOException {
 		log.info("Fetching and Scanning returned HTML for Token");
 		HttpGet jwtRequest = new HttpGet(ENPHASE_BASE_URI + "/entrez-auth-token?serial_num=" + serialNumber);
 
-		try (CloseableHttpResponse response = httpClient.execute(jwtRequest)) {
-
+		return httpClient.execute(jwtRequest, response -> {
 			if (response.getCode() != 200) {
 				throw new IOException("Failed to load the token page");
 			}
-
 			Document jwt = Jsoup.parse(response.getEntity().getContent(), "UTF-8", ENPHASE_BASE_URI);
-
 			String tokenObject = jwt.getElementsByTag("body").text();
 
 			if (tokenObject.isEmpty()) {
@@ -163,7 +159,7 @@ public class EnphaseJWTExtractor {
 
 			ObjectMapper jsonMapper = new ObjectMapper();
 			return jsonMapper.readValue(tokenObject, WebToken.class).getToken();
-		}
+		});
 	}
 
 	public static String fetchJWTV2(String username, String password, String serialNumber) throws IOException {
