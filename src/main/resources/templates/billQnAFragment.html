@@ -4,7 +4,7 @@
 <body>
     <div th:fragment="billQnA (visible)" id="bill-data">
         <!--@thymesVar id="bill_question" type="com.hz.controllers.models.BillQuestion"-->
-        <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-form">
+        <form method="post" th:action="@{/bill}" th:object="${bill_question}" id="bill-form" aria-live="polite">
             <div class="columns is-gapless">
                 <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.from', *{dateRange.getFrom()}, 'From')}"/>
                 <div data-th-replace="~{qnaFieldFragment :: dateField('dateRange.to', *{dateRange.getTo()}, 'To')}"/>

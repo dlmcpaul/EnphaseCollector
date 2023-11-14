@@ -7,8 +7,12 @@ function getAnswers(target, event) {
 
     const form = document.getElementById(target + "-form");
 
+    // All these attributes and classes will be removed when we replace the outerHTML
+    if (form.hasAttribute('data-submitting')) { return; }
+    form.setAttribute('data-submitting', '');
+
     const button = document.getElementById(target + "-button");
-    button.innerText = "Calculating";
+    button.classList.add('is-loading');
 
     const request = new XMLHttpRequest();
     request.open("POST", form.action, true);
@@ -25,6 +29,8 @@ function getAnswers(target, event) {
         } else {
             console.log("Refresh Error for " + target);
             button.innerText = "Error";
+            button.classList.remove('is-loading');
+            form.removeAttribute('data-submitting');
         }
     };
     request.send(new FormData(form));

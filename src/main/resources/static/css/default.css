@@ -71,8 +71,16 @@
     }
 }
 
+#time-bar-id {
+    --duration: 10;
+}
+
 .time-bar div {
     height: 5px;
     animation: shrink calc(var(--duration) * 1s) linear forwards;
     transform-origin: left center;
+}
+
+.nowrap-whitespace {
+    white-space: nowrap;
 }
