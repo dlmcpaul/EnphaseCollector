@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,12 +63,27 @@ public class EnphaseCollectorProperties {
         private int port;
         private String context;
 
+        private String buildUrl(String scheme, String host, int port, String context) {
+
+            UriComponentsBuilder builder = UriComponentsBuilder.newInstance().scheme(scheme).host(host);
+
+            if (port != 80 && port != 443) {
+                builder = builder.port(port);
+            }
+
+            if (context == null || context.isEmpty()) {
+                return builder.build().toUriString();
+            }
+            return builder.path("/{context}")
+                    .buildAndExpand(context).toUriString();
+        }
+
         public String getUnencryptedUrl() {
-            return "http://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+            return buildUrl("http", this.host, this.port, this.context);
         }
 
         public String getEncryptedUrl() {
-            return "https://" + host + (context == null || context.isEmpty() ? "" : "/" + context);
+            return buildUrl("https", this.host, this.port, this.context);
         }
 
         public String getUrl() {
@@ -79,7 +95,7 @@ public class EnphaseCollectorProperties {
             }
 
             // Unknown port.  Should we treat this as encrypted?
-            return "http://" + host + ":" + port + (context == null || context.isEmpty() ? "" : "/" + context);
+            return buildUrl("http", this.host, this.port, this.context);
         }
     }
 
