@@ -66,7 +66,7 @@
 <!--@thymesVar id="value" type="java.lang.String"-->
 <div th:fragment="levelItem (heading, value)" class="level-item has-text-centered">
     <div>
-        <p class="heading" th:text="${heading}"></p>
+        <p class="heading" th:utext="${heading}"></p>
         <p class="title" th:text="${value}"></p>
     </div>
 </div>
@@ -75,35 +75,15 @@
 <div th:fragment="estimateBox (source)" class="box">
     <nav class="level" aria-label="financial estimates">
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Estimated Bill', ${source.getEstimatedBill()})}"></div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="title">=</p>
-            </div>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('<br>', '=')}"></div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Import', ${source.getTotalImportCost()})}"></div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="title">-</p>
-            </div>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('<br>', '-')}"></div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"></div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="title"> </p>
-            </div>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('<br>', ' ')}"></div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Payback', ${source.getTotalPayback()})}"></div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="title">=</p>
-            </div>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('<br>', '=')}"></div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Savings', ${source.importSavings})}"></div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="title">+</p>
-            </div>
-        </div>
+        <div data-th-replace="~{qnaFieldFragment :: levelItem('<br>', '+')}"></div>
         <div data-th-replace="~{qnaFieldFragment :: moneyLevelItem('Earnings', ${source.exportEarnings})}"></div>
     </nav>
 </div>
