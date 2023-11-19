@@ -63,7 +63,7 @@ public class EnphaseCollectorProperties {
         private int port;
         private String context;
 
-        private String buildUrl(String scheme, String host, int port, String context) {
+        protected String buildUrl(String scheme, String host, int port, String context) {
 
             UriComponentsBuilder builder = UriComponentsBuilder.newInstance().scheme(scheme).host(host);
 
@@ -140,7 +140,7 @@ public class EnphaseCollectorProperties {
 
         @Override
         public String getUrl() {
-            return "tcp://" + this.getHost() + ":" + this.getPort();
+            return buildUrl("tcp", this.getHost(), this.getPort(), this.getContext());
         }
 
         public boolean isPublisherIdEmpty() {
