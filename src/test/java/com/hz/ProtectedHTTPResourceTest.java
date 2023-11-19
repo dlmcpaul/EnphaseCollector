@@ -21,6 +21,15 @@ class ProtectedHTTPResourceTest {
 		assertThat(resource.isUserPasswordSet(), comparesEqualTo(false));
 		assertThat(resource.isUserEmpty(), comparesEqualTo(true));
 		assertThat(resource.isPasswordEmpty(), comparesEqualTo(true));
+
+		resource.setUser("");
+		assertThat(resource.isUserPasswordSet(), comparesEqualTo(false));
+		assertThat(resource.isUserEmpty(), comparesEqualTo(true));
+
+		resource.setPassword("");
+		assertThat(resource.isUserPasswordSet(), comparesEqualTo(false));
+		assertThat(resource.isPasswordEmpty(), comparesEqualTo(true));
+
 		assertThat(resource.noAuthenticationSet(), comparesEqualTo(true));
 
 		resource.setUser("nobody");
@@ -35,6 +44,11 @@ class ProtectedHTTPResourceTest {
 	@Test
 	void TokenTest() {
 		EnphaseCollectorProperties.ProtectedHTTPResource resource = makeProtectedHTTPResource();
+		assertThat(resource.isTokenEmpty(), comparesEqualTo(true));
+		assertThat(resource.isTokenSet(), comparesEqualTo(false));
+		assertThat(resource.noAuthenticationSet(), comparesEqualTo(true));
+
+		resource.setToken("");
 		assertThat(resource.isTokenEmpty(), comparesEqualTo(true));
 		assertThat(resource.isTokenSet(), comparesEqualTo(false));
 		assertThat(resource.noAuthenticationSet(), comparesEqualTo(true));

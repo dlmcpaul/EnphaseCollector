@@ -21,6 +21,12 @@ class MqqtResourceTest {
 		assertThat(resource.isPublisherIdEmpty(), comparesEqualTo(true));
 		assertThat(resource.isTopicEmpty(), comparesEqualTo(true));
 
+		resource.setTopic("");
+		assertThat(resource.isTopicEmpty(), comparesEqualTo(true));
+
+		resource.setPublisherId("");
+		assertThat(resource.isPublisherIdEmpty(), comparesEqualTo(true));
+
 		resource.setHost("hzmega.local");
 		resource.setPort(1883);
 		resource.setTopic("topic1");
@@ -29,7 +35,6 @@ class MqqtResourceTest {
 		assertThat(resource.isPublisherIdEmpty(), comparesEqualTo(false));
 		assertThat(resource.isTopicEmpty(), comparesEqualTo(false));
 		assertThat(resource.getUrl(), comparesEqualTo("tcp://hzmega.local:1883"));
-
 	}
 
 }
