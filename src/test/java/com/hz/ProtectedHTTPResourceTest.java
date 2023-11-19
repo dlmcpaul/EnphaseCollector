@@ -9,9 +9,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 class ProtectedHTTPResourceTest {
 
 	private EnphaseCollectorProperties.ProtectedHTTPResource makeProtectedHTTPResource() {
-		EnphaseCollectorProperties.ProtectedHTTPResource resource = new EnphaseCollectorProperties.ProtectedHTTPResource();
-
-		return resource;
+		return new EnphaseCollectorProperties.ProtectedHTTPResource();
 	}
 
 	@Test

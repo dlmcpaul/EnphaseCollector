@@ -9,9 +9,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 class MqqtResourceTest {
 
 	private EnphaseCollectorProperties.MqqtResource makeMqqtResource() {
-		EnphaseCollectorProperties.MqqtResource resource = new EnphaseCollectorProperties.MqqtResource();
-
-		return resource;
+		return new EnphaseCollectorProperties.MqqtResource();
 	}
 
 	@Test
