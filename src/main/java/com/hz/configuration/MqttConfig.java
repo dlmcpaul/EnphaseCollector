@@ -31,6 +31,8 @@ public class MqttConfig {
 
 		EnphaseCollectorProperties.MqqtResource mqqtResource = config.getMqqtResource();
 
+		log.info("Configuring MQTT Resource with Host {} Port {} publisher {} topic {}", mqqtResource.getHost(), mqqtResource.getPort(), mqqtResource.getPublisherId(), mqqtResource.getTopic());
+
 		MqttConnectOptions options = new MqttConnectOptions();
 		if (mqqtResource.isUserEmpty() == false) {
 			options.setUserName(mqqtResource.getUser());

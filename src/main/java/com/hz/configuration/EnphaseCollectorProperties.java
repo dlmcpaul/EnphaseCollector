@@ -140,7 +140,7 @@ public class EnphaseCollectorProperties {
 
         @Override
         public String getUrl() {
-            return buildUrl("tcp", this.getHost(), this.getPort(), this.getContext());
+            return "tcp://" + this.getHost() + ":" + this.getPort();
         }
 
         public boolean isPublisherIdEmpty() {
