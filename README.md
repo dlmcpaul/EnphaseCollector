@@ -20,9 +20,9 @@ EnphaseCollector uses the **undocumented API** in the Envoy device to collect in
 
 Can be run as a java application or using the docker image
 
-| Main Page                                                                       | Weekly History Tab                                                             | Questions and Answers Tab                                                      |
-|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalQnA.png">    |
+| Main Page                                    | Weekly History Tab                           | Questions and Answers Tab                    |
+|----------------------------------------------|----------------------------------------------|----------------------------------------------|
+| ![Screenshot](/docs/images/LocalDisplay.png) | ![Screenshot](/docs/images/LocalWeekly.png)  | ![Screenshot](/docs/images/LocalQnA.png)     |
 
 If using the jar file you will need a Java 17 that you can get from https://adoptium.net/
 
