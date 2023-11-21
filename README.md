@@ -20,9 +20,9 @@ EnphaseCollector uses the **undocumented API** in the Envoy device to collect in
 
 Can be run as a java application or using the docker image
 
-| Main Page                                                                       | Weekly History Tab                                                             |
-|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png"> |
+| Main Page                                                                       | Weekly History Tab                                                             | Questions and Answers Tab                                                      |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalDisplay.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalWeekly.png"> | <img src="https://dlmcpaul.github.io/EnphaseCollector/images/LocalQnA.png">    |
 
 If using the jar file you will need a Java 17 that you can get from https://adoptium.net/
 
@@ -197,10 +197,11 @@ Influx DB is needed for storage of the statistics (Will autocreate 2 databases c
 
 - If profile set to pvoutput then every 5m the stats will be uploaded to your account at https://pvoutput.org (you will need to create an account to to get the systemid and key)
 
-- You can set both profiles separated by a comma eg influxdb,pvoutput
+- You can set multiple profiles separated by a comma eg influxdb,pvoutput
 
 - The internal database is always populated so the local view is always available at /solar
-- Stats can be pulled to Prometheus by using the Actuator endpoint configured at /solar/actuator/prometheus  
+- Stats can be pulled to Prometheus by using the Actuator endpoint configured at /solar/actuator/prometheus
+- Stats can be pushed to a mqtt server with the mqtt profile (requires mqtt server)
 
 ## Building for yourself
 This is a fairly standard maven project using spring boot so ```mvn package -Dmaven.test.skip``` should get your started and can build a working jar located in the target directory
