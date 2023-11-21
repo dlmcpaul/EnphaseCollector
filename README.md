@@ -97,6 +97,24 @@ dlmcpaul/enphasecollector
 ```
 Your timezone is something like Australia/Sydney or similar
 
+Example #4 sending data to mqtt.
+```
+docker run \
+-e TZ=your-timezone \
+-e ENVOY_CONTROLLER_PASSWORD=envoy-password \
+-e ENVOY_CONTROLLER_HOST=envoy-ip \
+-e ENVOY_MQQTRESOURCE_HOST=mqqt-ip \
+-e ENVOY_MQQTRESOURCE_PORT=mqqt-port \
+-e ENVOY_MQQTRESOURCE_TOPIC=topic-name \
+-e ENVOY_MQQTRESOURCE_PUBLISHERID=publisher-id \
+-e SPRING_PROFILES_ACTIVE=mqtt \
+dlmcpaul/enphasecollector
+```
+
+if ENVOY_MQQTRESOURCE_PUBLISHERID is not provided a random value will be chosen
+
+Note the spelling mistake in the environment variables (MQQT instead of MQTT) This will likely be fixed in a later release
+
 Available environment variables descriptions:
 
 - ENVOY_CONTROLLER_HOST           Set to your Envoy Controller IP Address if envoy.local cannot be found (usually if run in Docker)
@@ -108,7 +126,11 @@ Available environment variables descriptions:
 - ENVOY_INFLUXDBRESOURCE_PASSWORD Set if your Influx Database needs a user/password
 - ENVOY_PVOUTPUTRESOURCE_SYSTEMID Set to your pvoutput systemid
 - ENVOY_PVOUTPUTRESOURCE_KEY      Set to your pvoutput key
-- SPRING_PROFILES_ACTIVE          Determines destination for stats.  If not set only an internal database gets the stats.  Values can be influxdb and pvoutput
+- ENVOY_MQQTRESOURCE_HOST         Set to your MQTT Server IP Address
+- ENVOY_MQQTRESOURCE_PORT         Set to your MQTT Server Port No
+- ENVOY_MQQTRESOURCE_TOPIC        Set to the MQTT topic you want to write to 
+- ENVOY_MQQTRESOURCE_PUBLISHERID  Set to the MQTT publisher id you want to use
+- SPRING_PROFILES_ACTIVE          Determines destination for stats.  If not set only an internal database gets the stats.  Values can be influxdb, pvoutput, mqtt
 - ENVOY_REFRESHSECONDS            How often to poll the Envoy Controller.  Default 60s
 - ENVOY_PAYMENTPERKILOWATT        How much you get paid to export power to grid (FIT) eg 0.125 is 12.5c/Kw
 - ENVOY_CHARGEPERKILOWATT         How much it costs to buy from the grid eg 0.32285 is 32.285c/Kw
