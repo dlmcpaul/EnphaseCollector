@@ -32,6 +32,10 @@ public class Convertors {
 		return convertToKiloWattHours(BigDecimal.valueOf(watts), minutesOfOperation);
 	}
 
+	public static BigDecimal convertFromKiloWattHoursToTotalWatts(BigDecimal kwh, BigDecimal minutesOfOperation) {
+		return kwh.multiply(BigDecimal.valueOf(60000)).divide(minutesOfOperation, 4, RoundingMode.HALF_UP);
+	}
+
 	public static LocalDateTime convertToLocalDateTime(long time) {
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(time * 1000L), ZoneId.systemDefault());
 	}
