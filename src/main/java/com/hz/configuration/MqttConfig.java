@@ -25,28 +25,28 @@ public class MqttConfig {
 	@Profile("mqtt")
 	@Bean
 	public IMqttClient mqttClient() throws MqttException {
-		if (config.getMqqtResource() == null) {
+		EnphaseCollectorProperties.MqttResource mqttResource = config.getMqttResource();
+
+		if (mqttResource == null) {
 			throw new ConfigurationException("Please configure the mqtt settings");
 		}
 
-		EnphaseCollectorProperties.MqqtResource mqqtResource = config.getMqqtResource();
+		String publisherId = mqttResource.isPublisherIdEmpty() ? DEFAULTPUBLISHERID : mqttResource.getPublisherId();
 
-		log.info("Configuring MQTT Resource with Host {} Port {} publisher {} topic {}", mqqtResource.getHost(), mqqtResource.getPort(), mqqtResource.getPublisherId(), mqqtResource.getTopic());
+		log.info("Configuring MQTT Resource with Host {} Port {} publisher {} topic {}", mqttResource.getHost(), mqttResource.getPort(), publisherId, mqttResource.getTopic());
 
 		MqttConnectOptions options = new MqttConnectOptions();
-		if (mqqtResource.isUserEmpty() == false) {
-			options.setUserName(mqqtResource.getUser());
+		if (mqttResource.isUserEmpty() == false) {
+			options.setUserName(mqttResource.getUser());
 		}
-		if (mqqtResource.isPasswordEmpty() == false) {
-			options.setPassword(mqqtResource.getPassword().toCharArray());
+		if (mqttResource.isPasswordEmpty() == false) {
+			options.setPassword(mqttResource.getPassword().toCharArray());
 		}
 		options.setAutomaticReconnect(true);
 		options.setCleanSession(true);
 		options.setConnectionTimeout(10);
 
-		String publisherId = mqqtResource.isPublisherIdEmpty() ? DEFAULTPUBLISHERID : mqqtResource.getPublisherId();
-
-		IMqttClient publisher = new MqttClient(mqqtResource.getUrl(), publisherId);
+		IMqttClient publisher = new MqttClient(mqttResource.getUrl(), publisherId);
 		publisher.connect(options);
 		return publisher;
 	}

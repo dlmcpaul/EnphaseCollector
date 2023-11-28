@@ -60,14 +60,14 @@ public class MqttService {
 			throw new ConnectionException("Mqtt client not connected");
 		}
 
-		log.debug("Sending metric stats at {} with {} items to MQTT topic {}", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size(), properties.getMqqtResource().getTopic());
+		log.debug("Sending metric stats at {} with {} items to MQTT topic {}", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size(), properties.getMqttResource().getTopic());
 		String payload = createPayload(metricCollectionEvent);
 
 		MqttMessage msg = new MqttMessage(payload.getBytes());
 		msg.setQos(0);
 		msg.setRetained(true);
 		try {
-			mqttClient.publish(properties.getMqqtResource().getTopic(), msg);
+			mqttClient.publish(properties.getMqttResource().getTopic(), msg);
 		} catch (MqttException e) {
 			throw new ConnectionException(e);
 		}

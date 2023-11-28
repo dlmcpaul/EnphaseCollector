@@ -8,13 +8,13 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 
 class MqqtResourceTest {
 
-	private EnphaseCollectorProperties.MqqtResource makeMqqtResource() {
-		return new EnphaseCollectorProperties.MqqtResource();
+	private EnphaseCollectorProperties.MqttResource makeMqqtResource() {
+		return new EnphaseCollectorProperties.MqttResource();
 	}
 
 	@Test
 	void MqqtTest() {
-		EnphaseCollectorProperties.MqqtResource resource = makeMqqtResource();
+		EnphaseCollectorProperties.MqttResource resource = makeMqqtResource();
 
 		assertThat(resource.isPublisherIdEmpty(), comparesEqualTo(true));
 		assertThat(resource.isTopicEmpty(), comparesEqualTo(true));

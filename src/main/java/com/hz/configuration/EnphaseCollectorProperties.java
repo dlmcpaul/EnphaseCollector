@@ -34,7 +34,7 @@ public class EnphaseCollectorProperties {
     private LocalDate effectiveRateDate;
     private ProtectedHTTPResource influxdbResource;
     private PvOutputResource pvOutputResource;
-    private MqqtResource mqqtResource;
+    private MqttResource mqttResource;
 
     // V7 Autofetch configuration
     private String enphaseWebUser;
@@ -134,7 +134,7 @@ public class EnphaseCollectorProperties {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @NoArgsConstructor
-    public static class MqqtResource extends ProtectedHTTPResource {
+    public static class MqttResource extends ProtectedHTTPResource {
         private String topic;
         private String publisherId;
 
