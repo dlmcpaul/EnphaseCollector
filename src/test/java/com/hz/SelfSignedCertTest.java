@@ -4,7 +4,6 @@ import com.hz.components.EnphaseRequestRetryStrategy;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
@@ -13,7 +12,7 @@ import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
-import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.hc.core5.ssl.SSLContexts;
@@ -67,12 +66,11 @@ class SelfSignedCertTest {
 
 	@Test
 	void fetchUrlIgnoringCertChecks() throws IOException {
-		HttpClient client = this.createSecureClient();
-		HttpUriRequest request = new HttpGet("https://self-signed.badssl.com");
-
-		HttpResponse response = client.execute(request);
-
-		assertEquals(200, response.getCode());
+		assertEquals(200,
+				this.createSecureClient().<ClassicHttpResponse>execute(new HttpGet("https://self-signed.badssl.com"),
+						response -> {
+							return response;
+						}).getCode());
 	}
 
 }
