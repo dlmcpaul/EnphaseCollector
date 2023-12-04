@@ -58,7 +58,20 @@ public class EnphaseCollectorProperties {
 
     @Data
     @NoArgsConstructor
-    public static class HTTPResource {
+    public static class Resource {
+        protected boolean isPropertySet(String property) {
+            return (property == null || property.isEmpty()) == false;
+        }
+
+        protected boolean isPropertyEmpty(String property) {
+            return (property == null || property.isEmpty());
+        }
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @NoArgsConstructor
+    public static class HTTPResource extends Resource {
         private String host;
         private int port;
         private String context;
@@ -107,12 +120,13 @@ public class EnphaseCollectorProperties {
         private String password;
         private String token;
 
+        public boolean isUserSet() { return isPropertySet(this.user); }
+        public boolean isPasswordSet() { return isPropertySet(this.password); }
         public boolean isUserPasswordSet() {
-            return (isUserEmpty() == false && isPasswordEmpty() == false);
+            return (isPropertySet(this.user) && isPropertySet(this.password));
         }
-
         public boolean isTokenSet() {
-            return isTokenEmpty() == false;
+            return isPropertySet(token);
         }
 
         public boolean noAuthenticationSet() {
@@ -120,14 +134,13 @@ public class EnphaseCollectorProperties {
         }
 
         public boolean isTokenEmpty() {
-            return (token == null || token.isEmpty());
+            return isPropertyEmpty(this.token);
         }
-
         public boolean isUserEmpty() {
-            return (user == null || user.isEmpty());
+            return isPropertyEmpty(this.user);
         }
         public boolean isPasswordEmpty() {
-            return (password == null || password.isEmpty());
+            return isPropertyEmpty(this.password);
         }
     }
 
@@ -144,10 +157,10 @@ public class EnphaseCollectorProperties {
         }
 
         public boolean isPublisherIdEmpty() {
-            return (publisherId == null || publisherId.isEmpty());
+            return isPropertyEmpty(this.publisherId);
         }
         public boolean isTopicEmpty() {
-            return (topic == null || topic.isEmpty());
+            return isPropertyEmpty(this.topic);
         }
     }
 

@@ -36,10 +36,10 @@ public class MqttConfig {
 		log.info("Configuring MQTT Resource with Host {} Port {} publisher {} topic {}", mqttResource.getHost(), mqttResource.getPort(), publisherId, mqttResource.getTopic());
 
 		MqttConnectOptions options = new MqttConnectOptions();
-		if (mqttResource.isUserEmpty() == false) {
+		if (mqttResource.isUserSet()) {
 			options.setUserName(mqttResource.getUser());
 		}
-		if (mqttResource.isPasswordEmpty() == false) {
+		if (mqttResource.isPasswordSet()) {
 			options.setPassword(mqttResource.getPassword().toCharArray());
 		}
 		options.setAutomaticReconnect(true);

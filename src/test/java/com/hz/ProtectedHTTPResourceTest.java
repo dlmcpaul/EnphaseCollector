@@ -22,10 +22,12 @@ class ProtectedHTTPResourceTest {
 
 		resource.setUser("");
 		assertThat(resource.isUserPasswordSet(), comparesEqualTo(false));
+		assertThat(resource.isUserSet(), comparesEqualTo(false));
 		assertThat(resource.isUserEmpty(), comparesEqualTo(true));
 
 		resource.setPassword("");
 		assertThat(resource.isUserPasswordSet(), comparesEqualTo(false));
+		assertThat(resource.isPasswordSet(), comparesEqualTo(false));
 		assertThat(resource.isPasswordEmpty(), comparesEqualTo(true));
 
 		assertThat(resource.noAuthenticationSet(), comparesEqualTo(true));
@@ -34,8 +36,10 @@ class ProtectedHTTPResourceTest {
 		resource.setPassword("invalid");
 
 		assertThat(resource.isUserPasswordSet(), comparesEqualTo(true));
+		assertThat(resource.isUserSet(), comparesEqualTo(true));
 		assertThat(resource.isUserEmpty(), comparesEqualTo(false));
 		assertThat(resource.isPasswordEmpty(), comparesEqualTo(false));
+		assertThat(resource.isPasswordSet(), comparesEqualTo(true));
 		assertThat(resource.noAuthenticationSet(), comparesEqualTo(false));
 	}
 
