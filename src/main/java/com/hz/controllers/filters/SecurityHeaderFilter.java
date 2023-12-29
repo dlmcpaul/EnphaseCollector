@@ -2,12 +2,19 @@ package com.hz.controllers.filters;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 @Component
 public class SecurityHeaderFilter implements Filter {
+
+	private final String contentSecurityPolicyValue;
+
+	public SecurityHeaderFilter(@Qualifier(value="contentSecurityPolicyValue") String contentSecurityPolicyValue) {
+		this.contentSecurityPolicyValue = contentSecurityPolicyValue;
+	}
 
 	@Override
 	public void destroy() {
@@ -17,7 +24,7 @@ public class SecurityHeaderFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletResponse httpServletResponse=(HttpServletResponse)response;
-		httpServletResponse.setHeader("Content-Security-Policy","default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self';");
+		httpServletResponse.setHeader("Content-Security-Policy", contentSecurityPolicyValue);
 		httpServletResponse.setHeader("X-Frame-Options","SAMEORIGIN");
 		httpServletResponse.setHeader("X-Content-Type-Options","nosniff");
 		httpServletResponse.setHeader("Referrer-Policy","no-referrer");
