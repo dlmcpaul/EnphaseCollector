@@ -208,7 +208,7 @@ This is a fairly standard maven project using spring boot so ```mvn package -Dma
 
 You will need the following tools installed to develop and build this code.
 - Git to clone the code and commit changes
-- Java 17 to compile the code
+- Java 21 to compile the code
 - Maven to manage the build process
 - Docker to support the testing
 
