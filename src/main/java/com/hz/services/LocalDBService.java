@@ -1,6 +1,8 @@
 package com.hz.services;
 
 import com.hz.configuration.EnphaseCollectorProperties;
+import com.hz.controllers.models.Timeline;
+import com.hz.controllers.models.TimelineEntry;
 import com.hz.interfaces.*;
 import com.hz.metrics.Metric;
 import com.hz.models.database.*;
