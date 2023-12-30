@@ -52,10 +52,12 @@ public class Summary {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		Summary summary = (Summary) o;
-		return Objects.equals(date, summary.date);
+		if (o instanceof Summary that) {
+			if (this == o) return true;
+			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+			return Objects.equals(this.date, that.date);
+		}
+		return false;
 	}
 
 	@Override

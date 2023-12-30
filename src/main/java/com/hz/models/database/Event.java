@@ -40,10 +40,12 @@ public class Event {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		Event event = (Event) o;
-		return Objects.equals(id, event.id);
+		if (o instanceof Event that) {
+			if (this == o) return true;
+			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+			return Objects.equals(this.id, that.id);
+		}
+		return false;
 	}
 
 	@Override

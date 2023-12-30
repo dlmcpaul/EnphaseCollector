@@ -57,10 +57,12 @@ public class EnvoySystem implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		EnvoySystem that = (EnvoySystem) o;
-		return Objects.equals(id, that.id);
+		if (o instanceof EnvoySystem that) {
+			if (this == o) return true;
+			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+			return Objects.equals(this.id, that.id);
+		}
+		return false;
 	}
 
 	@Override

@@ -34,10 +34,12 @@ public class ElectricityRate implements RateInterface {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		ElectricityRate that = (ElectricityRate) o;
-		return Objects.equals(effectiveDate, that.effectiveDate);
+		if (o instanceof ElectricityRate that) {
+			if (this == o) return true;
+			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+			return Objects.equals(this.effectiveDate, that.effectiveDate);
+		}
+		return false;
 	}
 
 	@Override

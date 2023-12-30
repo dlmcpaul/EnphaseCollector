@@ -41,10 +41,12 @@ public class Panel {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		Panel panel = (Panel) o;
-		return Objects.equals(id, panel.id);
+		if (o instanceof Panel that) {
+			if (this == o) return true;
+			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+			return Objects.equals(this.id, that.id);
+		}
+		return false;
 	}
 
 	@Override
