@@ -30,6 +30,7 @@
                 <li id="monthly"><a id="monthly-event">Month</a></li>
                 <li id="quarterly"><a id="quarterly-event">Quarter</a></li>
                 <li id="qna"><a id="qna-event">Q & A</a></li>
+                <li id="timeline"><a id="timeline-event">Timeline</a></li>
             </ul>
         </nav>
         <div id="live-data" role="main">
@@ -48,6 +49,7 @@
         <div data-th-replace="~{historyChartFragment :: historyChart('monthly')}"></div>
         <div data-th-replace="~{historyChartFragment :: historyChart('quarterly')}"></div>
         <div data-th-replace="~{qnaFragment :: qna}"></div>
+        <div data-th-replace="~{timeFragment :: timeline(${timeline})}"></div>
     </div>
 </section>
 <footer class="footer is-paddingless has-background-white">
@@ -72,6 +74,7 @@
     </div>
 </footer>
 <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/css/all.css}"/>
+<link rel="stylesheet" data-th-href="@{/webjars/bulma-timeline/dist/css/bulma-timeline.min.css}"/>
 <link rel="stylesheet" data-th-href="@{/css/default.css}"/>
 <script data-th-src="@{/webjars/highcharts/highstock.js}"></script>
 <script data-th-src="@{/webjars/highcharts/highcharts-more.js}"></script>

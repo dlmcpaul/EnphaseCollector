@@ -254,6 +254,59 @@ public class LocalDBService {
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
+	@Transactional(readOnly = true)
+	public Timeline getTimeline() {
+		LocalDate earliestEntry = summaryRepository.findFirst().getDate();
+		int year = earliestEntry.getYear();
+		Timeline timeline = new Timeline(earliestEntry);
+
+		List<Summary> summaries = summaryRepository.findSummariesByDateBetweenOrderByDateAsc(earliestEntry, this.getMidnight().toLocalDate());
+
+		Summary highestOutput = new Summary();
+		Summary highestProduction = new Summary();
+		Summary highestGridImport = new Summary();
+		Summary highestGridExport = new Summary();
+
+		for (var summary : summaries) {
+			if (summary.getDate().getYear() > year) {
+				if (highestOutput.getHighestOutput() != 0L) {
+					timeline.addTimeLine(highestOutput.getDate(), TimelineEntry.EntryType.HIGHEST_OUTPUT, BigDecimal.valueOf(highestOutput.getHighestOutput()));
+				}
+				timeline.addTimeLine(highestProduction.getDate(), TimelineEntry.EntryType.HIGHEST_PRODUCTION, Convertors.convertToKiloWattHours(highestProduction.getProduction(), properties.getRefreshAsMinutes(highestProduction.getConversionRate())));
+				timeline.addTimeLine(highestGridImport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_IMPORT, Convertors.convertToKiloWattHours(highestGridImport.getGridImport(), properties.getRefreshAsMinutes(highestGridImport.getConversionRate())));
+				timeline.addTimeLine(highestGridExport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_EXPORT, Convertors.convertToKiloWattHours(highestGridExport.getGridExport(), properties.getRefreshAsMinutes(highestGridExport.getConversionRate())));
+
+				highestOutput = new Summary();
+				highestProduction = new Summary();
+				highestGridImport = new Summary();
+				highestGridExport = new Summary();
+				year = summary.getDate().getYear();
+			}
+
+			if (summary.getHighestOutput() != null && (summary.getHighestOutput().compareTo(highestOutput.getHighestOutput()) > 0)) {
+				highestOutput = summary;
+			}
+			if (summary.getProduction().compareTo(highestProduction.getProduction()) > 0) {
+				highestProduction = summary;
+			}
+			if (summary.getGridImport().compareTo(highestGridImport.getGridImport()) > 0) {
+				highestGridImport = summary;
+			}
+			if (summary.getGridExport().compareTo(highestGridExport.getGridExport()) > 0) {
+				highestGridExport = summary;
+			}
+
+		}
+		if (highestOutput.getHighestOutput() != 0L) {
+			timeline.addTimeLine(highestOutput.getDate(), TimelineEntry.EntryType.HIGHEST_OUTPUT, BigDecimal.valueOf(highestOutput.getHighestOutput()));
+		}
+		timeline.addTimeLine(highestProduction.getDate(), TimelineEntry.EntryType.HIGHEST_PRODUCTION, Convertors.convertToKiloWattHours(highestProduction.getProduction(), properties.getRefreshAsMinutes(highestProduction.getConversionRate())));
+		timeline.addTimeLine(highestGridImport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_IMPORT, Convertors.convertToKiloWattHours(highestGridImport.getGridImport(), properties.getRefreshAsMinutes(highestGridImport.getConversionRate())));
+		timeline.addTimeLine(highestGridExport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_EXPORT, Convertors.convertToKiloWattHours(highestGridExport.getGridExport(), properties.getRefreshAsMinutes(highestGridExport.getConversionRate())));
+
+		return timeline;
+	}
+
 	private LocalDateTime getMidnight() {
 		LocalDate now = LocalDate.now();
 		return now.atStartOfDay();

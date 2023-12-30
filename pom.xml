@@ -168,6 +168,12 @@
             <artifactId>bulma</artifactId>
             <version>${bulma.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>bulma-timeline</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

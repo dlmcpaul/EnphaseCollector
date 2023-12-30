@@ -122,6 +122,7 @@ public class EnphaseController {
 			model.addAttribute("releaseVersion", release.getVersion());
 			model.addAttribute("exportLimit", properties.getExportLimit());
 			model.addAttribute("contextPath", request.getContextPath());
+			model.addAttribute("timeline", localDBService.getTimeline());
 		} catch (Exception e) {
 			log.error("index Page Exception {}", e.getMessage(), e);
 		}
