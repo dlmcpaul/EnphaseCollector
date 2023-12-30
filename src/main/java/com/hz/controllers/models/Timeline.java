@@ -1,7 +1,6 @@
 package com.hz.controllers.models;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,12 +8,15 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 @Data
-@NoArgsConstructor
 public class Timeline {
 	Comparator<TimelineEntry> byDate = Comparator.comparing(TimelineEntry::getDate);
 
 	private LocalDate earliestEntry;
 	private TreeSet<TimelineEntry> timelineEntryList = new TreeSet<>(byDate);
+
+	public Timeline() {
+		this.earliestEntry = LocalDate.now();
+	}
 
 	public Timeline(LocalDate earliestEntry) {
 		this.earliestEntry = earliestEntry;

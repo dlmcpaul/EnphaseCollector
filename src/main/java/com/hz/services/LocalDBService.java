@@ -258,7 +258,11 @@ public class LocalDBService {
 
 	@Transactional(readOnly = true)
 	public Timeline getTimeline() {
-		LocalDate earliestEntry = summaryRepository.findFirst().getDate();
+		Summary firstEntry = summaryRepository.findFirst();
+		if (firstEntry == null) {
+			return new Timeline();
+		}
+		LocalDate earliestEntry = firstEntry.getDate();
 		int year = earliestEntry.getYear();
 		Timeline timeline = new Timeline(earliestEntry);
 
