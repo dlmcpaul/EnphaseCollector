@@ -24,7 +24,7 @@ Can be run as a java application or using the docker image
 |----------------------------------------------|----------------------------------------------|----------------------------------------------|
 | ![Screenshot](/docs/images/LocalDisplay.png) | ![Screenshot](/docs/images/LocalWeekly.png)  | ![Screenshot](/docs/images/LocalQnA.png)     |
 
-If using the jar file you will need a Java 17 that you can get from https://adoptium.net/
+If using the jar file you will need a Java 21 that you can get from https://adoptium.net/
 
 Example #1 with default internal website (assuming jar is named enphasecollector-development-SNAPSHOT.jar which is the default build artifact)
 ```
@@ -190,7 +190,7 @@ dlmcpaul/enphasecollector
 While I make every effort to make this application secure I cannot make any guarantees.  The application should be hosted behind a firewall and only exposed through a reverse proxy which includes an authentication mechanism and utilises https.
 
 ## Dependencies
-- Docker (or Java 17)
+- Docker (or Java 21)
 
 - If profile set to influxdb then an 
 Influx DB is needed for storage of the statistics (Will autocreate 2 databases called 'solardb' and 'collectorStats')

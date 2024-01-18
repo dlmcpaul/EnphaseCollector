@@ -15,7 +15,8 @@ public class TimelineEntry {
 		HIGHEST_PRODUCTION,
 		HIGHEST_GRID_IMPORT,
 		HIGHEST_OUTPUT,
-		HIGHEST_GRID_EXPORT
+		HIGHEST_GRID_EXPORT,
+		EMPTY_TIMELINE
 	}
 
 	private LocalDate date;
@@ -28,6 +29,7 @@ public class TimelineEntry {
 			case HIGHEST_GRID_IMPORT -> "Highest Imported from Grid";
 			case HIGHEST_OUTPUT -> "Peak Power Achieved";
 			case HIGHEST_GRID_EXPORT -> "Highest Excess Exported";
+			case EMPTY_TIMELINE -> "Nothing Here Yet";
 			case null, default -> "Unknown";
 		};
 	}
@@ -35,6 +37,7 @@ public class TimelineEntry {
 	public String getValueAsString() {
 		return switch (entryType) {
 			case HIGHEST_OUTPUT -> value.toPlainString() + " W";
+			case EMPTY_TIMELINE -> "";
 			case null, default -> value.toPlainString() + " kWh";
 		};
 	}
@@ -45,6 +48,7 @@ public class TimelineEntry {
 			case HIGHEST_GRID_IMPORT -> "fas fa-thumbs-down";
 			case HIGHEST_OUTPUT -> "fas fa-arrow-circle-up";
 			case HIGHEST_GRID_EXPORT -> "fas fa-arrow-up";
+			case EMPTY_TIMELINE -> "fas fa-arrow-down";
 			case null, default -> "";
 		};
 	}

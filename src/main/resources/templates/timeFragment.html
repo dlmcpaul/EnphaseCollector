@@ -2,9 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
 
 <body>
+<!--/*@thymesVar id="timeline" type="com.hz.controllers.models.Timeline"*/-->
 <div th:fragment="timeline (timeline)" th:id="timeline-data" class="is-hidden" role="main">
     <div class="timeline is-centered">
-        <!--/*@thymesVar id="timeline" type="com.hz.controllers.models.Timeline"*/-->
         <header class="timeline-header">
             <span class="tag is-medium is-primary" th:text="${#temporals.format(timeline.getEarliestEntry(),'dd MMM yyyy')}">1999</span>
         </header>

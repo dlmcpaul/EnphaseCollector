@@ -2,7 +2,9 @@ package com.hz.controllers;
 
 import com.hz.components.ReleaseInfoContributor;
 import com.hz.configuration.EnphaseCollectorProperties;
-import com.hz.controllers.models.*;
+import com.hz.controllers.models.BillAnswer;
+import com.hz.controllers.models.BillQuestion;
+import com.hz.controllers.models.Status;
 import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
@@ -10,16 +12,16 @@ import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.services.EnvoyService;
 import com.hz.services.LocalDBService;
 import com.hz.utils.Convertors;
-import com.hz.utils.Validators;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -36,7 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Controller
 @RequiredArgsConstructor
 @Log4j2
-public class EnphaseController {
+public class TemplateController {
 	private static final String DOLLAR_SIGN = "fas fa-dollar-sign";
 	private static final String SOLAR_SIGN = "fas fa-sun";
 
@@ -155,63 +157,6 @@ public class EnphaseController {
 	public String status(Model model) {
 		model.addAttribute("statusList", this.populateStatusList());
 		return "statusListFragment :: statusList (statusList=${statusList})";
-	}
-
-	@GetMapping(value = "/pvc", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public PvC getPvc() {
-		PvC pvc = new PvC();
-
-		try {
-			localDBService.getEventsForToday().forEach(pvc::addEvent);
-			pvc.generateExcess(localDBService.getPanelProduction(), properties.getExportLimit());
-			pvc.setPlotBands(properties.getBands().stream().map(b -> new PlotBand(b.getFrom(), b.getTo(), b.getColour())).toList());
-		} catch (Exception e) {
-			log.error("getPvc Exception: {}", e.getMessage(), e);
-		}
-		return pvc;
-	}
-
-	@GetMapping(value = "/history", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public History getHistory(@Valid @RequestParam @NotNull String duration) {
-		History result = new History();
-
-		if (Validators.isValidDuration(duration)) {
-			try {
-				localDBService.getLastDurationTotalsContinuous(duration)
-						.forEach(total -> result.addSummary(new Summary(total.getDate(),
-								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
-								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
-								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
-								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), duration));
-			} catch (Exception e) {
-				log.error("getHistory Exception: {}", e.getMessage(), e);
-			}
-		}
-		return result;
-	}
-
-	@GetMapping(value = "/production", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public Integer getProduction() {
-		try {
-			return localDBService.getLastEvent().getProduction().intValue();
-		} catch (Exception e) {
-			log.error("getProduction Exception: {}", e.getMessage(), e);
-		}
-		return 0;
-	}
-
-	@GetMapping(value = "/consumption", produces = "application/json; charset=UTF-8")
-	@ResponseBody
-	public Integer getConsumption() {
-		try {
-			return localDBService.getLastEvent().getConsumption().intValue();
-		} catch (Exception e) {
-			log.error("getConsumption Exception: {}", e.getMessage(), e);
-		}
-		return 0;
 	}
 
 }
