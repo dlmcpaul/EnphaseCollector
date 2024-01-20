@@ -550,6 +550,10 @@ function setupClickEvents(contextPath) {
         .addEventListener("click", function () {
             switchToTab('main-tab', 'qna');
         }, false);
+    document.getElementById("timeline-event")
+        .addEventListener("click", function () {
+            switchToTab('main-tab', 'timeline');
+        }, false);
 
     let names = ["weekly", "monthly", "quarterly"];
     for (const element of names) {
