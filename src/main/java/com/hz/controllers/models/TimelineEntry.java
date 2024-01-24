@@ -26,9 +26,9 @@ public class TimelineEntry {
 	public String getDescription() {
 		return switch (entryType) {
 			case HIGHEST_PRODUCTION -> "Highest Solar Produced";
-			case HIGHEST_GRID_IMPORT -> "Highest Imported from Grid";
+			case HIGHEST_GRID_IMPORT -> "Highest Grid Imported";
 			case HIGHEST_OUTPUT -> "Peak Power Achieved";
-			case HIGHEST_GRID_EXPORT -> "Highest Excess Exported";
+			case HIGHEST_GRID_EXPORT -> "Highest Solar Exported";
 			case EMPTY_TIMELINE -> "Nothing Here Yet";
 			case null, default -> "Unknown";
 		};

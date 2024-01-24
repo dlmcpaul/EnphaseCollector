@@ -9,7 +9,7 @@
             <span class="tag is-medium is-primary" th:text="${#temporals.format(timeline.getEarliestEntry(),'dd MMM yyyy')}">1999</span>
         </header>
         <!--/*@thymesVar id="entry" type="com.hz.controllers.models.TimelineEntry"*/-->
-        <th:block th:with="timelineList=${timeline.getTimelineEntryList()}" th:each="entry, stats : ${timeline.getTimelineEntryList()}">
+        <th:block th:with="timelineList=${timeline.values()}" th:each="entry, stats : ${timeline.values()}">
             <header class="timeline-header" th:unless="${stats.first or stats.last or entry.getYear() == timelineList[stats.index-1].getYear()}">
                 <span class="tag is-primary" th:text="${entry.getYear()}">1999</span>
             </header>

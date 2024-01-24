@@ -4,17 +4,15 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.Collection;
+import java.util.TreeMap;
 
 import static com.hz.controllers.models.TimelineEntry.EntryType.EMPTY_TIMELINE;
 
 @Data
 public class Timeline {
-	private final Comparator<TimelineEntry> byDate = Comparator.comparing(TimelineEntry::getDate);
-
 	private LocalDate earliestEntry;
-	private TreeSet<TimelineEntry> timelineEntryList = new TreeSet<>(byDate);
+	private TreeMap<String, TimelineEntry> timelineEntryList = new TreeMap<>();
 
 	public Timeline() {
 		this.earliestEntry = LocalDate.now();
@@ -26,10 +24,16 @@ public class Timeline {
 	}
 
 	public void addTimeLineEntry(TimelineEntry e) {
-		this.timelineEntryList.add(e);
+		if (e.getDate() != null) {
+			this.timelineEntryList.put(String.valueOf(e.getDate()) + e.getEntryType(), e);
+		}
 	}
 
 	public void addTimeLine(LocalDate date, TimelineEntry.EntryType entryType, BigDecimal value) {
 		this.addTimeLineEntry(new TimelineEntry(date, entryType, value));
+	}
+
+	public Collection<TimelineEntry> values() {
+		return this.timelineEntryList.values();
 	}
 }

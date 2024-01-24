@@ -289,16 +289,16 @@ public class LocalDBService {
 				year = summary.getDate().getYear();
 			}
 
-			if (summary.getHighestOutput() != null && (summary.getHighestOutput().compareTo(highestOutput.getHighestOutput()) > 0)) {
+			if (summary.getHighestOutput() != null && (summary.getHighestOutput().compareTo(highestOutput.getHighestOutput()) >= 0)) {
 				highestOutput = summary;
 			}
-			if (summary.getProduction().compareTo(highestProduction.getProduction()) > 0) {
+			if (summary.getProduction().compareTo(highestProduction.getProduction()) >= 0) {
 				highestProduction = summary;
 			}
-			if (summary.getGridImport().compareTo(highestGridImport.getGridImport()) > 0) {
+			if (summary.getGridImport().compareTo(highestGridImport.getGridImport()) >= 0) {
 				highestGridImport = summary;
 			}
-			if (summary.getGridExport().compareTo(highestGridExport.getGridExport()) > 0) {
+			if (summary.getGridExport().compareTo(highestGridExport.getGridExport()) >= 0) {
 				highestGridExport = summary;
 			}
 
