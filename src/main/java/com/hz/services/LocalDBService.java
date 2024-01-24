@@ -168,9 +168,9 @@ public class LocalDBService {
 	public PanelProduction getMaxPanelProduction() {
 		NavigableMap<Float,List<Panel>> map = new TreeMap<>(this.getPanelSummaries());
 
-		return map.size() > 0
-				? new PanelProduction(BigDecimal.valueOf(map.lastEntry().getKey()), BigDecimal.ZERO, map.lastEntry().getValue().size())
-				: new PanelProduction(BigDecimal.ZERO,BigDecimal.ZERO,0);
+		return map.isEmpty()
+				? new PanelProduction(BigDecimal.ZERO,BigDecimal.ZERO,0)
+				: new PanelProduction(BigDecimal.valueOf(map.lastEntry().getKey()), BigDecimal.ZERO, map.lastEntry().getValue().size());
 	}
 
 	@Transactional(readOnly = true)
@@ -256,12 +256,22 @@ public class LocalDBService {
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
+	private void summarise(Timeline timeline, Summary highestOutput, Summary highestProduction, Summary highestGridImport, Summary highestGridExport) {
+		if (highestOutput.getHighestOutput() != 0L) {
+			timeline.addTimeLine(highestOutput.getDate(), TimelineEntry.EntryType.HIGHEST_OUTPUT, BigDecimal.valueOf(highestOutput.getHighestOutput()));
+		}
+		timeline.addTimeLine(highestProduction.getDate(), TimelineEntry.EntryType.HIGHEST_PRODUCTION, Convertors.convertToKiloWattHours(highestProduction.getProduction(), properties.getRefreshAsMinutes(highestProduction.getConversionRate())));
+		timeline.addTimeLine(highestGridImport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_IMPORT, Convertors.convertToKiloWattHours(highestGridImport.getGridImport(), properties.getRefreshAsMinutes(highestGridImport.getConversionRate())));
+		timeline.addTimeLine(highestGridExport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_EXPORT, Convertors.convertToKiloWattHours(highestGridExport.getGridExport(), properties.getRefreshAsMinutes(highestGridExport.getConversionRate())));
+	}
+
 	@Transactional(readOnly = true)
 	public Timeline getTimeline() {
 		Summary firstEntry = summaryRepository.findFirst();
 		if (firstEntry == null) {
 			return new Timeline();
 		}
+
 		LocalDate earliestEntry = firstEntry.getDate();
 		int year = earliestEntry.getYear();
 		Timeline timeline = new Timeline(earliestEntry);
@@ -275,12 +285,7 @@ public class LocalDBService {
 
 		for (var summary : summaries) {
 			if (summary.getDate().getYear() > year) {
-				if (highestOutput.getHighestOutput() != 0L) {
-					timeline.addTimeLine(highestOutput.getDate(), TimelineEntry.EntryType.HIGHEST_OUTPUT, BigDecimal.valueOf(highestOutput.getHighestOutput()));
-				}
-				timeline.addTimeLine(highestProduction.getDate(), TimelineEntry.EntryType.HIGHEST_PRODUCTION, Convertors.convertToKiloWattHours(highestProduction.getProduction(), properties.getRefreshAsMinutes(highestProduction.getConversionRate())));
-				timeline.addTimeLine(highestGridImport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_IMPORT, Convertors.convertToKiloWattHours(highestGridImport.getGridImport(), properties.getRefreshAsMinutes(highestGridImport.getConversionRate())));
-				timeline.addTimeLine(highestGridExport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_EXPORT, Convertors.convertToKiloWattHours(highestGridExport.getGridExport(), properties.getRefreshAsMinutes(highestGridExport.getConversionRate())));
+				summarise(timeline, highestOutput, highestProduction, highestGridImport, highestGridExport);
 
 				highestOutput = new Summary();
 				highestProduction = new Summary();
@@ -303,12 +308,7 @@ public class LocalDBService {
 			}
 
 		}
-		if (highestOutput.getHighestOutput() != 0L) {
-			timeline.addTimeLine(highestOutput.getDate(), TimelineEntry.EntryType.HIGHEST_OUTPUT, BigDecimal.valueOf(highestOutput.getHighestOutput()));
-		}
-		timeline.addTimeLine(highestProduction.getDate(), TimelineEntry.EntryType.HIGHEST_PRODUCTION, Convertors.convertToKiloWattHours(highestProduction.getProduction(), properties.getRefreshAsMinutes(highestProduction.getConversionRate())));
-		timeline.addTimeLine(highestGridImport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_IMPORT, Convertors.convertToKiloWattHours(highestGridImport.getGridImport(), properties.getRefreshAsMinutes(highestGridImport.getConversionRate())));
-		timeline.addTimeLine(highestGridExport.getDate(), TimelineEntry.EntryType.HIGHEST_GRID_EXPORT, Convertors.convertToKiloWattHours(highestGridExport.getGridExport(), properties.getRefreshAsMinutes(highestGridExport.getConversionRate())));
+		summarise(timeline, highestOutput, highestProduction, highestGridImport, highestGridExport);
 
 		return timeline;
 	}

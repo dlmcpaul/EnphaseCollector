@@ -30,7 +30,7 @@ public class TimelineEntry {
 			case HIGHEST_OUTPUT -> "Peak Power Achieved";
 			case HIGHEST_GRID_EXPORT -> "Highest Solar Exported";
 			case EMPTY_TIMELINE -> "Nothing Here Yet";
-			case null, default -> "Unknown";
+			case null -> "Unknown";
 		};
 	}
 
@@ -49,7 +49,7 @@ public class TimelineEntry {
 			case HIGHEST_OUTPUT -> "fas fa-arrow-circle-up";
 			case HIGHEST_GRID_EXPORT -> "fas fa-arrow-up";
 			case EMPTY_TIMELINE -> "fas fa-arrow-down";
-			case null, default -> "";
+			case null -> "";
 		};
 	}
 
