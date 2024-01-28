@@ -7,6 +7,7 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Log4j2
@@ -72,6 +73,10 @@ public class Calculators {
 			return base.minusDays(base.getDayOfMonth());
 		}
 		return base.minusDays(1);
+	}
+
+	public static LocalDateTime getMidnight() {
+		return LocalDate.now().atStartOfDay();
 	}
 
 }

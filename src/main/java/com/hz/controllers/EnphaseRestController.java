@@ -5,7 +5,9 @@ import com.hz.controllers.models.History;
 import com.hz.controllers.models.PlotBand;
 import com.hz.controllers.models.PvC;
 import com.hz.models.database.Summary;
+import com.hz.services.ElectricityRateService;
 import com.hz.services.LocalDBService;
+import com.hz.services.SummaryService;
 import com.hz.utils.Convertors;
 import com.hz.utils.Validators;
 import jakarta.validation.Valid;
@@ -24,8 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class EnphaseRestController {
 
-	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
+	private final LocalDBService localDBService;
+	private final SummaryService summaryService;
+	private final ElectricityRateService electricityRateService;
 
 	@GetMapping(value = "/pvc", produces = "application/json; charset=UTF-8")
 	public PvC getPvc() {
@@ -47,12 +51,12 @@ public class EnphaseRestController {
 
 		if (Validators.isValidDuration(duration)) {
 			try {
-				localDBService.getLastDurationTotalsContinuous(duration)
+				summaryService.getLastDurationTotalsContinuous(duration)
 						.forEach(total -> result.addSummary(new Summary(total.getDate(),
 								Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 								Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 								Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
-								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), duration));
+								Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), electricityRateService.getRateForDate(total.getDate()), duration));
 			} catch (Exception e) {
 				log.error("getHistory Exception: {}", e.getMessage(), e);
 			}

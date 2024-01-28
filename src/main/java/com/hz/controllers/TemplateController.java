@@ -9,8 +9,7 @@ import com.hz.models.database.EnvoySystem;
 import com.hz.models.database.Summary;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.envoy.xml.EnvoyInfo;
-import com.hz.services.EnvoyService;
-import com.hz.services.LocalDBService;
+import com.hz.services.*;
 import com.hz.utils.Convertors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -42,11 +41,16 @@ public class TemplateController {
 	private static final String DOLLAR_SIGN = "fas fa-dollar-sign";
 	private static final String SOLAR_SIGN = "fas fa-sun";
 
-	private final EnvoyService envoyService;
-	private final LocalDBService localDBService;
 	private final EnphaseCollectorProperties properties;
 	private final EnvoyInfo envoyInfo;
 	private final ReleaseInfoContributor release;
+
+	private final EnvoyService envoyService;
+	private final LocalDBService localDBService;
+
+	private final SummaryService summaryService;
+	private final ElectricityRateService electricityRateService;
+	private final TimelineService timelineService;
 
 	private List<Status> populateMultiStatsStatusList() {
 		List<Status> statusList = new ArrayList<>();
@@ -96,7 +100,7 @@ public class TemplateController {
 
 	private List<Status> populatePanelStatsStatusList() {
 		final List<Status> statusList = new ArrayList<>();
-		localDBService.getPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing about", aFloat.intValue() + " W")));
+		localDBService.createPanelSummaries().forEach((aFloat, panels) -> statusList.add(new Status(SOLAR_SIGN, panels.size() + " solar panels producing about", aFloat.intValue() + " W")));
 		if (statusList.size() < 9) {
 			statusList.addAll(populateMultiStatsStatusList());
 		}
@@ -124,7 +128,7 @@ public class TemplateController {
 			model.addAttribute("releaseVersion", release.getVersion());
 			model.addAttribute("exportLimit", properties.getExportLimit());
 			model.addAttribute("contextPath", request.getContextPath());
-			model.addAttribute("timeline", localDBService.getTimeline());
+			model.addAttribute("timeline", timelineService.getTimeline());
 		} catch (Exception e) {
 			log.error("index Page Exception {}", e.getMessage(), e);
 		}
@@ -143,12 +147,12 @@ public class TemplateController {
 
 		billAnswer.setDaysInPeriod(billQuestion.getDateRange().getDuration());
 		// Calculate Power Costs over period
-		localDBService.getSummaries(billQuestion.getDateRange().getFrom(), billQuestion.getDateRange().getTo())
+		summaryService.getSummariesBetween(billQuestion.getDateRange().getFrom(), billQuestion.getDateRange().getTo())
 				.forEach(total -> billAnswer.addSummary(new Summary(total.getDate(),
 						Convertors.convertToKiloWattHours(total.getGridImport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 						Convertors.convertToKiloWattHours(total.getGridExport(), properties.getRefreshAsMinutes(total.getConversionRate())),
 						Convertors.convertToKiloWattHours(total.getConsumption(), properties.getRefreshAsMinutes(total.getConversionRate())),
-						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), localDBService.getRateForDate(total.getDate()), billQuestion));
+						Convertors.convertToKiloWattHours(total.getProduction(), properties.getRefreshAsMinutes(total.getConversionRate()))), electricityRateService.getRateForDate(total.getDate()), billQuestion));
 
 		return "billQnAFragment :: billQnA(visible=true)";
 	}
