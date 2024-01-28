@@ -14,8 +14,8 @@ public class TimelineEntry {
 	public enum EntryType {
 		HIGHEST_PRODUCTION,
 		HIGHEST_GRID_IMPORT,
-		HIGHEST_OUTPUT,
-		HIGHEST_GRID_EXPORT,
+		HIGHEST_POWER_ACHIEVED,
+		HIGHEST_SOLAR_EXPORT,
 		EMPTY_TIMELINE
 	}
 
@@ -27,8 +27,8 @@ public class TimelineEntry {
 		return switch (entryType) {
 			case HIGHEST_PRODUCTION -> "Highest Solar Produced";
 			case HIGHEST_GRID_IMPORT -> "Highest Grid Imported";
-			case HIGHEST_OUTPUT -> "Peak Power Achieved";
-			case HIGHEST_GRID_EXPORT -> "Highest Solar Exported";
+			case HIGHEST_POWER_ACHIEVED -> "Peak Power Achieved";
+			case HIGHEST_SOLAR_EXPORT -> "Highest Solar Exported";
 			case EMPTY_TIMELINE -> "Nothing Here Yet";
 			case null -> "Unknown";
 		};
@@ -36,7 +36,7 @@ public class TimelineEntry {
 
 	public String getValueAsString() {
 		return switch (entryType) {
-			case HIGHEST_OUTPUT -> value.toPlainString() + " W";
+			case HIGHEST_POWER_ACHIEVED -> value.toPlainString() + " W";
 			case EMPTY_TIMELINE -> "";
 			case null, default -> value.toPlainString() + " kWh";
 		};
@@ -46,8 +46,8 @@ public class TimelineEntry {
 		return switch (entryType) {
 			case HIGHEST_PRODUCTION -> "fas fa-sun";
 			case HIGHEST_GRID_IMPORT -> "fas fa-thumbs-down";
-			case HIGHEST_OUTPUT -> "fas fa-arrow-circle-up";
-			case HIGHEST_GRID_EXPORT -> "fas fa-arrow-up";
+			case HIGHEST_POWER_ACHIEVED -> "fas fa-arrow-up";
+			case HIGHEST_SOLAR_EXPORT -> "fas fa-thumbs-up";
 			case EMPTY_TIMELINE -> "fas fa-arrow-down";
 			case null -> "";
 		};
