@@ -34,7 +34,8 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static com.hz.configuration.EnphaseURLS.*;
+import static com.hz.configuration.EnphaseURLS.AUTH_CHECK;
+import static com.hz.configuration.EnphaseURLS.INVERTERS;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +43,12 @@ import static com.hz.configuration.EnphaseURLS.*;
 public class EnvoyConnectionProxy {
 	private static final String REALM = "enphaseenergy.com";
 
-	private final AuthorisationToken authorisationToken;
 	private final EnphaseCollectorProperties config;
-	private final RestTemplateBuilder builder;
 	private final HttpClientConnectionManager sslConnectionManager;
+	private final AuthorisationToken authorisationToken;
+	private final RestTemplateBuilder builder;
 
 	private RestTemplate secureTemplate;
-	private RestTemplate defaultTemplate;
 	private RestTemplate installerTemplate;
 
 	private RestTemplate buildTemplate(HttpClient httpClient) {
@@ -57,18 +57,6 @@ public class EnvoyConnectionProxy {
 				.setConnectTimeout(Duration.ofSeconds(5))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
-	}
-
-	private RestTemplate createDefaultRestTemplate() {
-		log.info("Reading from insecure Envoy controller endpoint {}{}", config.getController().getUrl(), SYSTEM);
-
-		HttpClient httpClient = HttpClients
-				.custom()
-				.useSystemProperties()
-				.setRetryStrategy(new EnphaseRequestRetryStrategy())
-				.build();
-
-		return buildTemplate(httpClient);
 	}
 
 	private CredentialsProvider standardProvider() throws URISyntaxException {
@@ -159,14 +147,6 @@ public class EnvoyConnectionProxy {
 		}
 
 		return secureTemplate;
-	}
-
-	public RestTemplate getDefaultTemplate() {
-		if (defaultTemplate == null) {
-			log.debug("Creating a new default access template");
-			defaultTemplate = createDefaultRestTemplate();
-		}
-		return defaultTemplate;
 	}
 
 	// Installer Provider is also likely changed with V7
