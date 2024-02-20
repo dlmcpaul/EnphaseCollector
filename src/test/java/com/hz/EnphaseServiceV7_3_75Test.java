@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import(TestEnphaseSystemInfoConfig.class)
 @AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/D7.3.75")
 @Log4j2
-class EnphaseServiceRest_7_3_75_Test {
+class EnphaseServiceV7_3_75Test {
 
 	@TestConfiguration
 	static class EnphaseServiceTestContextConfiguration {
