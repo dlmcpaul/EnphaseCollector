@@ -9,6 +9,7 @@ import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiStyle;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Log4j2
+@Lazy(false)
 public class ReleaseInfoContributor implements InfoContributor, InitializingBean {
 
 	@NotNull
