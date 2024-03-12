@@ -28,7 +28,7 @@
     <properties>
         <java.version>21</java.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <highcharts.version>10.3.3</highcharts.version>
+        <highcharts.version>11.2.0</highcharts.version>
         <bulma.version>0.9.4</bulma.version>
         <influxdb.connector.version>2.24</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
@@ -36,6 +36,9 @@
         <testcontainers.version>1.17.6</testcontainers.version>
         <selenide.version>6.12.3</selenide.version>
         <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <webjars.locator.version>0.52</webjars.locator.version>
+        <testcontainers.version>1.19.7</testcontainers.version>
+        <selenide.version>7.2.1</selenide.version>
         <paho.version>1.2.5</paho.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
@@ -308,7 +311,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.5</version>
                 <configuration>
                     <argLine>@{argLine} -Dfile.encoding=UTF-8</argLine>
                     <systemPropertyVariables>
@@ -319,7 +322,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.1</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
