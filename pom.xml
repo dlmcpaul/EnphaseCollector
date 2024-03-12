@@ -32,10 +32,6 @@
         <bulma.version>0.9.4</bulma.version>
         <influxdb.connector.version>2.24</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
-        <webjars.locator.version>0.50</webjars.locator.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <selenide.version>6.12.3</selenide.version>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
         <webjars.locator.version>0.52</webjars.locator.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <selenide.version>7.2.1</selenide.version>
