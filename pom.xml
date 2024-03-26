@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.2.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -34,7 +34,7 @@
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.52</webjars.locator.version>
         <testcontainers.version>1.19.7</testcontainers.version>
-        <selenide.version>7.2.1</selenide.version>
+        <selenide.version>7.2.2</selenide.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <paho.version>1.2.5</paho.version>
         <build.number>development</build.number>

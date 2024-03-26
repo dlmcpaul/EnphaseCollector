@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim AS builder
+FROM openjdk:21-jdk-slim AS builder
 
 ARG JAR_FILE
 COPY ${JAR_FILE} ./app.jar
@@ -6,7 +6,7 @@ COPY ${JAR_FILE} ./app.jar
 # Explode Uber jar into lib jars and classes
 RUN "$JAVA_HOME/bin/jar" -xf ./app.jar
 
-FROM gcr.io/distroless/java:17
+FROM gcr.io/distroless/java:21
 LABEL maintainer="dlmcpaul@gmail.com"
 
 # Override these for your timezone and language
@@ -16,12 +16,14 @@ ENV TZ="Australia/Sydney" \
 # Generate a JDK class data share
 RUN ["/usr/bin/java", "-Xshare:dump"]
 
+ENV SPRING_DATASOURCE_URL=jdbc:h2:/internal_db/solar_stats_db_v2.2
+
 COPY --from=builder "./BOOT-INF/lib" /app/lib
 COPY --from=builder "./META-INF" /app/META-INF
 COPY --from=builder "./BOOT-INF/classes" /app
 
 EXPOSE 8080
 
-VOLUME /internal_db
+VOLUME /internal_db /properties
 
 ENTRYPOINT ["/usr/bin/java", "-cp", "app:app/lib/*", "-Xshare:on", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.jmx.enabled=false", "com.hz.EnphaseCollectorApplication"]
