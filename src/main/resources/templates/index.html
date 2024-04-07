@@ -10,18 +10,18 @@
 </head>
 <body class="has-background-light">
 <noscript>You need to enable JavaScript to run this app.</noscript>
-<section class="hero is-info is-bold" role="banner">
+<section class="hero is-background-info-40" role="banner">
     <div class="hero-body">
         <div class="container">
-            <h1 class="title is-inline">Enphase Solar System Visualiser</h1>
-            <h2 class="subtitle is-inline" data-th-text="' (' + ${releaseVersion} + ')'"></h2>
-            <h2 class="subtitle">
+            <h1 class="title has-text-white has-text-weight-semibold is-inline">Enphase Solar System Visualiser</h1>
+            <h2 class="subtitle has-text-white is-inline" data-th-text="' (' + ${releaseVersion} + ')'"></h2>
+            <h2 class="subtitle has-text-white">
                 <i class="fas fa-copyright" aria-hidden="true"></i> David McPaul 2018
             </h2>
         </div>
     </div>
 </section>
-<section class="section is-paddingless has-background-white">
+<section class="section px-0 py-0 has-background-white">
     <div class="container">
         <nav class="tabs is-centered" id="main-tab">
             <ul>
@@ -52,7 +52,7 @@
         <div data-th-replace="~{timeFragment :: timeline(${timeline})}"></div>
     </div>
 </section>
-<footer class="footer is-paddingless has-background-white">
+<footer class="footer px-0 py-0 has-background-white">
     <div class="container">
         <div class="tabs is-centered">
             <ul>
@@ -67,7 +67,7 @@
                     <li class="is-size-6">Envoy Software Release: <span data-th-text="${software_release}">release</span></li>
                     <li class="is-size-6">Envoy Serial Number: <span data-th-text="${serial_number}">serial</span></li>
                     <li><br></li>
-                    <li class="is-size-6"><a href="https://bulma.io" title="Link to Bulma"><img loading="lazy" data-th-src="@{/images/made-with-bulma.png}" alt="Made with Bulma" title="Made with Bulma" src="/images/made-with-bulma.png" width="128" height="24"></a></li>
+                    <li class="is-size-6"><a href="https://bulma.io" title="Link to Bulma"><img loading="lazy" data-th-src="@{/images/made-with-bulma.png}" alt="Made with Bulma" title="Made with Bulma" src="/images/made-with-bulma_128x24.png" width="128" height="24"></a></li>
                 </ul>
             </div>
         </div>

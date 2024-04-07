@@ -49,7 +49,7 @@
 <div th:fragment="moneyLevelItem (heading, value)" class="level-item has-text-centered">
     <div>
         <p class="heading" th:text="${heading}"></p>
-        <p class="title" th:text="${#numbers.formatCurrency(value)}"></p>
+        <p class="title has-text-weight-semibold" th:text="${#numbers.formatCurrency(value)}"></p>
     </div>
 </div>
 
@@ -58,7 +58,7 @@
 <div th:fragment="energyLevelItem (heading, value)" class="level-item has-text-centered">
     <div>
         <p class="heading" th:text="${heading}"></p>
-        <p class="title" th:text="${#numbers.formatDecimal(value,1,2)} + ' kWh'"></p>
+        <p class="title has-text-weight-semibold" th:text="${#numbers.formatDecimal(value,1,2)} + ' kWh'"></p>
     </div>
 </div>
 
@@ -67,7 +67,7 @@
 <div th:fragment="levelItem (heading, value)" class="level-item has-text-centered">
     <div>
         <p class="heading" th:utext="${heading}"></p>
-        <p class="title" th:text="${value}"></p>
+        <p class="title has-text-weight-semibold" th:text="${value}"></p>
     </div>
 </div>
 

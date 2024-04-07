@@ -6,25 +6,25 @@
 <div th:fragment="timeline (timeline)" th:id="timeline-data" class="is-hidden" role="main">
     <div class="timeline is-centered">
         <header class="timeline-header">
-            <span class="tag is-medium is-primary" th:text="${#temporals.format(timeline.getEarliestEntry(),'dd MMM yyyy')}">1999</span>
+            <span class="tag is-medium is-primary has-text-white" th:text="${#temporals.format(timeline.getEarliestEntry(),'dd MMM yyyy')}">1999</span>
         </header>
         <!--/*@thymesVar id="entry" type="com.hz.controllers.models.TimelineEntry"*/-->
         <th:block th:with="timelineList=${timeline.values()}" th:each="entry, stats : ${timeline.values()}">
             <header class="timeline-header" th:unless="${stats.first or stats.last or entry.getYear() == timelineList[stats.index-1].getYear()}">
-                <span class="tag is-primary" th:text="${entry.getYear()}">1999</span>
+                <span class="tag is-primary has-text-white" th:text="${entry.getYear()}">1999</span>
             </header>
             <div class="timeline-item">
                 <div class="timeline-marker is-icon">
                     <i th:class="${entry.getIcon()}"></i>
                 </div>
                 <div class="timeline-content">
-                    <p class="title is-4" th:text="${#temporals.format(entry.getDate(),'dd MMM yyyy')}">01 Jan 2016</p>
+                    <p class="title has-text-weight-semibold is-4" th:text="${#temporals.format(entry.getDate(),'dd MMM yyyy')}">01 Jan 2016</p>
                     <p class="subtitle is-6" th:text="${entry.getDescription()} + ' ' + ${entry.getValueAsString()}">Timeline Entry</p>
                 </div>
             </div>
         </th:block>
         <div class="timeline-header">
-            <span class="tag is-medium is-primary">Now</span>
+            <span class="tag is-medium is-primary has-text-white">Now</span>
         </div>
     </div>
 </div>

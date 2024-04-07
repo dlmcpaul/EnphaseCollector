@@ -29,7 +29,7 @@
         <java.version>21</java.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <highcharts.version>11.2.0</highcharts.version>
-        <bulma.version>0.9.4</bulma.version>
+        <bulma.version>1.0.0</bulma.version>
         <influxdb.connector.version>2.24</influxdb.connector.version>
         <font-awsome.version>5.15.4</font-awsome.version>
         <webjars.locator.version>0.52</webjars.locator.version>
