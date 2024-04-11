@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,6 +54,16 @@ public class TemplateController {
 	private final ElectricityRateService electricityRateService;
 	private final TimelineService timelineService;
 
+	private String getFormattedLastDayOfCommunication(LocalDateTime lastCommunication) {
+		if (lastCommunication.toLocalDate().isEqual(LocalDate.now())) {
+			return "today";
+		} else if (lastCommunication.toLocalDate().isEqual(LocalDate.now().minusDays(1))) {
+			return "yesterday";
+		}
+
+		return lastCommunication.format(DateTimeFormatter.ofPattern("eeee"));
+	}
+
 	private List<Status> populateMultiStatsStatusList() {
 		List<Status> statusList = new ArrayList<>();
 		try {
@@ -69,7 +81,7 @@ public class TemplateController {
 			statusList.add(new Status("fas fa-arrow-circle-up", "Highest output so far today", localDBService.calculateMaxProduction() + " W"));
 			statusList.add(new Status(SOLAR_SIGN, "Production Today", number.format(localDBService.calculateTotalProduction()) + " kWh"));
 			statusList.add(new Status("fas fa-power-off", "Voltage", number.format(localDBService.getLastEvent().getVoltage()) + " V"));
-			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase today", envoySystem.getLastCommunication().format(timeFormatter)));
+			statusList.add(new Status("fas fa-broadcast-tower", "Last communication to Enphase " + getFormattedLastDayOfCommunication(envoySystem.getLastCommunication()), envoySystem.getLastCommunication().format(timeFormatter)));
 			statusList.add(new Status("fas fa-key","Authentication expires", envoyService.getExpiryAsString()));
 			statusList.add(new Status(envoySystem.isWifi() ? "fas fa-wifi" : "fas fa-network-wired", "Home network", envoySystem.getNetwork()));
 
