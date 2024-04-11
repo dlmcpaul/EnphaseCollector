@@ -23,7 +23,7 @@ public class TimelineEntry {
 	private EntryType entryType;
 	private BigDecimal value;
 
-	public String getDescription() {
+	private String getDescription() {
 		return switch (entryType) {
 			case HIGHEST_PRODUCTION -> "Highest Solar Produced";
 			case HIGHEST_GRID_IMPORT -> "Highest Grid Imported";
@@ -34,7 +34,7 @@ public class TimelineEntry {
 		};
 	}
 
-	public String getValueAsString() {
+	private String getValueAsString() {
 		return switch (entryType) {
 			case HIGHEST_POWER_ACHIEVED -> value.toPlainString() + " W";
 			case EMPTY_TIMELINE -> "";
@@ -55,5 +55,9 @@ public class TimelineEntry {
 
 	public int getYear() {
 		return date.getYear();
+	}
+
+	public String getSubtitle() {
+		return this.getDescription() + " " + this.getValueAsString();
 	}
 }

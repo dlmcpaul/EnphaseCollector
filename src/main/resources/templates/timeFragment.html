@@ -19,7 +19,7 @@
                 </div>
                 <div class="timeline-content">
                     <p class="title has-text-weight-semibold is-4" th:text="${#temporals.format(entry.getDate(),'dd MMM yyyy')}">01 Jan 2016</p>
-                    <p class="subtitle is-6" th:text="${entry.getDescription()} + ' ' + ${entry.getValueAsString()}">Timeline Entry</p>
+                    <p class="subtitle is-6" th:text="${entry.getSubtitle()}">Timeline Entry</p>
                 </div>
             </div>
         </th:block>
