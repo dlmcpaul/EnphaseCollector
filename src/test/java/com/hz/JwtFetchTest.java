@@ -1,11 +1,13 @@
 package com.hz;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.configuration.SecretConfig;
 import com.hz.configuration.SkipWhenMissingFile;
-import com.hz.models.envoy.JwtDataSection;
 import com.hz.utils.EnphaseJWTExtractor;
+import com.hz.utils.EnphaseJWTVerifier;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.IncorrectClaimException;
+import io.jsonwebtoken.MissingClaimException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,52 +17,59 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Base64;
+import java.time.ZoneId;
+import java.util.Date;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Log4j2
 @ExtendWith(SpringExtension.class)
-@EnableConfigurationProperties(value = SecretConfig.class)
-@TestPropertySource(locations = "classpath:secrets.properties")
+@EnableConfigurationProperties(value = {SecretConfig.class, EnphaseCollectorProperties.class})
+@TestPropertySource(locations = {"classpath:secrets.properties", "classpath:application.properties"})
 @SkipWhenMissingFile(filename="secrets.properties")
 class JwtFetchTest {
 
 	@Autowired
-	private SecretConfig secrets;
+	EnphaseCollectorProperties properties;
+
+	@Autowired
+	SecretConfig secrets;
+
+	private LocalDateTime convertToLocal(Date in) {
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(in.getTime()), ZoneId.systemDefault());
+	}
 
 	@Test
 	void testFetchingJWTFromWebSite() {
 		try {
-			log.info(secrets.getEnphaseWebUser());
-			String jwt = EnphaseJWTExtractor.fetchJWTV2(secrets.getEnphaseWebUser(), secrets.getEnphaseWebPassword(), secrets.getEnvoySerialNumber());
-			assertFalse(jwt.isEmpty());
+			log.info("Retrieving a JWT for user {}", secrets.getEnphaseWebUser());
 
-			// JWT cannot be validated because the key is hidden from us.
-			String[] split = jwt.split("\\.");
-			assertEquals(3, split.length);
+			String jws = EnphaseJWTExtractor.fetchJWT(secrets.getEnphaseWebUser(), secrets.getEnphaseWebPassword(), secrets.getEnvoySerialNumber());
+			assertFalse(jws.isEmpty());
 
-			String data = new String(Base64.getDecoder().decode(split[1]));
+			Claims jwt = EnphaseJWTVerifier.verifyClaims(secrets.getEnphaseWebUser(), properties.getPublicKey(), secrets.getEnvoySerialNumber(), jws);
 
-			ObjectMapper jsonMapper = new ObjectMapper();
-			jsonMapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-			JwtDataSection jwtDataSection = jsonMapper.readValue(data, JwtDataSection.class);
+			log.info("jws found and verified");
+			log.info("jti {}", jwt.get("jti", String.class));
+			log.info("Issued {}", jwt.getIssuedAt());
+			log.info("expires {}", jwt.getExpiration());
 
-			log.info("jti {}", jwtDataSection.getJti());
-			log.info("Issued {}", jwtDataSection.getIssuerDate());
-			log.info("expires {}", jwtDataSection.getExpires());
-
-			assertTrue(jwtDataSection.getSerialNumber().equalsIgnoreCase(secrets.getEnvoySerialNumber()));
-			assertTrue(jwtDataSection.getIssuerDate().isBefore(LocalDateTime.now().plus(1, MINUTES)));
-			assertTrue(jwtDataSection.getExpires().isEqual(jwtDataSection.getIssuerDate().plus(365, DAYS)));
-		} catch (IOException e) {
+			assertTrue(jwt.getAudience().stream().findAny().orElseThrow().equalsIgnoreCase(secrets.getEnvoySerialNumber()));
+			assertTrue(convertToLocal(jwt.getIssuedAt()).isBefore(LocalDateTime.now().plusMinutes(1)));
+			assertTrue(convertToLocal(jwt.getExpiration()).isEqual(convertToLocal(jwt.getIssuedAt()).plusDays(365)));
+		} catch (MissingClaimException mce) {
+			log.error("Required Claim not found: {}", mce.getMessage(), mce);
+			fail();
+		} catch (IncorrectClaimException ice) {
+			log.error("Claim was present but value did not match: {}", ice.getMessage(), ice);
+			fail();
+		} catch (IOException | GeneralSecurityException e) {
 			log.error("ERROR: {}", e.getMessage(), e);
 			fail();
 		}
 	}
-
 
 }
