@@ -39,6 +39,7 @@ public class EnphaseCollectorProperties {
     // V7 Autofetch configuration
     private String enphaseWebUser;
     private String enphaseWebPassword;
+    private String publicKey;
 
     public int getRefreshSeconds() {
         // Try to handle passing refreshSeconds as named instead of as microseconds
