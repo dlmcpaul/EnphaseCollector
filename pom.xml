@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -35,8 +35,9 @@
         <webjars.locator.version>0.52</webjars.locator.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <selenide.version>7.2.2</selenide.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
         <paho.version>1.2.5</paho.version>
+        <jsonwebtoken.version>0.12.5</jsonwebtoken.version>
         <build.number>development</build.number>
         <build.source>SNAPSHOT</build.source>
         <revision>${build.number}-${build.source}</revision>
@@ -138,29 +139,24 @@
             <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.17.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.12.5</version>
+            <version>${jsonwebtoken.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.12.5</version>
+            <version>${jsonwebtoken.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
-            <version>0.12.5</version>
+            <version>${jsonwebtoken.version}</version>
             <scope>runtime</scope>
         </dependency>
 
