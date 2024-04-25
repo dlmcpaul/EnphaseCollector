@@ -160,7 +160,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
-            <version>0.12.4</version>
+            <version>0.12.5</version>
             <scope>runtime</scope>
         </dependency>
 
