@@ -3,12 +3,10 @@ package com.hz.services;
 import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.interfaces.EnvoySystemRepository;
 import com.hz.interfaces.EventRepository;
+import com.hz.interfaces.EventSummaryRepository;
 import com.hz.interfaces.PanelRepository;
 import com.hz.metrics.Metric;
-import com.hz.models.database.EnvoySystem;
-import com.hz.models.database.Event;
-import com.hz.models.database.Panel;
-import com.hz.models.database.PanelSummary;
+import com.hz.models.database.*;
 import com.hz.models.dto.PanelProduction;
 import com.hz.models.events.MetricCollectionEvent;
 import com.hz.models.events.SystemInfoEvent;
@@ -21,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,10 @@ public class LocalDBService {
 	private final EnphaseCollectorProperties properties;
 	private final EnvoySystemRepository envoySystemRepository;
 	private final EventRepository eventRepository;
+	private final EventSummaryRepository eventSummaryRepository;
 	private final PanelRepository panelRepository;
+
+	private Event lastEvent = null;
 
 	@EventListener
 	public void systemInfoListener(SystemInfoEvent systemEvent) {
@@ -43,20 +45,55 @@ public class LocalDBService {
 	public void metricListener(MetricCollectionEvent metricCollectionEvent) {
 		log.debug("Writing metric stats at {} with {} items to internal database", metricCollectionEvent.getCollectionTime(), metricCollectionEvent.getMetrics().size());
 
-		Event event = new Event();
-		event.setTime(metricCollectionEvent.getCollectionTime());
+		lastEvent = new Event();
+		lastEvent.setTime(metricCollectionEvent.getCollectionTime());
 
-		event.setProduction(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_CURRENT).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setConsumption(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_CONSUMPTION_CURRENT).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
-		event.setVoltage(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_VOLTAGE).map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO));
+		lastEvent.setProduction(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_CURRENT).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setConsumption(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_CONSUMPTION_CURRENT).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setVoltage(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_PRODUCTION_VOLTAGE).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setPercentFull(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_PERCENT).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setBatteryWatts(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_WATTS_REMAINING).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setBatteryCellTemperature(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_MAX_CELL_TEMPERATURE).map(Metric::getValue).orElse(BigDecimal.ZERO));
+		lastEvent.setGrid(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_GRID_TOTAL).map(Metric::getValue).orElse(BigDecimal.ZERO));
 
-		metricCollectionEvent.getMetrics().stream().filter(Metric::isSolarPanel).forEach(event::addSolarPanel);
+		int chargeState = getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_STATE).map(metric -> metric.getValue().intValue()).orElse(0);
+		if (chargeState == 0) {
+			lastEvent.setChargeState("IDLE");
+			lastEvent.setBatteryPower(BigDecimal.ZERO);
+			logBattery("IDLE", lastEvent, metricCollectionEvent.getMetrics());
+		} else if (chargeState == -1) {
+			lastEvent.setChargeState("CHARGE");
+			lastEvent.setBatteryPower(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_POWER).map(Metric::getValue).orElse(BigDecimal.ZERO));
+			logBattery("CHARGING", lastEvent, metricCollectionEvent.getMetrics());
+		} else if (chargeState == 1) {
+			lastEvent.setChargeState("DISCHARGE");
+			lastEvent.setBatteryPower(getMetric(metricCollectionEvent.getMetrics(), Metric.METRIC_BATTERY_POWER).map(Metric::getValue).orElse(BigDecimal.ZERO));
+			logBattery("DISCHARGING", lastEvent, metricCollectionEvent.getMetrics());
+		}
 
-		eventRepository.save(event);
+		metricCollectionEvent.getMetrics().stream().filter(Metric::isSolarPanel).forEach(lastEvent::addSolarPanel);
+
+		eventRepository.save(lastEvent);
+	}
+
+	private void logBattery(String state, Event event, List<Metric> metrics) {
+		String gridState = getMetric(metrics, Metric.METRIC_GRID_TOTAL).map(Metric::getValue).orElse(BigDecimal.ZERO).floatValue() >= 0 ? "Importing" : "Exporting";
+		//log.info("BATTERY {} {}% of {} Power {} Production {} Consumption {} Grid {} {} Temp {} CellTemp {}",
+		//		state,
+		//		event.getPercentFull(),
+		//		getMetric(metrics, Metric.METRIC_BATTERY_CAPACITY).map(Metric::getValue).orElse(BigDecimal.ZERO),
+		//		event.getBatteryPower(),
+		//		event.getProduction(),
+		//		event.getConsumption(),
+		//		gridState,
+		//		event.getGrid(),
+		//		getMetric(metrics, Metric.METRIC_BATTERY_MAX_TEMPERATURE).map(Metric::getValue).orElse(BigDecimal.ZERO),
+		//		event.getBatteryCellTemperature()
+		//);
 	}
 
 	private Optional<Metric> getMetric(List<Metric> metrics, String name) {
-		return metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(name)).findFirst();
+		return metrics.stream().filter(metric -> metric.isName(name)).findFirst();
 	}
 
 	@Transactional(readOnly = true)
@@ -70,20 +107,28 @@ public class LocalDBService {
 	}
 
 	private Event findLastEvent() {
-		return envoySystemRepository
-				.findById(1L)
-				.map(es -> eventRepository.findTopByTime(es.getLastReadTime()))
-				.orElseGet(Event::new);
+		if (lastEvent == null) {
+			return envoySystemRepository
+					.findById(1L)
+					.map(es -> eventRepository.findTopByTime(es.getLastReadTime()))
+					.orElseGet(Event::new);
+		}
+		return lastEvent;
 	}
 
 	@Transactional(readOnly = true)
-	public List<Event> getEventsForToday() {
-		return eventRepository.findEventsByTimeAfter(Calculators.getMidnight());
+	public List<EventSummary> getEventsForToday() {
+		return eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight());
 	}
 
 	@Transactional(readOnly = true)
-	public PanelProduction getMaxPanelProduction() {
-		NavigableMap<Float,List<Panel>> map = new TreeMap<>(this.summeriseLastEvent());
+	public List<Panel> getLatestPanelValue(Event lastEvent) {
+		return lastEvent.getPanels();
+	}
+
+	@Transactional(readOnly = true)
+	public PanelProduction getMaxPanelProduction(Event lastEvent) {
+		NavigableMap<Integer, List<Panel>> map = new TreeMap<>(this.summeriseLastEvent(lastEvent));
 
 		return map.isEmpty()
 				? new PanelProduction(BigDecimal.ZERO,BigDecimal.ZERO,0)
@@ -91,15 +136,15 @@ public class LocalDBService {
 	}
 
 	@Transactional(readOnly = true)
-	public Map<Float, List<Panel>> createPanelSummaries() {
-		return this.summeriseLastEvent();
+	public Map<Integer, List<Panel>> createPanelSummaries(Event lastEvent) {
+		return this.summeriseLastEvent(lastEvent);
 	}
 
-	private Map<Float, List<Panel>> summeriseLastEvent() {
+	private Map<Integer, List<Panel>> summeriseLastEvent(Event lastEvent) {
 		try {
-			List<Panel> panels = this.findLastEvent().getPanels();
-			panels.sort((o1, o2) -> Float.compare(o1.getPanelValue(), o2.getPanelValue()) * -1);
+			List<Panel> panels = lastEvent.getPanels();
 			return panels.stream()
+					.sorted((o1, o2) -> Float.compare(o1.getPanelValue(), o2.getPanelValue()) * -1)
 					.collect(Collectors.groupingBy(Panel::bucket, LinkedHashMap::new, Collectors.toList()));
 		} catch (Exception e) {
 			log.error("getPanelSummaries error : {}", e.getMessage(), e);
@@ -114,19 +159,24 @@ public class LocalDBService {
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateCostsForToday() {
-		return Calculators.calculateFinancial(eventRepository.findExcessConsumptionAfter(Calculators.getMidnight()), properties.getChargePerKiloWatt(), "Cost", properties.getRefreshAsMinutes());
+		return Calculators.calculateFinancial(eventRepository.findGridImportAfter(Calculators.getMidnight()), properties.getChargePerKiloWatt(), "Cost", properties.getRefreshAsMinutes());
 	}
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculatePaymentForToday() {
-		return Calculators.calculateFinancial(eventRepository.findExcessProductionAfter(Calculators.getMidnight()), properties.getPaymentPerKiloWatt(), "Payment", properties.getRefreshAsMinutes());
+		return Calculators.calculateFinancial(eventRepository.findGridExportAfter(Calculators.getMidnight()), properties.getPaymentPerKiloWatt(), "Payment", properties.getRefreshAsMinutes());
 	}
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateSavingsForToday() {
-		Long totalWatts = eventRepository.findTotalProductionAfter(Calculators.getMidnight());
-		Long excessWatts = eventRepository.findExcessProductionAfter(Calculators.getMidnight());
-		return Calculators.calculateFinancial( totalWatts - excessWatts , properties.getChargePerKiloWatt(), "Savings", properties.getRefreshAsMinutes());
+		// Production + Discharged - Charged - Grid Export = Power we did not import ie savings
+		LocalDateTime midnight = Calculators.getMidnight();
+		Long production = eventRepository.findTotalProductionAfter(midnight);
+		Long gridExport = eventRepository.findGridExportAfter(midnight);
+		Long batteryDischarge = eventRepository.findDischargedAfter(midnight);
+		Long batteryCharged = eventRepository.findChargedAfter(midnight);
+
+		return Calculators.calculateFinancial( production + batteryDischarge - batteryCharged - gridExport, properties.getChargePerKiloWatt(), "Savings", properties.getRefreshAsMinutes());
 	}
 
 	@Transactional(readOnly = true)
@@ -136,7 +186,31 @@ public class LocalDBService {
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateGridImport() {
-		BigDecimal watts = BigDecimal.valueOf(eventRepository.findExcessConsumptionAfter(Calculators.getMidnight()));
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findGridImportAfter(Calculators.getMidnight()));
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
+	}
+
+	@Transactional(readOnly = true)
+	public BigDecimal calculateGridExport() {
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findGridExportAfter(Calculators.getMidnight()));
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
+	}
+
+	@Transactional(readOnly = true)
+	public BigDecimal calculateBatteryCharged() {
+		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerNegative(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight())).multiply(BigDecimal.valueOf(-1));
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findChargedAfter(Calculators.getMidnight()));
+
+	//	log.info("BatteryCharged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
+
+		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
+	}
+
+	@Transactional(readOnly = true)
+	public BigDecimal calculateBatteryDischarged() {
+		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
+		BigDecimal watts = BigDecimal.valueOf(eventRepository.findDischargedAfter(Calculators.getMidnight()));
+	//	log.info("BatteryDischarged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
@@ -148,7 +222,13 @@ public class LocalDBService {
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateTotalConsumption() {
+
+		BigDecimal x = Calculators.trapezoidalIntegrationTotalConsumptionPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
+
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalConsumptionAfter(Calculators.getMidnight()));
+
+	//	log.info("TotalConsumption sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
+
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 }

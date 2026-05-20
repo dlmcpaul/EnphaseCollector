@@ -183,6 +183,12 @@ function updatePvc(target, response) {
     });
 }
 
+function updateComponent(target, response) {
+    "use strict";
+
+    document.getElementById(target).outerHTML = response;
+}
+
 function makeRefreshChart(target, properties, refreshUrl, refreshInterval, updateFunction) {
     "use strict";
 
@@ -205,5 +211,14 @@ function makeStatusList(target, refreshUrl, refreshInterval) {
     // Refresh every interval
     setInterval(function () {
         refreshTarget(target, refreshUrl,"", updateStatusList);
+    }, refreshInterval);
+}
+
+function makeComponent(target, refreshUrl, refreshInterval) {
+    "use strict";
+
+    // Refresh every interval
+    setInterval(function () {
+        refreshTarget(target, refreshUrl,"", updateComponent);
     }, refreshInterval);
 }

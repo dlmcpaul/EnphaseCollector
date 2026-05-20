@@ -28,10 +28,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import static com.hz.configuration.Profiles.PVOUTPUT;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Profile("pvoutput")
+@Profile(PVOUTPUT)
 public class PvOutputService {
 
 	private BigDecimal energyGeneratedAccumulator = BigDecimal.ZERO;
@@ -92,9 +94,9 @@ public class PvOutputService {
 	}
 
 	private void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
-		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
-		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
-		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> BigDecimal.valueOf(metric.getValue())).orElse(BigDecimal.ZERO);
+		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
+		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
+		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
 
 		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshAsMinutes()), Convertors.convertToWattHours(consumption, properties.getRefreshAsMinutes()));
 		this.updatePower(production.intValue(), consumption.intValue());

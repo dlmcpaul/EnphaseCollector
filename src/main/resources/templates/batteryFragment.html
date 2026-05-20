@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<body>
+
+<!--@thymesVar id="percentage" type="java.lang.Integer"-->
+<!--@thymesVar id="state" type="java.lang.String"-->
+<!--@thymesVar id="power" type="java.lang.Integer"-->
+<!--@thymesVar id="hasBattery" type="java.lang.Boolean"-->
+<div th:fragment="batteryComponent (percentage, state, power, hasBattery)" id="batteryComponent" class="column is-one-third-desktop is-one-fifth-widescreen" th:if="${hasBattery}">
+    <figure class="image" style="height: 400px">
+        <div class="battery charging shrink">
+            <div th:if="${percentage} lt 25" class="battery-level below-quarter" data-th-style="|height:${percentage}%;|"></div>
+            <div th:if="${percentage} lt 50 and ${percentage} > 24" class="battery-level below-half" data-th-style="|height:${percentage}%;|"></div>
+            <div th:if="${percentage} gt 75 and ${percentage} > 49" class="battery-level below-three-quarter" data-th-style="|height:${percentage}%;|"></div>
+            <div th:if="${percentage} gt 74" class="battery-level" data-th-style="|height:${percentage}%;|"></div>
+        </div>
+    </figure>
+    <div class="media">
+        <div class="media-left is-hidden-mobile">
+            <figure class="image is-64x64">
+                <img data-th-src="@{/images/battery.png}" src="" alt="battery-image" width="64" height="64">
+            </figure>
+        </div>
+        <div class="media-content mx-2">
+            <p class="title has-text-weight-semibold is-5" data-th-text="|Battery ${percentage}%|">>Battery Charging</p>
+            <p class="subtitle is-6" data-th-text="|${power} W ${state}|"></p>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

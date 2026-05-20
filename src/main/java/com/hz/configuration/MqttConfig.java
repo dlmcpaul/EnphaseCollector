@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Profile;
 
 import java.util.UUID;
 
+import static com.hz.configuration.Profiles.MQTT;
+
 @Configuration
 @RequiredArgsConstructor
 @Log4j2
@@ -20,9 +22,9 @@ public class MqttConfig {
 
 	private final EnphaseCollectorProperties config;
 
-	private static final String DEFAULTPUBLISHERID = UUID.randomUUID().toString();
+	private static final String DEFAULT_PUBLISHER_ID = UUID.randomUUID().toString();
 
-	@Profile("mqtt")
+	@Profile(MQTT)
 	@Bean
 	public IMqttClient mqttClient() throws MqttException {
 		EnphaseCollectorProperties.MqttResource mqttResource = config.getMqttResource();
@@ -31,7 +33,7 @@ public class MqttConfig {
 			throw new ConfigurationException("Please configure the mqtt settings");
 		}
 
-		String publisherId = mqttResource.isPublisherIdEmpty() ? DEFAULTPUBLISHERID : mqttResource.getPublisherId();
+		String publisherId = mqttResource.isPublisherIdEmpty() ? DEFAULT_PUBLISHER_ID : mqttResource.getPublisherId();
 
 		log.info("Configuring MQTT Resource with Host {} Port {} publisher {} topic {}", mqttResource.getHost(), mqttResource.getPort(), publisherId, mqttResource.getTopic());
 

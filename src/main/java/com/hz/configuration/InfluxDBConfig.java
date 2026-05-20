@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import static com.hz.configuration.Profiles.INFLUXDB;
+
 @Configuration
 @RequiredArgsConstructor
 @Log4j2
@@ -28,7 +30,7 @@ public class InfluxDBConfig {
 	private static final String SOLAR_METRICS_ORGANISATION = "hzindustries";
 
 	@Bean
-	@Profile({"influxdb"})
+	@Profile({INFLUXDB})
 	public InfluxMeterRegistry influxMeterRegistry() {
 
 		InfluxConfig metricsConfig;
@@ -111,7 +113,7 @@ public class InfluxDBConfig {
 	}
 
 	@Bean
-	@Profile({"influxdb"})
+	@Profile({INFLUXDB})
 	public InfluxDB destinationInfluxDB() {
 		log.info("Writing solar stats to influx database at {}", config.getInfluxdbResource().getUrl());
 

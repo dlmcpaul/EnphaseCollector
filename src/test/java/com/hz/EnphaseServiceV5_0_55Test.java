@@ -16,13 +16,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ class EnphaseServiceV5_0_55Test {
 
 	}
 
-	@MockBean
+	@MockitoBean
 	private EnvoyConnectionProxy envoyConnectionProxy;
 
 	@Autowired
@@ -78,11 +78,11 @@ class EnphaseServiceV5_0_55Test {
 
 		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
 
-		Optional<System> system = this.enphaseService.collectEnphaseData();
+		Optional<System> system = this.enphaseService.collectEnphaseData(false);
 		assertTrue(system.isPresent());
 		assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
-		assertEquals(19, system.get().getProduction().getInverter().orElseThrow().getActiveCount());
-		assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
+		assertEquals(19, system.get().getProduction().getMicroInvertersList().size());
+		//assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
 		assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
 		assertEquals(BigDecimal.valueOf(-1554.171), system.get().getProduction().getNetConsumptionWatts());

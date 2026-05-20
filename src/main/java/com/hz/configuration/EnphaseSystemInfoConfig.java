@@ -10,19 +10,21 @@ import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
-import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
+import org.apache.hc.core5.pool.PoolReusePolicy;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,40 +46,58 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import static com.hz.configuration.Profiles.NOT_TESTING;
+
 @Configuration
 @RequiredArgsConstructor
 @Log4j2
-@Profile({"!testing"})
 public class EnphaseSystemInfoConfig {
 
 	private final EnphaseCollectorProperties config;
 
 	@Bean
 	public HttpClientConnectionManager sslConnectionManager() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+		// Not good to ignore all the SSL checks, but we don't own the certificate
+		// in theory we only need to not verify the host name as the cert will not match the name we are using.
+		// and we should load the public key of the signer
 		SSLContext sslContext = SSLContexts.custom()
-				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+				.loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
 				.build();
-		Registry<ConnectionSocketFactory> socketFactoryRegistry =
-				RegistryBuilder.<ConnectionSocketFactory> create()
-						.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-						.register("http", new PlainConnectionSocketFactory())
-						.build();
 
-		return new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+		var tlsSocketStrategy = new DefaultClientTlsStrategy(
+				sslContext,
+				HostnameVerificationPolicy.CLIENT,
+				NoopHostnameVerifier.INSTANCE);
+
+		return PoolingHttpClientConnectionManagerBuilder.create()
+				.setTlsSocketStrategy(tlsSocketStrategy)
+				.setDefaultSocketConfig(SocketConfig.custom()
+						.setSoTimeout(Timeout.ofMinutes(1))
+						.build())
+				.setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
+				.setConnPoolPolicy(PoolReusePolicy.LIFO)
+				.setDefaultConnectionConfig(ConnectionConfig.custom()
+						.setSocketTimeout(Timeout.ofMinutes(1))
+						.setConnectTimeout(Timeout.ofMinutes(1))
+						.setTimeToLive(TimeValue.ofMinutes(10))
+						.build())
+				.build();
 	}
 
 	@Bean
-	public RestClient defaultRestClient(HttpClientConnectionManager sslConnectionManager) {
-
-		HttpClient httpClient = HttpClients
+	public HttpClient defaultHttpClient(HttpClientConnectionManager sslConnectionManager) {
+		return HttpClients
 				.custom()
 				.useSystemProperties()
 				.setConnectionManager(sslConnectionManager)
 				.setRetryStrategy(new DefaultHttpRequestRetryStrategy(3, TimeValue.of(15, TimeUnit.SECONDS)))
 				.build();
+	}
 
-		HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		httpRequestFactory.setConnectTimeout(Duration.ofSeconds(5));
+	@Bean
+	public RestClient defaultRestClient(HttpClient defaultHttpClient) {
+
+		HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory(defaultHttpClient);
 		httpRequestFactory.setConnectionRequestTimeout(Duration.ofSeconds(15));
 
 		return RestClient
@@ -88,8 +108,9 @@ public class EnphaseSystemInfoConfig {
 	}
 
 	@Bean
+	@Profile({NOT_TESTING})
 	public EnvoyInfo envoyInfo(RestClient defaultRestClient) {
-		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUnencryptedUrl(), EnphaseURLS.CONTROLLER);
+		log.info("Reading system information from Envoy controller endpoint {}{}", config.getController().getUrl(), EnphaseURLS.CONTROLLER);
 		ResponseEntity<String> infoXML = null;
 		try {
 			ObjectMapper xmlMapper = new XmlMapper();
@@ -107,11 +128,12 @@ public class EnphaseSystemInfoConfig {
 			log.warn("Failed to read envoy info page.  Exception was {}", e.getMessage());
 		}
 
-		log.warn("Failed to read envoy info page. Response was {}", infoXML.getStatusCode());
+		log.warn("Failed to read envoy info page. Response was {}", infoXML != null ? infoXML.getStatusCode() : "infoXML is Null");
 		return new EnvoyInfo("Unknown", "Unknown");
 	}
 
 	@Bean
+	@Profile({NOT_TESTING})
 	public AuthorisationToken getAuthorisation(EnvoyInfo envoyInfo) throws JsonProcessingException {
 		if (envoyInfo.isV7orAbove()) {
 			// V7 default should be 443
@@ -139,6 +161,7 @@ public class EnphaseSystemInfoConfig {
 	 * @return customer converter to handle json as application octet stream
 	 */
 	@Bean
+	@Profile({NOT_TESTING})
 	public HttpMessageConverters customConverters() {
 		MappingJackson2HttpMessageConverter octetStreamConverter = new MappingJackson2HttpMessageConverter();
 		octetStreamConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));

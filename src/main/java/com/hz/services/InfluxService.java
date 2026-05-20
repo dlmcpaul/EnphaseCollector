@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
+import static com.hz.configuration.Profiles.INFLUXDB;
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Profile("influxdb")
+@Profile(INFLUXDB)
 public class InfluxService {
 	private final InfluxDB destinationInfluxDB;
 

@@ -54,7 +54,7 @@ public class EnvoyConnectionProxy {
 	private RestTemplate buildTemplate(HttpClient httpClient) {
 		return builder
 				.rootUri(config.getController().getUrl())
-				.setConnectTimeout(Duration.ofSeconds(5))
+				.connectTimeout(Duration.ofSeconds(5))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
 	}
@@ -105,6 +105,7 @@ public class EnvoyConnectionProxy {
 					.setRetryStrategy(new EnphaseRequestRetryStrategy())
 					.setDefaultHeaders(List.of(header))
 					.setConnectionManager(sslConnectionManager)
+					.setConnectionManagerShared(true)
 					.setDefaultCookieStore(cookieStore)
 					.build();
 

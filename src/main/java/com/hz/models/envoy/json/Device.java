@@ -42,6 +42,37 @@ public class Device {
     private boolean isOperating;
     @JsonProperty(value="chaneid")
     private int channelId;
+
+    private int percentFull;
+    @JsonProperty(value="real_power_w")
+    private int realPowerW;
+    @JsonProperty(value="encharge_capacity")
+    private int enchargeCapacity;
+    // temperature value can be returned as "unknown" so need to treat as string and convert.
+    private String temperature;
+    private String maxCellTemp;
+
+    @JsonProperty(value="Enpwr_grid_mode")
+    private String enpowerGridMode;
+    @JsonProperty(value="Enchg_grid_mode ")
+    private String enchargeGridMode;
+
     @JsonProperty(value="device_control")
     private List<DeviceControl> deviceControlList;
+
+    public int getMaxCellTempAsInt() {
+        try {
+            return Integer.parseInt(maxCellTemp);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public int getTemperatureAsInt() {
+        try {
+            return Integer.parseInt(temperature);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }

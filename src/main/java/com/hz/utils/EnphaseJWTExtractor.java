@@ -56,7 +56,13 @@ public class EnphaseJWTExtractor {
 	}
 
 	private static String postLogin(CloseableHttpClient httpClient, String username, String password) throws IOException {
-		log.info("Log into Enphase via enphase login page {}", LOGIN_URI);
+		log.info("Fetching Bearer Token from Enphase via enphase login page {} with user '{}' and password ********", LOGIN_URI, username);
+
+		if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+			log.error("Username and password are null or empty");
+			throw new IllegalStateException("Username and password are null or empty");
+		}
+
 		HttpPost request = new HttpPost(LOGIN_URI);
 
 		List<BasicNameValuePair> formData = new ArrayList<>();

@@ -10,19 +10,21 @@ import com.hz.models.envoy.xml.EnvoyInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
-import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
+import org.apache.hc.core5.pool.PoolReusePolicy;
 import org.apache.hc.core5.ssl.SSLContexts;
 import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -65,7 +67,7 @@ public class TestEnphaseSystemInfoConfig {
 
 	@Bean
 	public HttpClientConnectionManager sslConnectionManager() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-		SSLContext sslContext = SSLContexts.custom()
+/*		SSLContext sslContext = SSLContexts.custom()
 				.loadTrustMaterial(null, new TrustSelfSignedStrategy())
 				.build();
 		Registry<ConnectionSocketFactory> socketFactoryRegistry =
@@ -74,7 +76,33 @@ public class TestEnphaseSystemInfoConfig {
 						.register("http", new PlainConnectionSocketFactory())
 						.build();
 
-		return new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+		return new PoolingHttpClientConnectionManager(socketFactoryRegistry);*/
+
+		// Not good to ignore all the SSL checks, but we don't own the certificate
+		// in theory we only need to not verify the host name as the cert will not match the name we are using.
+		// and we should load the public key of the signer
+		SSLContext sslContext = SSLContexts.custom()
+				.loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
+				.build();
+
+		var tlsSocketStrategy = new DefaultClientTlsStrategy(
+				sslContext,
+				HostnameVerificationPolicy.CLIENT,
+				NoopHostnameVerifier.INSTANCE);
+
+		return PoolingHttpClientConnectionManagerBuilder.create()
+				.setTlsSocketStrategy(tlsSocketStrategy)
+				.setDefaultSocketConfig(SocketConfig.custom()
+						.setSoTimeout(Timeout.ofMinutes(1))
+						.build())
+				.setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
+				.setConnPoolPolicy(PoolReusePolicy.LIFO)
+				.setDefaultConnectionConfig(ConnectionConfig.custom()
+						.setSocketTimeout(Timeout.ofMinutes(1))
+						.setConnectTimeout(Timeout.ofMinutes(1))
+						.setTimeToLive(TimeValue.ofMinutes(10))
+						.build())
+				.build();
 	}
 
 	@Bean
@@ -97,7 +125,6 @@ public class TestEnphaseSystemInfoConfig {
 				.build();
 
 		HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		httpRequestFactory.setConnectTimeout(Duration.ofSeconds(5));
 		httpRequestFactory.setConnectionRequestTimeout(Duration.ofSeconds(15));
 
 		return RestClient
@@ -111,7 +138,7 @@ public class TestEnphaseSystemInfoConfig {
 	public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder restTemplateBuilder, HttpClient httpClient, @Qualifier("baseUrl") String baseUrl) {
 		RestTemplate result = restTemplateBuilder
 				.rootUri(baseUrl)
-				.setConnectTimeout(Duration.ofSeconds(5))
+				.connectTimeout(Duration.ofSeconds(5))
 				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
 				.build();
 		result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));

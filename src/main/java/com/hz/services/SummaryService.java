@@ -5,9 +5,7 @@ import com.hz.interfaces.EventRepository;
 import com.hz.interfaces.PanelRepository;
 import com.hz.interfaces.SummaryRepository;
 import com.hz.models.database.DailySummary;
-import com.hz.models.database.EmptyTotal;
 import com.hz.models.database.Summary;
-import com.hz.models.database.Total;
 import com.hz.utils.Calculators;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,15 +36,8 @@ public class SummaryService {
 		LocalDateTime midnight = Calculators.getMidnight();
 		log.info("Summarising Event table prior to {}", midnight);
 		try {
-			List<DailySummary> dailies = eventRepository.findAllBefore(midnight);
-			List<Total> gridImports = eventRepository.findAllExcessConsumptionBefore(midnight);
-			List<Total> gridExports = eventRepository.findAllExcessProductionBefore(midnight);
-			List<Total> maxProductions = eventRepository.findAllMaxProductionBefore(midnight);
-
-			dailies.forEach(daily -> saveSummary(daily,
-					findMatching(gridImports, daily.getDate()),
-					findMatching(gridExports, daily.getDate()),
-					findMatching(maxProductions, daily.getDate()), properties.getRefreshAsMinutes()));
+			eventRepository.findAllBefore(midnight)
+					.forEach(daily -> saveSummary(daily, properties.getRefreshAsMinutes()));
 
 			panelRepository.deleteEventsPanelByTimeBefore(midnight);
 			panelRepository.deletePanelsByTimeBefore(midnight);
@@ -55,6 +46,7 @@ public class SummaryService {
 			log.error("Failed to summarise Event table: {} {}", e.getMessage(), e);
 		}
 	}
+
 	@Transactional
 	public void upgradeConversion() {
 		summaryRepository.updateAllSummariesWithConversion(properties.getRefreshAsMinutes());
@@ -100,16 +92,9 @@ public class SummaryService {
 		return summaries;
 	}
 
-	private void saveSummary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput, BigDecimal conversionRate) {
-		log.info("Saving Summary for {} with import {} and export {}", daily.getDate(), gridImport.getSummary(), gridExport.getSummary());
-		summaryRepository.save(new Summary(daily, gridImport, gridExport, highestOutput, conversionRate));
-	}
-
-	private Total findMatching(List<Total> values, LocalDate matchDate) {
-		return values.stream().
-				filter(value -> matchDate.isEqual(value.getDate())).
-				findFirst().
-				orElseGet(EmptyTotal::new);
+	private void saveSummary(DailySummary daily, BigDecimal conversionRate) {
+		log.info("Saving Summary for {} with import {} and export {} max cell temp {}", daily.getEachDay(), daily.getGridImport(), daily.getGridExport(), daily.getMaxCellTemperature());
+		summaryRepository.save(new Summary(daily, conversionRate));
 	}
 
 }

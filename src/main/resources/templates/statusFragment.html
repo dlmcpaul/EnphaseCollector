@@ -4,18 +4,24 @@
 <!--@thymesVar id="image" type="java.lang.String"-->
 <!--@thymesVar id="text" type="java.lang.String"-->
 <!--@thymesVar id="value" type="java.lang.String"-->
-<tr th:fragment="status (image, text, value)" class="status-row">
-    <td>
-        <nav class="level is-mobile">
-            <div class="level-left">
-                <p class="level-item icon flex-text"><i th:class="${image}" aria-hidden="true"></i></p>
-                <p class="level-item flex-text" th:text="${text}"/>
-            </div>
-            <div class="level-right">
-                <p class="level-item has-text-right has-text-black has-text-weight-bold flex-text nowrap-whitespace" th:text="${value}">0</p>
-            </div>
-        </nav>
-    </td>
-</tr>
+<div th:fragment="status (image, text, value)" th:remove="tag">
+    <div class="cell is-col-span-1 icon"><i th:class="${image}" aria-hidden="true"></i></div>
+    <div class="cell is-col-span-8 flex-text status-row nowrap-whitespace" th:text="${text}"/>
+    <div class="cell is-col-span-3 has-text-right has-text-black has-text-weight-bold flex-text nowrap-whitespace" th:text="${value}">0</div>
+</div>
+
+<!--@thymesVar id="image" type="java.lang.String"-->
+<!--@thymesVar id="text" type="java.lang.String"-->
+<!--@thymesVar id="value" type="java.lang.String"-->
+<div th:fragment="statusOld (image, text, value)" class="level">
+    <div class="level-left">
+        <p class="level-item icon"><i th:class="${image}" aria-hidden="true"></i></p>
+        <p class="level-item flex-text" th:text="${text}"/>
+    </div>
+    <div class="level-right">
+        <p class="level-item has-text-right has-text-black has-text-weight-bold flex-text nowrap-whitespace" th:text="${value}">0</p>
+    </div>
+</div>
+
 </body>
 </html>

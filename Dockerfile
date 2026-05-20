@@ -1,28 +1,61 @@
-# syntax = docker/dockerfile:1.4
-FROM azul/zulu-openjdk-alpine:21 AS builder
+# syntax=docker/dockerfile:1
+
+# Create a stage for resolving and downloading dependencies.
+FROM azul-zulu:21 AS deps
 LABEL maintainer="dlmcpaul@gmail.com"
 
-RUN wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar
+WORKDIR /build
 
-ARG JAR_FILE
-COPY ${JAR_FILE} /app.jar
+# Copy the mvnw wrapper with executable permissions.
+COPY --chmod=0755 mvnw mvnw
+COPY .mvn/ .mvn/
 
-# Generate a JDK class data share and
-# Explode Uber jar into lib jars and classes
-RUN "$JAVA_HOME/bin/java" -Xshare:dump && \
-    "$JAVA_HOME/bin/jar" -xf app.jar
+# Download dependencies as a separate step to take advantage of Docker's caching.
+# Leverage a cache mount to /root/.m2 so that subsequent builds don't have to
+# re-download packages.
+RUN --mount=type=bind,source=pom.xml,target=pom.xml \
+    --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
 
-FROM azul/zulu-openjdk-alpine:21.0.3-21.34-jre-headless
-LABEL maintainer="dlmcpaul@gmail.com"
+RUN apt-get update && \
+    apt-get install -y wget && \
+    wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar
 
-COPY --from=builder "./BOOT-INF/lib" /app/lib
-COPY --from=builder "./META-INF" /app/META-INF
-COPY --from=builder "./BOOT-INF/classes" /app
-COPY --from=builder "${JAVA_HOME}/lib/server/classes.jsa" "${JAVA_HOME}/lib/server"
-COPY --from=builder "./H2MigrationTool.jar" "/H2MigrationTool.jar"
+FROM deps AS package
 
+WORKDIR /build
+
+COPY ./.git .git/
+COPY ./src src/
+RUN --mount=type=bind,source=pom.xml,target=pom.xml \
+    --mount=type=cache,target=/root/.m2 \
+    ./mvnw package -DskipTests && \
+    mv target/enphasecollector-development-SNAPSHOT.jar target/app.jar
+
+FROM package AS extract
+
+WORKDIR /build
+
+# unpack the uber jar into it's components
+RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
+
+# final image is based on a jre
+FROM azul-zulu:21-jre AS final
+
+RUN mkdir "/properties" && \
+    mkdir "/internal_db" && \
+    touch "/properties/application.properties"
+
+# Copy the executable from the "package" stage.
+COPY --from=extract build/target/extracted/dependencies/ ./
+COPY --from=extract build/target/extracted/spring-boot-loader/ ./
+COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
+COPY --from=extract build/target/extracted/application/ ./
+COPY --from=extract build/H2MigrationTool.jar ./
+
+# Shell script to run the Database upgrade code using H2MigrationTool
+# before running the appication
 # Need to escape all $ symbols to prevent Docker Build from trying to subsitute at build time
-COPY <<EOF /app/runapp.sh
+COPY --chmod=+x <<EOF ./app/runapp.sh
 #!/bin/sh
 if [ -f "/internal_db/solar_stats_db.mv.db" ]; then
   SOURCE_DB_VERSION=1.4.200
@@ -52,17 +85,13 @@ if [ -n "\${SOURCE_DB}" ]; then
   mv "\$SOURCE_DB" "/internal_db/solar_stats_db_backup.mv.db"
   echo "Upgrade completed"
 fi
-java -cp app:app/lib/* -Xshare:auto -Djava.security.egd=file:/dev/./urandom -Dspring.jmx.enabled=false com.hz.EnphaseCollectorApplication --spring.config.additional-location=file:/properties/application.properties
+java -Djava.security.egd=file:/dev/./urandom -Dspring.jmx.enabled=false org.springframework.boot.loader.launch.JarLauncher --spring.config.additional-location=file:/properties/application.properties
 EOF
 
 ENV SPRING_DATASOURCE_URL=jdbc:h2:/internal_db/solar_stats_db_v2.2
 
-RUN chmod +x /app/runapp.sh && \
-          mkdir "/properties" && \
-          touch "/properties/application.properties"
-
-ENTRYPOINT ["/app/runapp.sh"]
-
 EXPOSE 8080
 
 VOLUME /internal_db /properties
+
+ENTRYPOINT ["/app/runapp.sh"]

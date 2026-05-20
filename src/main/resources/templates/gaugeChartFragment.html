@@ -2,27 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
+
 <!--@thymesVar id="id" type="java.lang.String"-->
 <!--@thymesVar id="image" type="java.lang.String"-->
 <!--@thymesVar id="title" type="java.lang.String"-->
 <!--@thymesVar id="text" type="java.lang.String"-->
-<div th:fragment="gaugeChart (id, image, title, text)" class="column is-4 is-narrow">
-    <div th:id="${id}"></div>
-    <article class="media is-hidden-mobile">
-        <div class="media-left">
+<!--@thymesVar id="hasBattery" type="java.lang.Boolean"-->
+<div th:fragment="gaugeChartComponent (id, image, title, text, hasBattery)" class="column is-full-mobile is-full-tablet" th:classappend="${hasBattery} ? ' is-one-third-desktop is-one-fifth-widescreen' : ' is-one-half-desktop is-one-quarter-widescreen'">
+    <figure class="image is-5by3 shrink">
+        <div th:id="${id}"></div>
+    </figure>
+    <div class="media">
+        <div class="media-left is-hidden-mobile">
             <figure class="image is-64x64">
                 <img data-th-src="${image}" src="" data-th-alt="${title}+'-image'" alt="gauge-chart-image" width="64" height="64">
             </figure>
         </div>
-        <div class="media-content">
-            <p class="title has-text-weight-semibold is-4" th:text="${title}">Title</p>
+        <div class="media-content mx-2">
+            <p class="title has-text-weight-semibold is-5" th:text="${title}">Title</p>
             <p th:id="${id}+'-label'" class="subtitle is-6" data-th-text="${text} + ' W'"></p>
         </div>
-    </article>
-    <article class="is-hidden-tablet">
-        <p class="title has-text-weight-semibold is-4 has-text-centered" th:text="${title}">Title</p>
-    </article>
+    </div>
 </div>
+
 </body>
 
 </html>

@@ -20,7 +20,7 @@ public class ContentSecurityPolicyConfig {
 			value="spring.h2.console.enabled",
 			havingValue = "true")
 	public String h2ConsoleEnabled() {
-		return "default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self'; script-src-elem 'self' 'unsafe-inline'; style-src-attr 'self' 'unsafe-inline';";
+		return "default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; script-src-attr 'self' 'unsafe-inline'; script-src-elem 'self' 'unsafe-inline'; style-src-attr 'self' 'unsafe-inline';";
 	}
 
 	@Bean(name = "contentSecurityPolicyValue")
@@ -29,7 +29,7 @@ public class ContentSecurityPolicyConfig {
 			havingValue = "false",
 			matchIfMissing = true)
 	public String h2ConsoleDisabled() {
-		return "default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self';";
+		return "default-src 'self' data:; img-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';";
 	}
 
 }

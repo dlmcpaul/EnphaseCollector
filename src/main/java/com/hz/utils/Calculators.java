@@ -1,5 +1,6 @@
 package com.hz.utils;
 
+import com.hz.models.database.EventSummary;
 import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Log4j2
 public class Calculators {
@@ -77,6 +79,56 @@ public class Calculators {
 
 	public static LocalDateTime getMidnight() {
 		return LocalDate.now().atStartOfDay();
+	}
+
+	public static BigDecimal positive(BigDecimal value) {
+		return value.compareTo(BigDecimal.ZERO) > 0 ? value : BigDecimal.ZERO;
+	}
+
+	public static BigDecimal negative(BigDecimal value) {
+		return value.compareTo(BigDecimal.ZERO) < 0 ? value : BigDecimal.ZERO;
+	}
+
+	public static BigDecimal trapezoidalIntegrationBatteryPowerPositive(List<EventSummary> events) {
+
+		var totalEvents = events.size();
+		BigDecimal area = BigDecimal.ZERO;
+
+		for (var i = 1; i < totalEvents; i++) {
+			var sum = positive(events.get(i-1).getBatteryPower()).add(positive(events.get(i).getBatteryPower()));
+			var div = sum.divide(BigDecimal.valueOf(2), 3, RoundingMode.HALF_UP);
+			area = area.add(div);
+		}
+
+		return area;
+	}
+
+	public static BigDecimal trapezoidalIntegrationBatteryPowerNegative(List<EventSummary> events) {
+
+		var totalEvents = events.size();
+		BigDecimal area = BigDecimal.ZERO;
+
+		for (var i = 1; i < totalEvents; i++) {
+			var sum = negative(events.get(i-1).getBatteryPower()).add(negative(events.get(i).getBatteryPower()));
+			var div = sum.divide(BigDecimal.valueOf(2), 3, RoundingMode.HALF_UP);
+			area = area.add(div);
+		}
+
+		return area;
+	}
+
+	public static BigDecimal trapezoidalIntegrationTotalConsumptionPositive(List<EventSummary> events) {
+
+		var totalEvents = events.size();
+		BigDecimal area = BigDecimal.ZERO;
+
+		for (var i = 1; i < totalEvents; i++) {
+			var sum = positive(events.get(i-1).getConsumption()).add(positive(events.get(i).getConsumption()));
+			var div = sum.divide(BigDecimal.valueOf(2), 3, RoundingMode.HALF_UP);
+			area = area.add(div);
+		}
+
+		return area;
 	}
 
 }

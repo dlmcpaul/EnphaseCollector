@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 
+import static com.hz.configuration.Profiles.MQTT;
+
 @Service
 @Log4j2
 @RequiredArgsConstructor
-@Profile("mqtt")
+@Profile(MQTT)
 public class MqttService {
 	private final IMqttClient mqttClient;
 	private final EnphaseCollectorProperties properties;
@@ -29,7 +31,7 @@ public class MqttService {
 				.stream()
 				.filter(metric -> metric.getName().equalsIgnoreCase(name))
 				.findFirst()
-				.map(metric -> BigDecimal.valueOf(metric.getValue()))
+				.map(metric -> metric.getValue())
 				.orElse(BigDecimal.ZERO).doubleValue();
 	}
 

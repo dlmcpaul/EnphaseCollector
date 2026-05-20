@@ -11,10 +11,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
+import static com.hz.configuration.Profiles.PVOUTPUT;
+
 @Configuration
 @RequiredArgsConstructor
 @Log4j2
-@Profile("pvoutput")
+@Profile(PVOUTPUT)
 public class PvOutputClientConfig {
 	private final EnphaseCollectorProperties config;
 
@@ -46,8 +48,8 @@ public class PvOutputClientConfig {
 
 		return builder
 				.rootUri(config.getPvOutputResource().getUrl())
-				.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(30))
+				.connectTimeout(Duration.ofSeconds(5))
+				.readTimeout(Duration.ofSeconds(30))
 				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-Apikey", config.getPvOutputResource().getKey()))
 				.additionalInterceptors(new HeaderRequestInterceptor("X-Pvoutput-SystemId", config.getPvOutputResource().getSystemId()))
 				.build();

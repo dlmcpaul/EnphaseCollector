@@ -8,18 +8,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import static com.hz.configuration.Profiles.EXPERIMENTAL;
+import static com.hz.configuration.Profiles.NOT_EXPERIMENTAL;
+
 @Configuration
 @Log4j2
 public class MetricCalculationConfig {
 
 	@Bean
-	@Profile({"!experimental"})
+	@Profile({NOT_EXPERIMENTAL})
 	public MetricCalculator standard() {
 		return new MetricCalculatorStandard();
 	}
 
 	@Bean
-	@Profile({"experimental"})
+	@Profile({EXPERIMENTAL})
 	public MetricCalculator experimental() {
 		return new MetricCalculatorNegativeConsumption();
 	}

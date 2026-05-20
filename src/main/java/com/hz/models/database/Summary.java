@@ -27,6 +27,12 @@ public class Summary {
 	private BigDecimal production = BigDecimal.ZERO;
 	private Long highestOutput = 0L;
 	private BigDecimal conversionRate = BigDecimal.ZERO;
+	private BigDecimal batteryMinPercent = new BigDecimal(0);
+	private BigDecimal batteryMaxPercent = new BigDecimal(0);
+	private BigDecimal batteryCharged = new BigDecimal(0);
+	private BigDecimal batteryDischarged = new BigDecimal(0);
+	private BigDecimal batteryMaxCellTemperature = new BigDecimal(0);
+	private BigDecimal batteryMidnightSoc = new BigDecimal(0);
 
 	public Summary(LocalDate date, BigDecimal gridImport, BigDecimal gridExport, BigDecimal consumption, BigDecimal production) {
 		this.date = date;
@@ -36,14 +42,20 @@ public class Summary {
 		this.production = production == null ? BigDecimal.ZERO : production;
 	}
 
-	public Summary(DailySummary daily, Total gridImport, Total gridExport, Total highestOutput, BigDecimal conversionRate) {
-		this.date = daily.getDate();
+	public Summary(DailySummary daily, BigDecimal conversionRate) {
+		this.date = daily.getEachDay();
 		this.consumption = daily.getConsumption();
 		this.production = daily.getProduction();
-		this.gridImport = BigDecimal.valueOf(gridImport.getSummary());
-		this.gridExport = BigDecimal.valueOf(gridExport.getSummary());
-		this.highestOutput = highestOutput.getSummary();
+		this.gridImport = daily.getGridImport();
+		this.gridExport = daily.getGridExport();
+		this.highestOutput = daily.getHighestProduction().longValue();
 		this.conversionRate = conversionRate;
+		this.batteryMinPercent = daily.getMinBatterySoc();
+		this.batteryMaxPercent = daily.getMaxBatterySoc();
+		this.batteryCharged = daily.getBatteryCharged();
+		this.batteryDischarged = daily.getBatteryDischarged();
+		this.batteryMaxCellTemperature = daily.getMaxCellTemperature();
+		this.batteryMidnightSoc = daily.getCurrentBatterySoc();
 	}
 
 	public Summary(LocalDate date) {

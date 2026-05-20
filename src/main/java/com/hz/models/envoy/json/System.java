@@ -40,4 +40,9 @@ public class System {
     private Production production;  // Populated from production.json
     private List<Inventory> inventoryList;  // populated from inventory.json
     private Wireless wireless;  // populated from wireless_display.json
+    private List<BatteryDevice> batteries;  // Battery data
+
+    public boolean hasBattery() {
+        return batteries != null && batteries.isEmpty() == false;
+    }
 }

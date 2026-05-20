@@ -1,4 +1,4 @@
-/*global Highcharts, makeRefreshChart, updateGauge, updatePvc, makeChart, makeStatusList, switchToTab, switchToHistoryTab, getAnswers, switchStacking */
+/*global Highcharts, makeRefreshChart, makeComponent, updateGauge, updatePvc, makeChart, makeStatusList, switchToTab, switchToHistoryTab, getAnswers, switchStacking */
 
 function initHighCharts(timezone) {
     "use strict";
@@ -200,6 +200,7 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
     };
 
     const now = new Date();
+    let backgroundColour = (Highcharts.theme) ? Highcharts.theme.legendColor.backgroundColor : "rgba(255,255,255,0.25)";
 
     const pvcProperties = {
         chart: {
@@ -241,7 +242,7 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
             verticalAlign: "top",
             y: 50,
             floating: true,
-            backgroundColor: (Highcharts.theme && Highcharts.theme.legendColor.backgroundColor) || "rgba(255,255,255,0.25)"
+            backgroundColor: backgroundColour
         },
         series: [
             {
@@ -289,6 +290,7 @@ function initLiveCharts(contextPath, refreshInterval, exportLimit) {
         });
     }
     makeStatusList("statusComponent", contextPath + "/refreshStats", refreshInterval);
+    makeComponent("batteryComponent", contextPath + "/refreshBattery", refreshInterval);
 }
 
 function initHistoryCharts() {

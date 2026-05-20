@@ -41,6 +41,8 @@ public class EnphaseCollectorProperties {
     private String enphaseWebPassword;
     private String publicKey;
 
+    private boolean supportBattery;
+
     public int getRefreshSeconds() {
         // Try to handle passing refreshSeconds as named instead of as microseconds
         if (refreshSeconds <= 120) {

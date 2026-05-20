@@ -29,7 +29,7 @@ public class PrometheusService {
 				.stream()
 				.filter(metric -> metric.getName().equalsIgnoreCase(name))
 				.findFirst()
-				.map(metric -> BigDecimal.valueOf(metric.getValue()))
+				.map(metric -> metric.getValue())
 				.orElse(BigDecimal.ZERO).doubleValue();
 	}
 

@@ -2,8 +2,8 @@ package com.hz.utils;
 
 import com.hz.interfaces.MetricCalculator;
 import com.hz.metrics.Metric;
-import com.hz.models.envoy.json.EimType;
-import com.hz.models.envoy.json.InvertersType;
+import com.hz.models.envoy.interfaces.Power;
+import com.hz.models.envoy.json.Inverter;
 import com.hz.models.envoy.json.System;
 import lombok.extern.log4j.Log4j2;
 
@@ -51,19 +51,19 @@ public class MetricCalculatorNegativeConsumption implements MetricCalculator {
 		metricList.add(new Metric(Metric.METRIC_PRODUCTION_CURRENT, production, 5));
 		metricList.add(new Metric(Metric.METRIC_PRODUCTION_VOLTAGE, system.getProduction().getProductionVoltage().floatValue()));
 
-		Optional<EimType> productionEim = system.getProduction().getProductionEim();
-		Optional<InvertersType> inverter = system.getProduction().getInverter();
-		if (productionEim.isPresent() && inverter.isPresent()) {
-			log.debug("production: eim time {} eim {} inverter time {} inverter {} calculated {}", Convertors.convertToLocalDateTime(productionEim.get().getReadingTime()), productionEim.get().getWattsNow(), Convertors.convertToLocalDateTime(inverter.get().getReadingTime()), inverter.get().getWattsNow(), production);
-			metricList.add(new Metric(Metric.METRIC_PRODUCTION_TOTAL, inverter.get().getWattsLifetime()));
+		Optional<Power> productionPower = system.getProduction().getProductionMeter();
+		Optional<Inverter> inverter = system.getProduction().getInverter();
+		if (productionPower.isPresent() && inverter.isPresent()) {
+			log.debug("production: eim time {} eim {} inverter time {} inverter {} calculated {}", Convertors.convertToLocalDateTime(productionPower.get().getTimestamp()), productionPower.get().getActivePower(), Convertors.convertToLocalDateTime(inverter.get().getLastReportDate().getTime()), inverter.get().getLastReportWatts(), production);
+			metricList.add(new Metric(Metric.METRIC_PRODUCTION_TOTAL, BigDecimal.ZERO));
 		}
 
 		BigDecimal consumption = system.getProduction().getNetConsumptionWatts();
 
-		Optional<EimType> consumptionEim = system.getProduction().getNetConsumptionEim();
-		if (consumptionEim.isPresent()) {
-			log.debug("consumption: eim time {} eim {} calculated {}", Convertors.convertToLocalDateTime(consumptionEim.get().getReadingTime()), consumptionEim.get().getWattsNow(), consumption);
-			metricList.add(new Metric(Metric.METRIC_CONSUMPTION_TOTAL, consumptionEim.get().getWattsLifetime()));
+		Optional<Power> consumptionMeter = system.getProduction().getNetConsumptionMeter();
+		if (consumptionMeter.isPresent()) {
+			log.debug("consumption: eim time {} eim {} calculated {}", Convertors.convertToLocalDateTime(consumptionMeter.get().getTimestamp()), consumptionMeter.get().getActivePower(), consumption);
+			metricList.add(new Metric(Metric.METRIC_CONSUMPTION_TOTAL, BigDecimal.ZERO));
 		}
 
 		calculateSavings(metricList, production, consumption);

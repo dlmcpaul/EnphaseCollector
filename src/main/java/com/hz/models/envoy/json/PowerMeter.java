@@ -2,14 +2,13 @@ package com.hz.models.envoy.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import com.hz.models.envoy.interfaces.Power;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PowerMeter {
+public class PowerMeter implements Power {
 	private String eid;
 	private long timestamp;
 	private BigDecimal actEnergyDlvd;
@@ -26,12 +25,6 @@ public class PowerMeter {
 	private BigDecimal current;
 	private BigDecimal freq;
 
-	public PowerMeter() {
-		// Set some defaults
-		this.activePower = BigDecimal.ZERO;
-		this.voltage = BigDecimal.ZERO;
-	}
-
 	public PowerMeter(BigDecimal activePower, BigDecimal voltage) {
 		this.activePower = activePower;
 		this.voltage = voltage;
@@ -39,4 +32,39 @@ public class PowerMeter {
 
 	@JsonProperty(value="channels")
 	private List<Channel> channelList;
+
+	@Override
+	public BigDecimal getActivePower() {
+		return activePower;
+	}
+
+	@Override
+	public BigDecimal getEnergyDelivered() {
+		return actEnergyDlvd;
+	}
+
+	@Override
+	public BigDecimal getEnergyReceived() {
+		return actEnergyRcvd;
+	}
+
+	@Override
+	public BigDecimal getCurrentPower() {
+		return BigDecimal.ZERO;
+	}
+
+	@Override
+	public String getEid() {
+		return eid;
+	}
+
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	@Override
+	public BigDecimal getVoltage() {
+		return voltage;
+	}
 }

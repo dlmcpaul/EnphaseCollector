@@ -2,7 +2,7 @@ package com.hz.models.envoy.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hz.models.envoy.interfaces.Power;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,127 +20,110 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Production {
 	private static final String PRODUCTION_TYPE = "production";
+	private static final String NET_CONSUMPTION_TYPE = "net-consumption";
+	private static final String TOTAL_CONSUMPTION_TYPE = "total-consumption";
+	private static final String STORAGE_TYPE = "storage";
 
-	@JsonProperty(value="production")
-	private List<TypeBase> productionList;
-	@JsonProperty(value="consumption")
-	private List<TypeBase> consumptionList;
-	@JsonProperty(value="storage")
-	private List<TypeBase> storageList;
+	private static final int MICRO_INVERTER = 1;
+	private static final int BATTERY = 11;
 
+	@JsonIgnore
+	private List<Inverter> inverterList;
 	@JsonIgnore
 	private List<PowerMeter> powerMeterList;
 	@JsonIgnore
 	private List<DeviceMeter> deviceMeterList;
 
 	@JsonIgnore
+	private List<MeterReport> meterReportList;
+
+	@JsonIgnore
 	public List<Inverter> getMicroInvertersList() {
-		return this.getInverter().orElseGet(InvertersType::new).getMicroInverters();
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == MICRO_INVERTER).toList();
 	}
 
 	@JsonIgnore
 	public List<Inverter> getBatteryList() {
-		return this.getInverter().orElseGet(InvertersType::new).getBatteries();
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() == BATTERY).toList();
 	}
 
 	@JsonIgnore
 	public void setInverterList(List<Inverter> inverterList) {
-		this.getInverter().ifPresent(invertersType -> invertersType.setInverterList(inverterList));
+		this.inverterList = inverterList;
 	}
 
 	@JsonIgnore
-	public Optional<InvertersType> getInverter() {
-		return productionList.stream().filter(module -> module.getType().equalsIgnoreCase("inverters")).findFirst().map(InvertersType.class::cast);
+	public Optional<Inverter> getInverter() {
+		return inverterList.stream().filter(inverter -> inverter.getDeviceType() != MICRO_INVERTER && inverter.getDeviceType() != BATTERY).findFirst();
 	}
 
 	@JsonIgnore
-	public Optional<EimType> getProductionEim() {
-		return findByMeasurementType(productionList, PRODUCTION_TYPE);
+	public Optional<Power> getProductionMeter() {
+		return getMeterReport(PRODUCTION_TYPE).flatMap(Optional::of);
+//		return getDevice(PRODUCTION_TYPE).
+//				flatMap(device -> getPowerMeter(device.getEid()));
 	}
 
 	@JsonIgnore
-	public Optional<EimType> getTotalConsumptionEim() {
-		return findByMeasurementType(consumptionList, "total-consumption");
+	public Optional<Power> getNetConsumptionMeter() {
+		return getMeterReport(NET_CONSUMPTION_TYPE).flatMap(Optional::of);
+//		return getDevice(NET_CONSUMPTION_TYPE).
+//				flatMap(device -> getPowerMeter(device.getEid()));
 	}
 
 	@JsonIgnore
-	public Optional<EimType> getNetConsumptionEim() {
-		return findByMeasurementType(consumptionList, "net-consumption");
-	}
-
-	private Optional<PowerMeter> getProductionMeter() {
-		return getDevice(PRODUCTION_TYPE).
-				flatMap(device -> getPowerMeter(device.getEid()));
-	}
-
-	private Optional<PowerMeter> getNetConsumptionMeter() {
-		return getDevice("net-consumption").
-				flatMap(device -> getPowerMeter(device.getEid()));
-	}
-
-	private Optional<PowerMeter> getTotalConsumptionMeter() {
-		return getDevice("total-consumption").
-				flatMap(device -> getPowerMeter(device.getEid()));
-	}
-
-	private Optional<PowerMeter> getPowerMeter(String eid) {
-		return powerMeterList.stream().filter(power -> power.getEid().compareToIgnoreCase(eid) == 0).findFirst();
+	public Optional<Power> getTotalConsumptionMeter() {
+		return getMeterReport(TOTAL_CONSUMPTION_TYPE).flatMap(Optional::of);
+//		return getDevice(TOTAL_CONSUMPTION_TYPE).
+//				flatMap(device -> getPowerMeter(device.getEid()));
 	}
 
 	@JsonIgnore
-	public Optional<DeviceMeter> getDevice(String measurementType) {
-		return deviceMeterList.stream().filter(device -> device.getMeasurementType().compareToIgnoreCase(measurementType) == 0).findFirst();
+	public Optional<Power> getStorageMeter() {
+		return getMeterReport(STORAGE_TYPE).flatMap(Optional::of);
 	}
 
 	@JsonIgnore
 	public BigDecimal getPhaseCount() {
-		return BigDecimal.valueOf(getDevice(PRODUCTION_TYPE).orElse(new DeviceMeter()).getPhaseCount());
-
+		return BigDecimal.valueOf(getMeterReport(PRODUCTION_TYPE).orElse(new MeterReport()).getLines().size());
+		//return BigDecimal.valueOf(getDevice(PRODUCTION_TYPE).orElse(new DeviceMeter()).getPhaseCount());
 	}
 
 	@JsonIgnore
 	public BigDecimal getProductionVoltage() {
-		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, getProductionEimVoltage())).getVoltage().divide(getPhaseCount(), 3, RoundingMode.HALF_UP);
-	}
-
-	@JsonIgnore
-	public BigDecimal getProductionEimVoltage() {
-		return getProductionEim().orElseGet(EimType::new).getRmsVoltage();
+		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO)).getVoltage().divide(getPhaseCount(), 3, RoundingMode.HALF_UP);
 	}
 
 	@JsonIgnore
 	public BigDecimal getProductionWatts() {
-		return getProductionMeter().orElse(new PowerMeter(getProductionEimWatts(), BigDecimal.ZERO)).getActivePower();
-	}
-
-	@JsonIgnore
-	public BigDecimal getProductionEimWatts() {
-		return getProductionEim().orElse(new EimType(getInverterWatts())).getWattsNow();
+		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO)).getActivePower();
 	}
 
 	@JsonIgnore
 	public BigDecimal getInverterWatts() {
-		return getInverter().orElseGet(InvertersType::new).getWattsNow();
+		return BigDecimal.valueOf(getInverter().orElseGet(Inverter::new).getLastReportWatts());
 	}
 
 	@JsonIgnore
 	public BigDecimal getConsumptionWatts() {
-		return getTotalConsumptionMeter().orElse(new PowerMeter(getConsumptionEimWatts(), BigDecimal.ZERO)).getActivePower();
+		return getTotalConsumptionMeter().orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO)).getActivePower();
 	}
 
 	@JsonIgnore
 	public BigDecimal getNetConsumptionWatts() {
-		return getNetConsumptionMeter().orElse(new PowerMeter(getNetConsumptionEimWatts(), BigDecimal.ZERO)).getActivePower();
+		return getNetConsumptionMeter().orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO)).getActivePower();
 	}
 
-	@JsonIgnore
-	public BigDecimal getNetConsumptionEimWatts() {
-		return getNetConsumptionEim().orElseGet(EimType::new).getWattsNow();
+	private Optional<MeterReport> getMeterReport(String measurementType) {
+		return meterReportList.stream().filter(meterReport -> meterReport.getReportType().compareToIgnoreCase(measurementType) == 0).findFirst();
 	}
 
-	@JsonIgnore
-	public BigDecimal getConsumptionEimWatts() {
-		return getTotalConsumptionEim().orElseGet(EimType::new).getWattsNow();
+	private Optional<DeviceMeter> getDevice(String measurementType) {
+		return deviceMeterList.stream().filter(device -> device.getMeasurementType().compareToIgnoreCase(measurementType) == 0).findFirst();
+	}
+
+	private Optional<PowerMeter> getPowerMeter(String eid) {
+		return powerMeterList.stream().filter(power -> power.getEid().compareToIgnoreCase(eid) == 0).findFirst();
 	}
 
 	private Optional<EimType> findByMeasurementType(List<TypeBase> list, String measurementType) {

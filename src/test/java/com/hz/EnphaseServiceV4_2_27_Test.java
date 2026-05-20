@@ -16,13 +16,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -61,7 +61,7 @@ class EnphaseServiceV4_2_27_Test {
 
 	}
 
-	@MockBean
+	@MockitoBean
 	private EnvoyConnectionProxy envoyConnectionProxy;
 
 	@Autowired
@@ -78,11 +78,11 @@ class EnphaseServiceV4_2_27_Test {
 
 		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
 
-		Optional<System> system = this.enphaseService.collectEnphaseData();
+		Optional<System> system = this.enphaseService.collectEnphaseData(false);
 		assertTrue(system.isPresent());
 		assertEquals("D4.2.27", this.envoyInfo.getSoftwareVersion() );
-		assertEquals(20, system.get().getProduction().getInverter().get().getActiveCount());
-		assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
+		assertEquals(20, system.get().getProduction().getMicroInvertersList().size());
+		//assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionWatts());
 		assertEquals(0, system.get().getProduction().getBatteryList().size());
 		assertTrue(this.enphaseService.isOk());

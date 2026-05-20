@@ -4,18 +4,21 @@ import com.hz.components.EnphaseRequestRetryStrategy;
 import lombok.extern.log4j.Log4j2;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
-import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
-import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.pool.PoolConcurrencyPolicy;
+import org.apache.hc.core5.pool.PoolReusePolicy;
 import org.apache.hc.core5.ssl.SSLContexts;
+import org.apache.hc.core5.util.TimeValue;
+import org.apache.hc.core5.util.Timeout;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,19 +35,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 class SelfSignedCertTest {
 
-	private BasicHttpClientConnectionManager createSSLConnectionManager() {
+	private PoolingHttpClientConnectionManager createSSLConnectionManager() {
 		// Not good to ignore all the SSL checks
 		try {
 			SSLContext sslContext = SSLContexts.custom()
-					.loadTrustMaterial(null, new TrustSelfSignedStrategy())
+					.loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
 					.build();
-			Registry<ConnectionSocketFactory> socketFactoryRegistry =
-					RegistryBuilder.<ConnectionSocketFactory> create()
-							.register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
-							.register("http", new PlainConnectionSocketFactory())
-							.build();
 
-			return new BasicHttpClientConnectionManager(socketFactoryRegistry);
+			var tlsSocketStrategy = new DefaultClientTlsStrategy(
+					sslContext,
+					HostnameVerificationPolicy.CLIENT,
+					NoopHostnameVerifier.INSTANCE);
+
+			return PoolingHttpClientConnectionManagerBuilder.create()
+				.setTlsSocketStrategy(tlsSocketStrategy)
+				.setDefaultSocketConfig(SocketConfig.custom()
+						.setSoTimeout(Timeout.ofMinutes(1))
+						.build())
+				.setPoolConcurrencyPolicy(PoolConcurrencyPolicy.STRICT)
+				.setConnPoolPolicy(PoolReusePolicy.LIFO)
+				.setDefaultConnectionConfig(ConnectionConfig.custom()
+						.setSocketTimeout(Timeout.ofMinutes(1))
+						.setConnectTimeout(Timeout.ofMinutes(1))
+						.setTimeToLive(TimeValue.ofMinutes(10))
+						.build())
+				.build();
 		} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
 			log.error("Could not create an SSL context - {}", e.getMessage(), e);
 			throw new RuntimeException(e);
@@ -67,10 +82,8 @@ class SelfSignedCertTest {
 	@Test
 	void fetchUrlIgnoringCertChecks() throws IOException {
 		assertEquals(200,
-				this.createSecureClient().<ClassicHttpResponse>execute(new HttpGet("https://self-signed.badssl.com"),
-						response -> {
-							return response;
-						}).getCode());
+				this.createSecureClient().execute(new HttpGet("https://self-signed.badssl.com"),
+						response -> response).getCode());
 	}
 
 }

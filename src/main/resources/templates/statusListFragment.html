@@ -2,20 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <body>
+
 <!--@thymesVar id="statusList" type="java.util.List<com.hz.controllers.models.Status>"-->
-<!--@thymesVar id="refresh_stats_interval" type="java.lang.Integer"-->
-<div th:fragment="statusList (statusList)" id="statusComponent" class="column is-4 centre" aria-live="polite">
-    <div class="time-bar" id="time-bar-id">
-        <div></div>
-    </div>
-    <table th:unless="${statusList.isEmpty()}" class="table is-fullwidth" aria-label="Solar Status Table">
-        <tbody>
+<!--@thymesVar id="panelList" type="java.util.List<com.hz.controllers.models.IntValue>"-->
+<!--@thymesVar id="hasBattery" type="java.lang.Boolean"-->
+<div th:fragment="statusListComponent (statusList, panelList, hasBattery)" id="statusComponent" class="column is-narrow-mobile is-narrow-tablet is-full-desktop" th:classappend="${hasBattery} ? ' is-two-fifths-widescreen' : ' is-two-fifths-widescreen'">
+    <div class="fixed-grid has-12-cols pb-5">
+        <div class="grid">
+            <div class="time-bar cell is-col-span-12" id="time-bar-id">
+                <div></div>
+            </div>
             <!--@thymesVar id="status" type="com.hz.controllers.models.Status"-->
-            <th:block th:each="status : ${statusList}">
+            <th:block th:unless="${statusList.isEmpty()}" th:each="status : ${statusList}">
                 <div data-th-replace="~{statusFragment :: status(${status.image},${status.text},${status.value})}"></div>
             </th:block>
-        </tbody>
-    </table>
+        </div>
+    </div>
+    <div class="media fixed-grid has-8-cols is-hidden-mobile pt-2">
+        <div class="media-content grid">
+            <th:block th:unless="${panelList.isEmpty()}" th:each="panel : ${panelList}">
+                <div class="cell has-background-success has-text-white solar-panel" th:text="${panel.watts}">0</div>
+            </th:block>
+        </div>
+    </div>
 </div>
 
 </body>

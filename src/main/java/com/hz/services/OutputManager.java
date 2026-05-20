@@ -44,7 +44,7 @@ public class OutputManager {
 				collectionPeriod -= 1000;
 			} else {
 				collectionPeriod = properties.getRefreshSeconds() - 1000;
-				enphaseImportService.collectEnphaseData().ifPresent(s -> publish(s, metricCalculator.calculateMetrics(s), enphaseImportService.getCollectionTime(s)));
+				enphaseImportService.collectEnphaseData(properties.isSupportBattery()).ifPresent(s -> publish(s, metricCalculator.calculateMetrics(s), enphaseImportService.getCollectionTime(s)));
 			}
 		} catch (Exception e) {
 			log.error("Failed to collect data from Enphase Controller - {}", e.getMessage(), e);

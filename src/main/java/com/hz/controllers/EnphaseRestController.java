@@ -4,6 +4,7 @@ import com.hz.configuration.EnphaseCollectorProperties;
 import com.hz.controllers.models.History;
 import com.hz.controllers.models.PlotBand;
 import com.hz.controllers.models.PvC;
+import com.hz.models.database.Event;
 import com.hz.models.database.Summary;
 import com.hz.services.ElectricityRateService;
 import com.hz.services.LocalDBService;
@@ -77,7 +78,8 @@ public class EnphaseRestController {
 	@GetMapping(value = "/consumption", produces = "application/json; charset=UTF-8")
 	public Integer getConsumption() {
 		try {
-			return localDBService.getLastEvent().getConsumption().intValue();
+			Event lastEvent = localDBService.getLastEvent();
+			return lastEvent.getConsumption().intValue();
 		} catch (Exception e) {
 			log.error("getConsumption Exception: {}", e.getMessage(), e);
 		}

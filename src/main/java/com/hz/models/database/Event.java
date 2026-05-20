@@ -2,35 +2,22 @@ package com.hz.models.database;
 
 import com.hz.metrics.Metric;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
+import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
+@Table(name="EVENT")
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
-public class Event {
-	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-	private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+public class Event extends EventBase {
 
-	@OneToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade= CascadeType.ALL, fetch = FetchType.EAGER)
 	@ToString.Exclude
 	private List<Panel> panels = new ArrayList<>();
-	private LocalDateTime time = LocalDateTime.now();
-	private BigDecimal consumption = new BigDecimal(0);
-	private BigDecimal production = new BigDecimal(0);
-	private BigDecimal voltage = new BigDecimal(0);
 
 	public void addSolarPanel(Metric metric) {
 		if (metric.isSolarPanel()) {
@@ -40,16 +27,6 @@ public class Event {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof Event that) {
-			if (this == o) return true;
-			if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-			return Objects.equals(this.id, that.id);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return 0;
+		return super.equals(o);
 	}
 }

@@ -3,7 +3,7 @@ package com.hz.configuration;
 public class EnphaseURLS {
 
 	public static final String SYSTEM = "/home.json";   // Basic info about the envoy device
-	public static final String INVENTORY = "/inventory.json?deleted=1";
+	public static final String INVENTORY_OLD = "/inventory.json?deleted=1";
 	public static final String PRODUCTION = "/production.json?details=1";   // Used for production and consumption values
 	public static final String CONTROLLER = "/info.xml";    // Used to generate passwords and detect enphase software version
 
@@ -13,8 +13,11 @@ public class EnphaseURLS {
 	public static final String WAN_INFO = "/admin/lib/network_display.json";
 	public static final String DEVICE_METERS = "/ivp/meters";
 	public static final String POWER_METERS = "/ivp/meters/readings";
-	public static final String LIVE_STATUS = "/ivp/livedata/status";
+	public static final String LIVE_STATUS = "/ivp/livedata/status";    // Needs to be turned on to use
 	public static final String DEVICE_STATUS = "/ivp/sc/status";
+	public static final String INVENTORY = "/ivp/ensemble/inventory";
+	public static final String SECCTRL = "/ivp/ensemble/secctrl";
+	public static final String BATTERY_POWER = "/ivp/ensemble/power";
 
 	// Needs Installer authentication for < V7
 	public static final String METER_STREAM = "/stream/meter";

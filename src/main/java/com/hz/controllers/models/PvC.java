@@ -1,6 +1,6 @@
 package com.hz.controllers.models;
 
-import com.hz.models.database.Event;
+import com.hz.models.database.EventSummary;
 import com.hz.models.database.PanelSummary;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +18,13 @@ public class PvC {
 	List<IntValue> excess = new ArrayList<>();
 	List<PlotBand> plotBands = new ArrayList<>();
 
-	public void addEvent(Event event) {
+	public void addEvent(EventSummary event) {
 		consumption.add(new IntValue(event.getTime(), event.getConsumption().multiply(BigDecimal.valueOf(-1))));
 		production.add(new IntValue(event.getTime(), event.getProduction()));
-		gridImport.add(new IntValue(event.getTime(), calculateGridUsage(event.getProduction(),event.getConsumption())));
+		gridImport.add(new IntValue(event.getTime(), event.getGrid().intValue() > 0 ? event.getGrid() : BigDecimal.ZERO));
 	}
 
-	private BigDecimal calculateGridUsage(BigDecimal production, BigDecimal consumption) {
+	private BigDecimal calculateGridImport(BigDecimal production, BigDecimal consumption) {
 		if (production.compareTo(consumption) < 0) {
 			return consumption.subtract(production);
 		}
@@ -36,7 +36,7 @@ public class PvC {
 		// Are we producing more power than we can export
 		if (production.compareTo(exportLimit) > 0) {
 			// Are we importing from the grid
-			if (calculateGridUsage(production, consumption).compareTo(BigDecimal.ZERO) <= 0) {
+			if (calculateGridImport(production, consumption).compareTo(BigDecimal.ZERO) <= 0) {
 				// No so we have some excess power
 				BigDecimal totalExcess = production.subtract(consumption).subtract(exportLimit);
 				return totalExcess.compareTo(BigDecimal.ZERO) > 0 ? totalExcess : BigDecimal.ZERO;

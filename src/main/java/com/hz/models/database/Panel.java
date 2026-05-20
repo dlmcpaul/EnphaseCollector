@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
@@ -18,7 +19,7 @@ import java.util.Objects;
 @ToString
 @RequiredArgsConstructor
 public class Panel {
-	private static final int BUCKET_SIZE = 25;
+	private static final int BUCKET_SIZE = 5;
 
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
@@ -27,16 +28,21 @@ public class Panel {
 	private String identifier;
 	private float panelValue;
 
-	public Panel(String identifier, float panelValue) {
+	public Panel(String identifier, BigDecimal panelValue) {
+		this.identifier = identifier;
+		this.panelValue = panelValue.floatValue();
+	}
+
+	public Panel(String identifier, int panelValue) {
 		this.identifier = identifier;
 		this.panelValue = panelValue;
 	}
 
-	public float bucket() {
-		if (panelValue <= 0f) {
-			return 0f;
+	public int bucket() {
+		if (panelValue < 0f) {
+			return 0;
 		}
-		return panelValue % BUCKET_SIZE == 0 ? panelValue : ((int) (panelValue / BUCKET_SIZE) + 1) * (float) BUCKET_SIZE;
+		return (int) (panelValue % BUCKET_SIZE == 0 ? panelValue : ( (int) (panelValue / BUCKET_SIZE) + 1) * BUCKET_SIZE);
 	}
 
 	@Override

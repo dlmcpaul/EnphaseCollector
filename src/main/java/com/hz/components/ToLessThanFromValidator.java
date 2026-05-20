@@ -16,7 +16,7 @@ public class ToLessThanFromValidator implements ConstraintValidator<ToLessThanFr
 
 		if (value.getTo().isAfter(value.getFrom()) == false) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate(String.format("'From' date (%s) must be prior to 'To' date (%s)", value.getFrom(), value.getTo()))
+			context.buildConstraintViolationWithTemplate("'From' date (%s) must be prior to 'To' date (%s)".formatted(value.getFrom(), value.getTo()))
 					.addConstraintViolation();
 			return false;
 		}

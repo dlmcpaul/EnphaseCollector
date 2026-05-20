@@ -12,13 +12,13 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ class EnphaseServiceEnvoySTest {
 
 	}
 
-	@MockBean
+	@MockitoBean
 	private EnvoyConnectionProxy envoyConnectionProxy;
 
 	@Autowired
@@ -63,7 +63,7 @@ class EnphaseServiceEnvoySTest {
 	void enphase_envoy_s_no_consumption_ServiceTest() throws IOException, URISyntaxException {
 		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
 
-		Optional<System> system = this.enphaseService.collectEnphaseData();
+		Optional<System> system = this.enphaseService.collectEnphaseData(false);
 		assertTrue(system.isPresent());
 		assertTrue(this.enphaseService.isOk());
 		assertEquals(BigDecimal.ZERO, system.get().getProduction().getConsumptionWatts());
