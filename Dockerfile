@@ -45,6 +45,7 @@ RUN mkdir "/properties" && \
     mkdir "/internal_db" && \
     touch "/properties/application.properties"
 
+WORKDIR /app
 # Copy the executable from the "package" stage.
 COPY --from=extract build/target/extracted/dependencies/ ./
 COPY --from=extract build/target/extracted/spring-boot-loader/ ./
@@ -55,7 +56,7 @@ COPY --from=extract build/H2MigrationTool.jar ./
 # Shell script to run the Database upgrade code using H2MigrationTool
 # before running the appication
 # Need to escape all $ symbols to prevent Docker Build from trying to subsitute at build time
-COPY --chmod=+x <<EOF ./app/runapp.sh
+COPY --chmod=+x <<EOF ./runapp.sh
 #!/bin/sh
 if [ -f "/internal_db/solar_stats_db.mv.db" ]; then
   SOURCE_DB_VERSION=1.4.200

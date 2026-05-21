@@ -11,8 +11,8 @@
     <figure class="image" style="height: 400px">
         <div class="battery charging shrink">
             <div th:if="${percentage} lt 25" class="battery-level below-quarter" data-th-style="|height:${percentage}%;|"></div>
-            <div th:if="${percentage} lt 50 and ${percentage} > 24" class="battery-level below-half" data-th-style="|height:${percentage}%;|"></div>
-            <div th:if="${percentage} gt 75 and ${percentage} > 49" class="battery-level below-three-quarter" data-th-style="|height:${percentage}%;|"></div>
+            <div th:if="${percentage} lt 50 and ${percentage} gt 24" class="battery-level below-half" data-th-style="|height:${percentage}%;|"></div>
+            <div th:if="${percentage} lt 75 and ${percentage} gt 49" class="battery-level below-three-quarter" data-th-style="|height:${percentage}%;|"></div>
             <div th:if="${percentage} gt 74" class="battery-level" data-th-style="|height:${percentage}%;|"></div>
         </div>
     </figure>

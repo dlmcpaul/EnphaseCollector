@@ -19,11 +19,11 @@ function updateHistory(target, response) {
 
     const labelValue = document.getElementById(billTarget);
     labelValue.innerText = "Estimated Cost for this period is $" +
-        parseFloat(response.billEstimate).toFixed(2) +
+        Number.parseFloat(response.billEstimate).toFixed(2) +
         " which is calculated from $" +
-        add(parseFloat(response.importCost), (parseFloat(response.baseCost))).toFixed(2) +
+        add(Number.parseFloat(response.importCost), (Number.parseFloat(response.baseCost))).toFixed(2) +
         " in electricity costs and $" +
-        parseFloat(response.exportEarnings).toFixed(2) +
+        Number.parseFloat(response.exportEarnings).toFixed(2) +
         " of export credits";
 }
 
