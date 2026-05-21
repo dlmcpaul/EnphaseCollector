@@ -127,21 +127,23 @@ public class EnvoyConnectionProxy {
 	public RestTemplate getSecureTemplate() throws IOException, URISyntaxException {
 		if (secureTemplate == null) {
 			if (authorisationToken.isV5()) {
-				log.debug("Creating a new secure V5 access template");
+				log.info("Creating a new secure V5 access template");
 				secureTemplate = createSecureRestTemplateV5(standardProvider());
 			} else if (authorisationToken.canFetchToken()) {
-				log.debug("Creating a new secure V7 access template after fetching token from Enphase");
+				log.info("Creating a new secure V7 access template after fetching token from Enphase");
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
 				secureTemplate = createSecureRestTemplateV7();
 			} else {
-				log.debug("Creating a new secure V7 access template with provided token");
+				log.info("Creating a new secure V7 access template with provided token");
 				secureTemplate = createSecureRestTemplateV7();
 			}
+			log.info("Security Setup Completed");
 		} else if (authorisationToken.hasExpired()) {
 			if (authorisationToken.canFetchToken()) {
-				log.debug("Creating a new secure V7 access template after refreshing token from Enphase");
+				log.info("Creating a new secure V7 access template after refreshing token from Enphase");
 				authorisationToken.updateToken(EnphaseJWTExtractor.fetchJWT(authorisationToken.getUser(), authorisationToken.getPassword(), authorisationToken.getSerialNo()));
 				secureTemplate = createSecureRestTemplateV7();
+				log.info("Token Refresh Completed");
 			} else {
 				log.error("Token has expired.  Please update JWT and restart");
 			}
