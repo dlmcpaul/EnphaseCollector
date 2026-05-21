@@ -81,7 +81,7 @@ class EnphaseServiceV4_2_27_Test {
 		Optional<System> system = this.enphaseService.collectEnphaseData(false);
 		assertTrue(system.isPresent());
 		assertEquals("D4.2.27", this.envoyInfo.getSoftwareVersion() );
-		assertEquals(20, system.get().getProduction().getMicroInvertersList().size());
+		assertEquals(16, system.get().getProduction().getMicroInvertersList().size());
 		//assertEquals(BigDecimal.valueOf(12605195.311), system.get().getProduction().getProductionEim().get().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(-1.707), system.get().getProduction().getProductionWatts());
 		assertEquals(0, system.get().getProduction().getBatteryList().size());
@@ -90,7 +90,7 @@ class EnphaseServiceV4_2_27_Test {
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		assertEquals(25, metrics.size());
+		assertEquals(26, metrics.size());
 
 		assertFalse(envoyInfo.isV7orAbove());
 	}

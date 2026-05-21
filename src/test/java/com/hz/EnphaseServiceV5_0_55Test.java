@@ -81,7 +81,7 @@ class EnphaseServiceV5_0_55Test {
 		Optional<System> system = this.enphaseService.collectEnphaseData(false);
 		assertTrue(system.isPresent());
 		assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
-		assertEquals(19, system.get().getProduction().getMicroInvertersList().size());
+		assertEquals(41, system.get().getProduction().getMicroInvertersList().size());
 		//assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
 		assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
@@ -92,8 +92,8 @@ class EnphaseServiceV5_0_55Test {
 		MetricCalculator metricCalculator = new MetricCalculatorNegativeConsumption();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		assertEquals(50, metrics.size());
-		assertEquals(-1554.1710205078125, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().orElseThrow().getValue());
+		assertEquals(49, metrics.size());
+		assertEquals(-1554.171, metrics.stream().filter(metric -> metric.getName().equalsIgnoreCase(Metric.METRIC_SOLAR_DIFFERENCE)).findFirst().orElseThrow().getValue().doubleValue());
 
 		assertFalse(envoyInfo.isV7orAbove());
 	}

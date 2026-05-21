@@ -31,7 +31,7 @@ public class MqttService {
 				.stream()
 				.filter(metric -> metric.getName().equalsIgnoreCase(name))
 				.findFirst()
-				.map(metric -> metric.getValue())
+				.map(Metric::getValue)
 				.orElse(BigDecimal.ZERO).doubleValue();
 	}
 

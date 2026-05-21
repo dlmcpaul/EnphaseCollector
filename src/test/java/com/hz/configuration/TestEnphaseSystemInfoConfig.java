@@ -106,7 +106,7 @@ public class TestEnphaseSystemInfoConfig {
 	}
 
 	@Bean
-	public HttpClient createDefaultHttpClient(HttpClientConnectionManager sslConnectionManager) {
+	public HttpClient testHttpClient(HttpClientConnectionManager sslConnectionManager) {
 		return HttpClients
 				.custom()
 				.useSystemProperties()
@@ -135,11 +135,11 @@ public class TestEnphaseSystemInfoConfig {
 	}
 
 	@Bean
-	public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder restTemplateBuilder, HttpClient httpClient, @Qualifier("baseUrl") String baseUrl) {
+	public RestTemplate enphaseSecureRestTemplate(RestTemplateBuilder restTemplateBuilder, HttpClient testHttpClient, @Qualifier("baseUrl") String baseUrl) {
 		RestTemplate result = restTemplateBuilder
 				.rootUri(baseUrl)
 				.connectTimeout(Duration.ofSeconds(5))
-				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient)))
+				.requestFactory(() -> new BufferingClientHttpRequestFactory(new HttpComponentsClientHttpRequestFactory(testHttpClient)))
 				.build();
 		result.setMessageConverters(List.of(new MappingJackson2HttpMessageConverter()));
 		return result;

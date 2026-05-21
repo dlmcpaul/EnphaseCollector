@@ -198,19 +198,19 @@ public class LocalDBService {
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateBatteryCharged() {
-		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerNegative(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight())).multiply(BigDecimal.valueOf(-1));
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findChargedAfter(Calculators.getMidnight()));
 
-	//	log.info("BatteryCharged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
+//		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerNegative(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight())).multiply(BigDecimal.valueOf(-1));
+//		log.info("BatteryCharged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
 
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
 	@Transactional(readOnly = true)
 	public BigDecimal calculateBatteryDischarged() {
-		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findDischargedAfter(Calculators.getMidnight()));
-	//	log.info("BatteryDischarged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
+//		BigDecimal x = Calculators.trapezoidalIntegrationBatteryPowerPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
+//		log.info("BatteryDischarged sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}
 
@@ -223,11 +223,10 @@ public class LocalDBService {
 	@Transactional(readOnly = true)
 	public BigDecimal calculateTotalConsumption() {
 
-		BigDecimal x = Calculators.trapezoidalIntegrationTotalConsumptionPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
-
 		BigDecimal watts = BigDecimal.valueOf(eventRepository.findTotalConsumptionAfter(Calculators.getMidnight()));
 
-	//	log.info("TotalConsumption sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
+//		BigDecimal x = Calculators.trapezoidalIntegrationTotalConsumptionPositive(eventSummaryRepository.findEventSummariesByTimeAfter(Calculators.getMidnight()));
+//		log.info("TotalConsumption sum {} trapezoidal {}", Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes()), Convertors.convertToKiloWattHours(x, properties.getRefreshAsMinutes()));
 
 		return Convertors.convertToKiloWattHours(watts, properties.getRefreshAsMinutes());
 	}

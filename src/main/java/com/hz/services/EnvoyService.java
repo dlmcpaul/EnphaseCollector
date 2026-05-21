@@ -5,6 +5,7 @@ import com.hz.exceptions.ConnectionException;
 import com.hz.models.envoy.interfaces.Power;
 import com.hz.models.envoy.json.*;
 import com.hz.models.envoy.json.System;
+import com.hz.models.envoy.xml.EnvoyInfo;
 import com.hz.utils.Convertors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @Log4j2
 public class EnvoyService {
 	private final EnvoyConnectionProxy envoyConnectionProxy;
+	private final EnvoyInfo envoyInfo;
 
 	private LocalDateTime lastProductionCollectionTime = null;
 	private LocalDateTime lastSystemReadTime = null;
@@ -66,11 +68,17 @@ public class EnvoyService {
 	public Optional<System> collectEnphaseData(boolean supportBattery) {
     	try {
 			system = getSystemData();   // Basic Data (cached)
-		    getProductionData(system);
-//		    getDeviceMeters(system);    // Consumption & Production (cacheable?)
-//		    getPowerMeters(system);     // Consumption & Production
+			if (envoyInfo.isV7orAbove() == false) {
+				getProductionDataV5(system);
+				getDeviceMeters(system);    // Consumption & Production (cacheable?)
+				getPowerMeters(system);     // Consumption & Production
+			} else {
+				getProductionData(system);
+			}
+
+		    getInventory(system);           // Has some Battery Info
+
 		    if (supportBattery) {
-			    getInventory(system);       // Battery Info
 			    getBatteryData(system);     // Battery Charging
 		    }
 		    getIndividualPanelData(system); // Panel Level Data
@@ -126,8 +134,11 @@ public class EnvoyService {
 	 //   ResponseEntity<String> statusStr3 = envoyConnectionProxy.getSecureTemplate().getForEntity("/ivp/ensemble/secctrl", String.class);
 	 //   ResponseEntity<String> statusStr4 = envoyConnectionProxy.getSecureTemplate().getForEntity("/ivp/ensemble/status", String.class);
 
+	    String url = envoyInfo.isV7orAbove() ? EnphaseURLS.INVENTORY : EnphaseURLS.INVENTORY_V5;
+
 	    ResponseEntity<List<Inventory>> inventoryResponse =
-			    envoyConnectionProxy.getSecureTemplate().exchange(EnphaseURLS.INVENTORY, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
+			    envoyConnectionProxy.getSecureTemplate()
+					    .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<Inventory>>() { });
 
 	    if (inventoryResponse.getStatusCode().value() == 200) {
 		    system.setInventoryList(inventoryResponse.getBody());
@@ -135,6 +146,10 @@ public class EnvoyService {
 		    throw new IOException("Reading Inventory failed with status " + inventoryResponse.getStatusCode());
         }
     }
+
+	private void getProductionDataV5(System system) throws IOException, URISyntaxException {
+		system.setProduction(envoyConnectionProxy.getSecureTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class));
+	}
 
 	private void getProductionData(System system) throws IOException, URISyntaxException {
 		system.setProduction(new Production());

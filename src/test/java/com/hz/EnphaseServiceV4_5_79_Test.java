@@ -87,7 +87,7 @@ class EnphaseServiceV4_5_79_Test {
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		assertEquals(25, metrics.size());
+		assertEquals(26, metrics.size());
 	}
 
 }

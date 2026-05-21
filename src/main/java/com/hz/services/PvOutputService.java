@@ -94,9 +94,9 @@ public class PvOutputService {
 	}
 
 	private void sendMetrics(List<Metric> metrics, LocalDateTime readTime) {
-		BigDecimal production = getMetric(metrics, "solar.production.current").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
-		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
-		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(metric -> metric.getValue()).orElse(BigDecimal.ZERO);
+		BigDecimal production = getMetric(metrics, "solar.production.current").map(Metric::getValue).orElse(BigDecimal.ZERO);
+		BigDecimal consumption = getMetric(metrics, "solar.consumption.current").map(Metric::getValue).orElse(BigDecimal.ZERO);
+		BigDecimal voltage = getMetric(metrics, "solar.production.voltage").map(Metric::getValue).orElse(BigDecimal.ZERO);
 
 		this.updateAccumulators(Convertors.convertToWattHours(production,properties.getRefreshAsMinutes()), Convertors.convertToWattHours(consumption, properties.getRefreshAsMinutes()));
 		this.updatePower(production.intValue(), consumption.intValue());

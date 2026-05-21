@@ -25,9 +25,18 @@ public class PowerMeter implements Power {
 	private BigDecimal current;
 	private BigDecimal freq;
 
+	public PowerMeter() {
+	}
+
 	public PowerMeter(BigDecimal activePower, BigDecimal voltage) {
 		this.activePower = activePower;
 		this.voltage = voltage;
+	}
+
+	public PowerMeter(BigDecimal activePower, BigDecimal voltage, long timestamp) {
+		this.activePower = activePower;
+		this.voltage = voltage;
+		this.timestamp = timestamp;
 	}
 
 	@JsonProperty(value="channels")

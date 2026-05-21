@@ -72,7 +72,7 @@ class EnphaseServiceEnvoySTest {
 		MetricCalculator metricCalculator = new MetricCalculatorStandard();
 		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
 
-		assertEquals(23, metrics.size());
+		assertEquals(26, metrics.size());
 	}
 
 }

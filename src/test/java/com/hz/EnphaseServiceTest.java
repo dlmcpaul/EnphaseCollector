@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,8 +31,10 @@ class EnphaseServiceTest {
 
 	private Optional<System> makeSystem(LocalDateTime now) {
 		Optional<System> system = Optional.of(new System());
+		Production production = new Production();
+		production.setMeterReportList(new ArrayList<>());
 
-		system.get().setProduction(new Production());
+		system.get().setProduction(production);
 
 		return system;
 	}

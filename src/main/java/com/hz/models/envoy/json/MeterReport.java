@@ -50,4 +50,8 @@ public class MeterReport implements Power {
 	public BigDecimal getVoltage() {
 		return cumulative.getRmsVoltage();
 	}
+
+	public int getPhaseCount() {
+		return lines.isEmpty() ? 1 : lines.size();
+	}
 }

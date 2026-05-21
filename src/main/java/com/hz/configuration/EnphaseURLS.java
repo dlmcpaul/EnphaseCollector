@@ -3,7 +3,7 @@ package com.hz.configuration;
 public class EnphaseURLS {
 
 	public static final String SYSTEM = "/home.json";   // Basic info about the envoy device
-	public static final String INVENTORY_OLD = "/inventory.json?deleted=1";
+	public static final String INVENTORY_V5 = "/inventory.json?deleted=1";
 	public static final String PRODUCTION = "/production.json?details=1";   // Used for production and consumption values
 	public static final String CONTROLLER = "/info.xml";    // Used to generate passwords and detect enphase software version
 
