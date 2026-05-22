@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
-
 # Create a stage for resolving and downloading dependencies.
+ARG VERSION="development-SNAPSHOT"
+ARG RELEASE="dev"
 FROM azul-zulu:21 AS deps
 LABEL maintainer="dlmcpaul@gmail.com"
 
@@ -17,10 +18,12 @@ RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
 
 RUN apt-get update && \
-    apt-get install -y wget && \
+    apt-get install -y wget=1.25.0 && \
     wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar
 
 FROM deps AS package
+ARG VERSION
+ARG RELEASE
 
 WORKDIR /build
 
@@ -28,30 +31,45 @@ COPY ./.git .git/
 COPY ./src src/
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 \
-    ./mvnw package -DskipTests && \
-    mv target/enphasecollector-development-SNAPSHOT.jar target/app.jar
+    ./mvnw package -DskipTests -Dbuild.number=${VERSION} -Dbuild.source=${RELEASE} && \
+    mv target/enphasecollector-${VERSION}-${RELEASE}.jar target/app.jar
 
-FROM package AS extract
+RUN echo "Creating a ${RELEASE} release as version ${VERSION}"
+
+FROM package AS extract-dev
 
 WORKDIR /build
 
 # unpack the uber jar into it's components
 RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
 
+FROM package AS extract-prod
+ARG VERSION
+WORKDIR /build
+
+# unpack the uber jar into it's components and set release properties
+RUN java -Djarmode=layertools -jar target/app.jar extract --destination target/extracted
+RUN echo "release.version=${VERSION}" > ./target/extracted/application/BOOT-INF/classes/release.properties
+
+#Choose prod or dev layer
+FROM extract-${RELEASE} AS pre-final
+
 # final image is based on a jre
-FROM azul-zulu:21-jre AS final
+FROM azul-zulu:21-jre-headless AS final
+ARG VERSION
+LABEL maintainer="dlmcpaul@gmail.com"
+LABEL version="${VERSION}"
 
 RUN mkdir "/properties" && \
     mkdir "/internal_db" && \
     touch "/properties/application.properties"
-
 WORKDIR /app
 # Copy the executable from the "package" stage.
-COPY --from=extract build/target/extracted/dependencies/ ./
-COPY --from=extract build/target/extracted/spring-boot-loader/ ./
-COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
-COPY --from=extract build/target/extracted/application/ ./
-COPY --from=extract build/H2MigrationTool.jar ./
+COPY --from=pre-final build/target/extracted/dependencies/ ./
+COPY --from=pre-final build/target/extracted/spring-boot-loader/ ./
+COPY --from=pre-final build/target/extracted/snapshot-dependencies/ ./
+COPY --from=pre-final build/target/extracted/application/ ./
+COPY --from=pre-final build/H2MigrationTool.jar ./
 
 # Shell script to run the Database upgrade code using H2MigrationTool
 # before running the appication
