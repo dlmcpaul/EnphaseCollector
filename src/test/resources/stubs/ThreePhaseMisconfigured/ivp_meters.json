@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/ivp/meters",
+    "headers": {
+      "Accept": {
+        "contains": "application/octet-stream"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "[ { \"eid\": 704643328, \"state\": \"enabled\", \"measurementType\": \"production\", \"phaseMode\": \"three\", \"phaseCount\": 1, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704643584, \"state\": \"enabled\", \"measurementType\": \"net-consumption\", \"phaseMode\": \"three\", \"phaseCount\": 1, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704643840, \"state\": \"disabled\", \"measurementType\": \"storage\", \"phaseMode\": \"three\", \"phaseCount\": 3, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704644352, \"state\": \"disabled\", \"measurementType\": \"backfeed\", \"phaseMode\": \"three\", \"phaseCount\": 3, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704644608, \"state\": \"disabled\", \"measurementType\": \"load\", \"phaseMode\": \"three\", \"phaseCount\": 3, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704644864, \"state\": \"disabled\", \"measurementType\": \"evse\", \"phaseMode\": \"three\", \"phaseCount\": 3, \"meteringStatus\": \"normal\", \"statusFlags\": [] }, { \"eid\": 704645120, \"state\": \"disabled\", \"measurementType\": \"pv3p\", \"phaseMode\": \"three\", \"phaseCount\": 3, \"meteringStatus\": \"normal\", \"statusFlags\": [] } ]",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/production.json?details=1",
+    "headers": {
+      "Accept": {
+        "contains": "application/json, application/*+json"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"production\":[{\"type\":\"inverters\",\"activeCount\":16,\"readingTime\":1779501539,\"wNow\":1107,\"whLifetime\":14969901},{\"type\":\"eim\",\"activeCount\":1,\"measurementType\":\"production\",\"readingTime\":1779501627,\"wNow\":795.76,\"whLifetime\":35580404.169,\"varhLeadLifetime\":10550748.236,\"varhLagLifetime\":8922513.993,\"vahLifetime\":0.021,\"rmsCurrent\":3.687,\"rmsVoltage\":248.517,\"reactPwr\":-10.976,\"apprntPwr\":797.82,\"pwrFactor\":0.999,\"whToday\":35580404.169,\"whLastSevenDays\":35580404.169,\"vahToday\":0.021,\"varhLeadToday\":10550748.236,\"varhLagToday\":8922513.993}],\"consumption\":[{\"type\":\"eim\",\"activeCount\":1,\"measurementType\":\"total-consumption\",\"readingTime\":1779501627,\"wNow\":9248.294,\"whLifetime\":64582956.259,\"varhLeadLifetime\":-2354195.899,\"varhLagLifetime\":7610688.686,\"vahLifetime\":0.234,\"rmsCurrent\":39.135,\"rmsVoltage\":247.362,\"reactPwr\":-98.68,\"apprntPwr\":9248.963,\"pwrFactor\":0.0,\"whToday\":64582956.259,\"whLastSevenDays\":64582956.259,\"vahToday\":0.234,\"varhLeadToday\":0.0,\"varhLagToday\":7610688.686},{\"type\":\"eim\",\"activeCount\":1,\"measurementType\":\"net-consumption\",\"readingTime\":1779501627,\"wNow\":8452.534,\"whLifetime\":29002552.09,\"varhLeadLifetime\":8200739.527,\"varhLagLifetime\":18165624.113,\"vahLifetime\":0.234,\"rmsCurrent\":35.847,\"rmsVoltage\":247.362,\"reactPwr\":-87.704,\"apprntPwr\":8453.726,\"pwrFactor\":0.0,\"whToday\":0,\"whLastSevenDays\":0,\"vahToday\":0,\"varhLeadToday\":0,\"varhLagToday\":0}],\"storage\":[{\"type\":\"acb\",\"activeCount\":0,\"readingTime\":0,\"wNow\":0,\"whNow\":0,\"state\":\"idle\"}]}",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

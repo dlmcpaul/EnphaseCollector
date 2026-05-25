@@ -1,0 +1,79 @@
+package com.hz;
+
+import com.hz.configuration.TestEnphaseSystemInfoConfig;
+import com.hz.interfaces.MetricCalculator;
+import com.hz.metrics.Metric;
+import com.hz.models.envoy.json.System;
+import com.hz.services.EnvoyConnectionProxy;
+import com.hz.services.EnvoyService;
+import com.hz.utils.MetricCalculatorStandard;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SpringBootTest
+@AutoConfigureWireMock(port = 0,stubs="classpath:/stubs/ThreePhaseMisconfigured")
+@Import(TestEnphaseSystemInfoConfig.class)
+@ActiveProfiles("testing")
+class EnphaseServiceThreePhaseMisconfiguredTest {
+
+	@TestConfiguration
+	static class EnphaseServiceTestContextConfiguration {
+
+		@Autowired
+		private Environment environment;
+
+		@Bean
+		@Primary
+		public String baseUrl() {
+			return "http://localhost:" + this.environment.getProperty("wiremock.server.port");
+		}
+
+	}
+
+	@MockitoBean
+	private EnvoyConnectionProxy envoyConnectionProxy;
+
+	@Autowired
+	private EnvoyService enphaseService;
+
+	@Autowired
+	private RestTemplate enphaseSecureRestTemplate;
+
+	@Test
+	void enphase_three_phase_misconfigured_Test() throws IOException, URISyntaxException {
+		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
+
+		Optional<System> system = this.enphaseService.collectEnphaseData(false);
+		assertTrue(system.isPresent());
+		assertEquals(BigDecimal.valueOf(1), system.get().getProduction().getPhaseCount());
+		assertEquals(BigDecimal.valueOf(249.853), system.get().getProduction().getProductionVoltage());
+		assertEquals(BigDecimal.valueOf(1092.558), system.get().getProduction().getProductionWatts());
+		assertTrue(this.enphaseService.isOk());
+
+		MetricCalculator metricCalculator = new MetricCalculatorStandard();
+		List<Metric> metrics = metricCalculator.calculateMetrics(system.get());
+
+		assertEquals(51, metrics.size());
+	}
+
+}
