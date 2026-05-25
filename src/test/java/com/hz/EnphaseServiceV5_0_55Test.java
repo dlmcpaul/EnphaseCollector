@@ -82,7 +82,6 @@ class EnphaseServiceV5_0_55Test {
 		assertTrue(system.isPresent());
 		assertEquals("D5.0.55", this.envoyInfo.getSoftwareVersion() );
 		assertEquals(41, system.get().getProduction().getMicroInvertersList().size());
-		//assertEquals(BigDecimal.valueOf(48718.422), system.get().getProduction().getProductionEim().orElseThrow().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(1288.056), system.get().getProduction().getProductionWatts());
 		assertEquals(BigDecimal.valueOf(-266.115), system.get().getProduction().getConsumptionWatts());
 		assertEquals(BigDecimal.valueOf(-1554.171), system.get().getProduction().getNetConsumptionWatts());
