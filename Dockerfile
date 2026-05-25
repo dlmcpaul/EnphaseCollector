@@ -18,7 +18,7 @@ RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
 
 RUN apt-get update && \
-    apt-get install -y wget=1.25.0 && \
+    apt-get install -y wget=1.25.0-2 && \
     wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar
 
 FROM deps AS package
