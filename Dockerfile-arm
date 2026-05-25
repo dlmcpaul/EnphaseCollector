@@ -2,10 +2,14 @@
 # Create a stage for resolving and downloading dependencies.
 ARG VERSION="development-SNAPSHOT"
 ARG RELEASE="dev"
-FROM azul-zulu:21-headless-almalinux AS deps
+FROM debian:stable-backports AS deps
 LABEL maintainer="dlmcpaul@gmail.com"
 
 WORKDIR /build
+
+RUN apt-get update && apt-get install -y wget && apt-get install -y openjdk-21-jdk && \
+    wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar && \
+    java -version
 
 # Copy the mvnw wrapper with executable permissions.
 COPY --chmod=0755 mvnw mvnw
@@ -17,8 +21,6 @@ COPY .mvn/ .mvn/
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 ./mvnw dependency:go-offline -DskipTests
 
-RUN dnf -y install wget && \
-    wget -q -P / -O H2MigrationTool.jar https://manticore-projects.com/download/H2MigrationTool-1.4/H2MigrationTool-1.4-all.jar
 
 FROM deps AS package
 ARG VERSION
@@ -26,10 +28,13 @@ ARG RELEASE
 
 WORKDIR /build
 
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-armhf
+
 COPY ./.git .git/
 COPY ./src src/
 RUN --mount=type=bind,source=pom.xml,target=pom.xml \
     --mount=type=cache,target=/root/.m2 \
+    ./mvnw -v && \
     ./mvnw package -DskipTests -Dbuild.number=${VERSION} -Dbuild.source=${RELEASE} && \
     mv target/enphasecollector-${VERSION}-${RELEASE}.jar target/app.jar
 
@@ -54,10 +59,12 @@ RUN echo "release.version=${VERSION}" > ./target/extracted/application/BOOT-INF/
 FROM extract-${RELEASE} AS pre-final
 
 # final image is based on a jre
-FROM azul-zulu:21-jre-headless-almalinux AS final
+FROM debian:stable-backports AS final
 ARG VERSION
 LABEL maintainer="dlmcpaul@gmail.com"
 LABEL version="${VERSION}"
+
+RUN apt-get update && apt-get install -y openjdk-21-jre
 
 RUN mkdir "/properties" && \
     mkdir "/internal_db" && \
