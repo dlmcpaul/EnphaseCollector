@@ -60,7 +60,7 @@ class EnphaseServiceThreePhaseTest {
 	private RestTemplate enphaseSecureRestTemplate;
 
 	@Test
-	void enphase_4_10_35_ServiceTest() throws IOException, URISyntaxException {
+	void enphase_three_phase_Test() throws IOException, URISyntaxException {
 		Mockito.when(this.envoyConnectionProxy.getSecureTemplate()).thenReturn(enphaseSecureRestTemplate);
 
 		Optional<System> system = this.enphaseService.collectEnphaseData(false);
@@ -68,7 +68,6 @@ class EnphaseServiceThreePhaseTest {
 		assertEquals(BigDecimal.valueOf(3), system.get().getProduction().getPhaseCount());
 		assertEquals(BigDecimal.valueOf(242.635), system.get().getProduction().getProductionVoltage());
 		assertEquals(0, system.get().getProduction().getBatteryList().size());
-//		assertEquals(BigDecimal.valueOf(16112904.995), system.get().getProduction().getProductionEim().get().getWattsLifetime());
 		assertEquals(BigDecimal.valueOf(8447165, 3), system.get().getProduction().getProductionWatts());
 		assertTrue(this.enphaseService.isOk());
 
