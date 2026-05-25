@@ -28,8 +28,9 @@
 
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <highcharts.version>11.2.0</highcharts.version>
+        <highcharts.version>12.1.2</highcharts.version>
         <bulma.version>1.0.1</bulma.version>
         <font-awsome.version>5.15.4</font-awsome.version>
         <selenide.version>7.2.2</selenide.version>
