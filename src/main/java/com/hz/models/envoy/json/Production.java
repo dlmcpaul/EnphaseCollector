@@ -65,16 +65,17 @@ public class Production {
 
 	@JsonIgnore
 	public Optional<Power> getProductionMeter() {
-		Optional<Power> result = getMeterReport(PRODUCTION_TYPE).flatMap(Optional::of);
-		if (result.isPresent()) {
-			return result;
+		Optional<Power> power = getMeterReport(PRODUCTION_TYPE).flatMap(Optional::of);
+		if (power.isPresent()) {
+			return power;
 		}
-		if (deviceMeterList == null || deviceMeterList.isEmpty()) {
-			return getProductionAsPowerMeter().flatMap(Optional::of);
-		} else {
-			return getDevice(PRODUCTION_TYPE).
-					flatMap(device -> getPowerMeter(device.getEid()));
+
+		Optional<DeviceMeter> device = getDevice(PRODUCTION_TYPE);
+		if (device.isPresent()) {
+			return device.flatMap(d -> getPowerMeter(d.getEid()));
 		}
+
+		return getProductionAsPowerMeter().flatMap(Optional::of);
 	}
 
 	private Optional<PowerMeter> getProductionAsPowerMeter() {
@@ -90,7 +91,7 @@ public class Production {
 		return productionList.stream()
 				.filter(typeBase -> typeBase instanceof EimType)
 				.map(typeBase -> (EimType) typeBase)
-				.map(eimType -> new PowerMeter(eimType.getWattsNow(), BigDecimal.ZERO, eimType.getReadingTime()))
+				.map(eimType -> new PowerMeter(eimType.getWattsNow(), eimType.getRmsVoltage(), eimType.getReadingTime()))
 				.findFirst();
 	}
 
@@ -105,43 +106,49 @@ public class Production {
 					.filter(typeBase -> typeBase instanceof EimType)
 					.map(typeBase -> (EimType) typeBase)
 					.filter(typeBase -> typeBase.getMeasurementType().equals(consumptionType))
-					.map(eimType -> new PowerMeter(eimType.getWattsNow(), BigDecimal.ZERO, eimType.getReadingTime()))
+					.map(eimType -> new PowerMeter(eimType.getWattsNow(), eimType.getRmsVoltage(), eimType.getReadingTime()))
 					.findFirst();
 		}
 
 		return consumptionList.stream()
 				.filter(typeBase -> typeBase instanceof EimType)
 				.map(typeBase -> (EimType) typeBase)
-				.map(eimType -> new PowerMeter(eimType.getWattsNow(), BigDecimal.ZERO, eimType.getReadingTime()))
+				.map(eimType -> new PowerMeter(eimType.getWattsNow(), eimType.getRmsVoltage(), eimType.getReadingTime()))
 				.findFirst();
+	}
+
+	private Optional<Power> getMeterOrDeviceAsPower(String meterType) {
+		Optional<Power> result = getMeterReport(meterType).flatMap(Optional::of);
+		if (result.isPresent()) {
+			return result;
+		}
+
+		Optional<DeviceMeter> device = getDevice(meterType);
+		if (device.isPresent()) {
+			return device.flatMap(d -> getPowerMeter(d.getEid()));
+		}
+
+		return Optional.empty();
 	}
 
 	@JsonIgnore
 	public Optional<Power> getNetConsumptionMeter() {
-		Optional<Power> result = getMeterReport(NET_CONSUMPTION_TYPE).flatMap(Optional::of);
-		if (result.isPresent()) {
-			return result;
+		Optional<Power> power = getMeterOrDeviceAsPower(NET_CONSUMPTION_TYPE);
+		if (power.isPresent()) {
+			return power;
 		}
-		if (deviceMeterList == null || deviceMeterList.isEmpty()) {
-			return getConsumptionAsPowerMeter(NET_CONSUMPTION_TYPE).flatMap(Optional::of);
-		} else {
-			return getDevice(NET_CONSUMPTION_TYPE).
-					flatMap(device -> getPowerMeter(device.getEid()));
-		}
+
+		return getConsumptionAsPowerMeter(NET_CONSUMPTION_TYPE).flatMap(Optional::of);
 	}
 
 	@JsonIgnore
 	public Optional<Power> getTotalConsumptionMeter() {
-		Optional<Power> result = getMeterReport(TOTAL_CONSUMPTION_TYPE).flatMap(Optional::of);
-		if (result.isPresent()) {
-			return result;
+		Optional<Power> power = getMeterOrDeviceAsPower(TOTAL_CONSUMPTION_TYPE);
+		if (power.isPresent()) {
+			return power;
 		}
-		if (deviceMeterList == null || deviceMeterList.isEmpty()) {
-			return getConsumptionAsPowerMeter(TOTAL_CONSUMPTION_TYPE).flatMap(Optional::of);
-		} else {
-			return getDevice(TOTAL_CONSUMPTION_TYPE).
-					flatMap(device -> getPowerMeter(device.getEid()));
-		}
+
+		return getConsumptionAsPowerMeter(TOTAL_CONSUMPTION_TYPE).flatMap(Optional::of);
 	}
 
 	@JsonIgnore
@@ -151,17 +158,24 @@ public class Production {
 
 	@JsonIgnore
 	public BigDecimal getPhaseCount() {
-		return getMeterReport(PRODUCTION_TYPE)
-				.map(report -> BigDecimal.valueOf(report.getPhaseCount()))
-				.orElseGet(() -> getDevice(PRODUCTION_TYPE)
-						.map(meter -> BigDecimal.valueOf(meter.getPhaseCount()))
-						.orElse(BigDecimal.ONE));
+		var dev = getDevice(PRODUCTION_TYPE);
+		var meter = getMeterReport(PRODUCTION_TYPE);
 
+		List<Integer> values = new ArrayList<>();
+
+		dev.ifPresent(deviceMeter -> values.add(deviceMeter.getPhaseCount()));
+		meter.ifPresent(meterReport -> values.add(meterReport.getPhaseCount()));
+		values.add(1);
+
+		return BigDecimal.valueOf(values.getFirst());
 	}
 
 	@JsonIgnore
 	public BigDecimal getProductionVoltage() {
-		return getProductionMeter().orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO)).getVoltage().divide(getPhaseCount(), 3, RoundingMode.HALF_UP);
+		return getProductionMeter()
+				.orElse(new PowerMeter(BigDecimal.ZERO, BigDecimal.ZERO))
+				.getVoltage()
+				.divide(getPhaseCount(), 3, RoundingMode.HALF_UP);
 	}
 
 	@JsonIgnore
@@ -185,14 +199,17 @@ public class Production {
 	}
 
 	private Optional<MeterReport> getMeterReport(String measurementType) {
-		if (meterReportList != null) {
-			return meterReportList.stream().filter(meterReport -> meterReport.getReportType().compareToIgnoreCase(measurementType) == 0).findFirst();
-		}
-		return Optional.empty();
+		return meterReportList == null ? Optional.empty() :
+			meterReportList.stream()
+					.filter(meterReport -> meterReport.getReportType().compareToIgnoreCase(measurementType) == 0)
+					.findFirst();
 	}
 
 	private Optional<DeviceMeter> getDevice(String measurementType) {
-		return deviceMeterList.stream().filter(device -> device.getMeasurementType().compareToIgnoreCase(measurementType) == 0).findFirst();
+		return deviceMeterList == null ? Optional.empty() :
+				deviceMeterList.stream()
+				.filter(device -> device.getMeasurementType().compareToIgnoreCase(measurementType) == 0)
+				.findFirst();
 	}
 
 	private Optional<PowerMeter> getPowerMeter(String eid) {

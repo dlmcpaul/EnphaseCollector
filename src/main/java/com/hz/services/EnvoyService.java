@@ -68,15 +68,17 @@ public class EnvoyService {
 	public Optional<System> collectEnphaseData(boolean supportBattery) {
     	try {
 			system = getSystemData();   // Basic Data (cached)
-			if (envoyInfo.isV7orAbove() == false) {
+		    // Consumption & Production
+		    // Consumption & Production (cacheable?)
+		    if (envoyInfo.isV7orAbove()) {
+				getProductionDataV7(system);
+		    } else {
 				getProductionDataV5(system);
-				getDeviceMeters(system);    // Consumption & Production (cacheable?)
-				getPowerMeters(system);     // Consumption & Production
-			} else {
-				getProductionData(system);
-			}
+		    }
+		    getDeviceMeters(system);    // Consumption & Production (cacheable?)
+		    getPowerMeters(system);     // Consumption & Production
 
-		    getInventory(system);           // Has some Battery Info
+		    getInventory(system);       // Has some Battery Info
 
 		    if (supportBattery) {
 			    getBatteryData(system);     // Battery Charging
@@ -114,6 +116,7 @@ public class EnvoyService {
 				envoyConnectionProxy.getSecureTemplate().getForEntity(EnphaseURLS.BATTERY_POWER, BatteryPower.class);
 
 		if (batteriesResponse.getStatusCode().value() == 200) {
+			assert batteriesResponse.getBody() != null;
 			system.setBatteries(batteriesResponse.getBody().getDevices());
 		} else {
 			throw new IOException("Reading Battery Data failed with status " + batteriesResponse.getStatusCode());
@@ -151,7 +154,7 @@ public class EnvoyService {
 		system.setProduction(envoyConnectionProxy.getSecureTemplate().getForObject(EnphaseURLS.PRODUCTION, Production.class));
 	}
 
-	private void getProductionData(System system) throws IOException, URISyntaxException {
+	private void getProductionDataV7(System system) throws IOException, URISyntaxException {
 		system.setProduction(new Production());
 
 		HttpHeaders headers = new HttpHeaders();
@@ -170,7 +173,7 @@ public class EnvoyService {
 			}
 		} catch (RestClientException e) {
 			log.warn("Device does not support {}", EnphaseURLS.DEVICE_METERS + "/reports");
-			system.getProduction().setDeviceMeterList(new ArrayList<>());
+			system.getProduction().setMeterReportList(new ArrayList<>());
 		}
 
 	}

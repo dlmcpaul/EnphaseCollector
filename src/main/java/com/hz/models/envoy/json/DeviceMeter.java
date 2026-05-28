@@ -16,7 +16,10 @@ public class DeviceMeter {
 	private String meteringStatus;
 	private List<String> statusFlags;
 
+	public DeviceMeter(int phaseCount) {
+		this.phaseCount = phaseCount;
+	}
+
 	public DeviceMeter() {
-		this.phaseCount = 1;
 	}
 }
